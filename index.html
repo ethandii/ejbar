@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#F2F2F7" />
+  <title>Ejbar - Card Game Scorer</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 432.07 432.07'%3E%3Crect width='432.07' height='432.07' fill='white'/%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none%3B%7D.cls-2%7Bfill:%23231f20%3B%7D.cls-3%7Bfill:%23ed1c24%3B%7D%3C/style%3E%3C/defs%3E%3Cg%3E%3Crect class='cls-1' width='432.07' height='432.07'/%3E%3Cg%3E%3Cpath d='M338.84,98.19c17.63,16.07,38.8,33.12,55.14,50.24,1,1.05,2.32,1.83,2.24,3.46l-51.05,84.76,2.43-61.36-10.68-4.84-1.46.81-38.49,64.11-2.14.66-9.67-32.56-50.19-31.75c-11.4-2.56-25.02-1.53-36.66-.6l-50.07,31.25-2.32,2.68-9.04,31-2.03-1.1-38.29-63.68c-1.15-1.62-4.21.33-5.87,1.06-.92.4-6.59,3.09-6.68,3.46l2.84,60.88-50.99-84.19c-.34-2.35,2.71-4.62,4.38-6.21,12.14-11.59,25.07-22.5,37.47-33.84,10.75-9.85,21.08-20.49,32.32-29.68l1.52.34,59.16,44.73,43.08-11.3c3.04-.72,5.42.65,7.74,1.11,13.58,2.69,26.7,7.47,40.3,10.08l59.61-44.96,1.88.63,15.51,14.82Z'/%3E%3Cpath d='M162.44,303.36c8.03,7.25,15.01,15.72,22.89,23.11l2.36-.56,13.76-15.32,29.95.45,12.96,14.87c1.02.87,2.39.89,3.36-.03,7.4-7.39,14.6-16.19,22.29-23.13.47-.42.93-2.15,1.07-.1l-21.28,42.52c-10.15.68-20.84,3.65-30.93,4.1-11.95.53-24.67-3.25-36.62-4.1-6.66-12.38-13.39-24.87-19.3-37.62-.78-1.68-2.44-4.2-1.66-5.85.57.39.7,1.23,1.16,1.65h0Z'/%3E%3Cpath class='cls-2' d='M188.96,192.33c.72-.15,1.38-.21,2.03.22l12.57,9.98c1.42,1.87-1.73,7.52-2.73,9.87-2.33,5.44-5.11,10.77-7.67,16.11-13.69,4.67-27.22,10.59-41.13,14.55-2.29.65-3.11.77-2.69-2.03.79-5.13,2.72-10.41,3.97-15.46.78-3.14.82-8.83,3.01-11.38l32.63-21.85h0Z'/%3E%3Cpath class='cls-2' d='M282.95,243.53l-43.77-14.71-10.99-23.44c-.39-.86-.43-1.64,0-2.5,1.09-2.15,10.96-7.6,12.86-10.33l2.03-.22,32.33,21.52c2.44,2.24,2.55,8.64,3.31,11.7.56,2.27,4.88,17.31,4.23,17.98Z'/%3E%3Cpath class='cls-3' d='M108.91,284.06c-.29.51-3.59,2.83-4.26,3.55-5.19,5.47-10.43,10.77-15.89,16.01l-1.88.63-20.64-20.05-.43-2.19,21.65-20.97c1.07,0,13.8,12.65,15.57,14.47,1.43,1.48,6.88,6.8,5.86,8.57h0Z'/%3E%3Cpath class='cls-3' d='M357.75,273.2c2.29,2.32,4.4,4.45,6.5,6.97.93,1.11,2.83.58,1.79,3.6l-20.36,20.34-2.39-.5-20.24-19.84c-.59-1.73,4.5-6.78,5.95-8.28,4.76-4.94,10.22-9.51,15.07-14.39,1.07-.28,3.01,1.4,3.87,2.19,3.16,2.9,6.71,6.76,9.81,9.89h0Z'/%3E%3Cpath class='cls-2' d='M259.81,261.68c.28,1.59-.03,1.33-.77,2.06-2.23,2.19-5.9,4.62-8.37,6.94-3.61,3.38-7.36,6.93-10.42,10.84-1.46.39-2.98.72-4.5.83-10.85.78-29.31.9-40.07,0-5-.42-2.91-1.1-4.69-2.79-4.65-4.44-9.58-8.88-14.36-13.19-.39-.35-6.87-4.51-4.07-4.69,4.45.67,8.91,5.77,13.2,6.22,5.17.54,11.12-3.57,16.19-3.12,4.09.36,10.08,4.53,14.36,4.43,3.96-.1,9.92-4.09,13.79-4.43,5.08-.45,11.02,3.66,16.19,3.12,4.44-.46,8.81-5.76,13.51-6.21h0Z'/%3E%3Cpath d='M211.46,233.02c1.63-.48,8.48-.36,9.92.47,5.73,5.2,9.09,12.6,16.84,15.06,1.23,1.42,1.48,6.38.38,7.86l-44.83.33c-3.95-9.41,2.38-7.9,6.32-11.31,2.09-1.81,4.8-6,6.86-8.15.88-.92,3.65-3.99,4.51-4.25h0Z'/%3E%3Cpath class='cls-2' d='M240.41,291.07l-10.67,10.92c-.98.93-2.15.88-3.38,1-7.16.66-15.63-.32-22.9-.3l-11.84-11.61h48.79,0Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 432.07 432.07'%3E%3Crect width='432.07' height='432.07' fill='white'/%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none%3B%7D.cls-2%7Bfill:%23231f20%3B%7D.cls-3%7Bfill:%23ed1c24%3B%7D%3C/style%3E%3C/defs%3E%3Cg%3E%3Crect class='cls-1' width='432.07' height='432.07'/%3E%3Cg%3E%3Cpath d='M338.84,98.19c17.63,16.07,38.8,33.12,55.14,50.24,1,1.05,2.32,1.83,2.24,3.46l-51.05,84.76,2.43-61.36-10.68-4.84-1.46.81-38.49,64.11-2.14.66-9.67-32.56-50.19-31.75c-11.4-2.56-25.02-1.53-36.66-.6l-50.07,31.25-2.32,2.68-9.04,31-2.03-1.1-38.29-63.68c-1.15-1.62-4.21.33-5.87,1.06-.92.4-6.59,3.09-6.68,3.46l2.84,60.88-50.99-84.19c-.34-2.35,2.71-4.62,4.38-6.21,12.14-11.59,25.07-22.5,37.47-33.84,10.75-9.85,21.08-20.49,32.32-29.68l1.52.34,59.16,44.73,43.08-11.3c3.04-.72,5.42.65,7.74,1.11,13.58,2.69,26.7,7.47,40.3,10.08l59.61-44.96,1.88.63,15.51,14.82Z'/%3E%3Cpath d='M162.44,303.36c8.03,7.25,15.01,15.72,22.89,23.11l2.36-.56,13.76-15.32,29.95.45,12.96,14.87c1.02.87,2.39.89,3.36-.03,7.4-7.39,14.6-16.19,22.29-23.13.47-.42.93-2.15,1.07-.1l-21.28,42.52c-10.15.68-20.84,3.65-30.93,4.1-11.95.53-24.67-3.25-36.62-4.1-6.66-12.38-13.39-24.87-19.3-37.62-.78-1.68-2.44-4.2-1.66-5.85.57.39.7,1.23,1.16,1.65h0Z'/%3E%3Cpath class='cls-2' d='M188.96,192.33c.72-.15,1.38-.21,2.03.22l12.57,9.98c1.42,1.87-1.73,7.52-2.73,9.87-2.33,5.44-5.11,10.77-7.67,16.11-13.69,4.67-27.22,10.59-41.13,14.55-2.29.65-3.11.77-2.69-2.03.79-5.13,2.72-10.41,3.97-15.46.78-3.14.82-8.83,3.01-11.38l32.63-21.85h0Z'/%3E%3Cpath class='cls-2' d='M282.95,243.53l-43.77-14.71-10.99-23.44c-.39-.86-.43-1.64,0-2.5,1.09-2.15,10.96-7.6,12.86-10.33l2.03-.22,32.33,21.52c2.44,2.24,2.55,8.64,3.31,11.7.56,2.27,4.88,17.31,4.23,17.98Z'/%3E%3Cpath class='cls-3' d='M108.91,284.06c-.29.51-3.59,2.83-4.26,3.55-5.19,5.47-10.43,10.77-15.89,16.01l-1.88.63-20.64-20.05-.43-2.19,21.65-20.97c1.07,0,13.8,12.65,15.57,14.47,1.43,1.48,6.88,6.8,5.86,8.57h0Z'/%3E%3Cpath class='cls-3' d='M357.75,273.2c2.29,2.32,4.4,4.45,6.5,6.97.93,1.11,2.83.58,1.79,3.6l-20.36,20.34-2.39-.5-20.24-19.84c-.59-1.73,4.5-6.78,5.95-8.28,4.76-4.94,10.22-9.51,15.07-14.39,1.07-.28,3.01,1.4,3.87,2.19,3.16,2.9,6.71,6.76,9.81,9.89h0Z'/%3E%3Cpath class='cls-2' d='M259.81,261.68c.28,1.59-.03,1.33-.77,2.06-2.23,2.19-5.9,4.62-8.37,6.94-3.61,3.38-7.36,6.93-10.42,10.84-1.46.39-2.98.72-4.5.83-10.85.78-29.31.9-40.07,0-5-.42-2.91-1.1-4.69-2.79-4.65-4.44-9.58-8.88-14.36-13.19-.39-.35-6.87-4.51-4.07-4.69,4.45.67,8.91,5.77,13.2,6.22,5.17.54,11.12-3.57,16.19-3.12,4.09.36,10.08,4.53,14.36,4.43,3.96-.1,9.92-4.09,13.79-4.43,5.08-.45,11.02,3.66,16.19,3.12,4.44-.46,8.81-5.76,13.51-6.21h0Z'/%3E%3Cpath d='M211.46,233.02c1.63-.48,8.48-.36,9.92.47,5.73,5.2,9.09,12.6,16.84,15.06,1.23,1.42,1.48,6.38.38,7.86l-44.83.33c-3.95-9.41,2.38-7.9,6.32-11.31,2.09-1.81,4.8-6,6.86-8.15.88-.92,3.65-3.99,4.51-4.25h0Z'/%3E%3Cpath class='cls-2' d='M240.41,291.07l-10.67,10.92c-.98.93-2.15.88-3.38,1-7.16.66-15.63-.32-22.9-.3l-11.84-11.61h48.79,0Z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Vazirmatn", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    :root {
+      --bg: #F2F2F7;
+      --card: rgba(255,255,255,0.72);
+      --stroke: rgba(60,60,67,0.18);
+      --stroke-strong: rgba(60,60,67,0.28);
+      --text: #111111;
+      --text-secondary: rgba(60,60,67,0.72);
+      --text-tertiary: rgba(60,60,67,0.45);
+      --blue: #007AFF;
+      --green: #34C759;
+      --red: #FF3B30;
+      --orange: #FF9500;
+      --shadow-1: 0 1px 1px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.06);
+      --shadow-2: 0 10px 30px rgba(0,0,0,0.10);
+      --radius-1: 14px;
+      --radius-2: 18px;
+      --radius-3: 22px;
+      --blur: blur(24px) saturate(180%);
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --card: rgba(28,28,30,0.72);
+      --card-solid: #1C1C1E;
+      --stroke: rgba(84,84,88,0.65);
+      --stroke-strong: rgba(84,84,88,0.80);
+      --text: #FFFFFF;
+      --text-secondary: rgba(235,235,245,0.72);
+      --text-tertiary: rgba(235,235,245,0.45);
+      --shadow-1: 0 1px 1px rgba(0,0,0,0.40), 0 10px 26px rgba(0,0,0,0.45);
+      --shadow-2: 0 12px 34px rgba(0,0,0,0.55);
+    }
+
+    .app {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: env(safe-area-inset-top) 14px env(safe-area-inset-bottom);
+      min-height: 100%;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding: calc(env(safe-area-inset-top) + 10px) 14px 18px;
+      background: linear-gradient(to bottom, rgba(242,242,247,0.92) 0%, rgba(242,242,247,0.78) 55%, rgba(242,242,247,0.00) 100%);
+      backdrop-filter: var(--blur);
+    }
+
+    [data-theme="dark"] .nav {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.62) 55%, rgba(0,0,0,0.00) 100%);
+    }
+
+    .nav::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 22px;
+      box-shadow: 0 12px 18px rgba(0,0,0,0.06);
+      pointer-events: none;
+      opacity: 0.22;
+    }
+
+    [data-theme="dark"] .nav::after {
+      box-shadow: 0 14px 22px rgba(0,0,0,0.55);
+      opacity: 0.35;
+    }
+
+    .nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 6px 2px;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+    }
+
+    .icon-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: var(--blur);
+      user-select: none;
+      color: var(--text);
+    }
+
+    [data-theme="dark"] .icon-chip { background: rgba(28,28,30,0.55); }
+
+    .icon-chip .emoji { font-size: 18px; }
+    .icon-chip .small { font-size: 12px; color: var(--text-secondary); font-weight: 700; }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: var(--blur);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: transform 120ms ease, background 120ms ease;
+    }
+
+    [data-theme="dark"] .icon-btn { background: rgba(28,28,30,0.55); }
+    .icon-btn:active { transform: scale(0.96); }
+
+    .section {
+      margin: 10px 0 14px;
+      padding: 14px;
+      border-radius: var(--radius-3);
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title h2 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+
+    .hint {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(118,118,128,0.12);
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      padding: 3px;
+      gap: 3px;
+      margin: 8px 0 14px;
+    }
+
+    [data-theme="dark"] .segmented { background: rgba(118,118,128,0.24); }
+
+    .seg-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 140ms ease, transform 120ms ease;
+    }
+
+    .seg-btn.selected {
+      background: #0A84FF;
+      color: #fff;
+    }
+
+    .seg-btn:active { transform: scale(0.985); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      margin: 0 0 6px 2px;
+    }
+
+    .text {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: var(--blur);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    [data-theme="dark"] .text { background: rgba(28,28,30,0.58); }
+
+    .text:focus {
+      border-color: rgba(0,122,255,0.55);
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      transition: transform 120ms ease;
+      user-select: none;
+    }
+
+    .btn:active { transform: scale(0.985); }
+
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: rgba(118,118,128,0.16);
+      color: var(--text);
+      border: 1px solid var(--stroke);
+    }
+
+    .btn-danger {
+      background: rgba(255,59,48,0.14);
+      color: var(--red);
+      border: 1px solid rgba(255,59,48,0.25);
+    }
+
+    .btn.is-disabled,
+    .btn:disabled {
+      background: rgba(60,60,67,0.28) !important;
+      color: rgba(255,255,255,0.55) !important;
+      border-color: rgba(255,255,255,0.10) !important;
+      cursor: not-allowed;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .score-card {
+      border-radius: var(--radius-3);
+      padding: 14px 14px 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: var(--blur);
+      transition: border-color 220ms ease, background 220ms ease;
+    }
+
+    [data-theme="dark"] .score-card { background: rgba(28,28,30,0.58); }
+
+    .score-card.total-highlight {
+      border: 1px solid rgba(255,59,48,0.65) !important;
+    }
+
+    [data-theme="dark"] .score-card.total-highlight {
+      border-color: rgba(255,59,48,0.75) !important;
+    }
+
+    .score-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .team-label {
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      line-height: 1.2;
+    }
+
+    .badge {
+      height: 28px;
+      width: 28px;
+      min-width: 28px;
+      padding: 0;
+      border-radius: 9999px;
+      border: 1px solid var(--stroke);
+      background: rgba(118,118,128,0.16);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 28px;
+      box-sizing: border-box;
+      transition: border-color 220ms ease, background 220ms ease;
+    }
+
+    .badge.points-leading {
+      background: rgba(255,149,0,0.20) !important;
+      border: 1px solid rgba(255,149,0,0.65) !important;
+      color: var(--text) !important;
+    }
+
+    [data-theme="dark"] .badge.points-leading {
+      background: rgba(255,159,10,0.26) !important;
+      border-color: rgba(255,159,10,0.72) !important;
+    }
+
+    .score-value {
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: -1.6px;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .accent-1 { color: var(--blue); }
+    .accent-2 { color: var(--green); }
+
+    .bid-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .bid-box {
+      padding: 12px;
+      border-radius: var(--radius-2);
+      border: 1px solid var(--stroke);
+      background: rgba(118,118,128,0.10);
+    }
+
+    [data-theme="dark"] .bid-box { background: rgba(118,118,128,0.18); }
+
+    .bid-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .pill-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .pill {
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: var(--blur);
+      padding: 10px 0;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 120ms ease, background 140ms ease, border-color 140ms ease;
+    }
+
+    [data-theme="dark"] .pill { background: rgba(28,28,30,0.55); }
+
+    .pill.selected {
+      background: rgba(0,122,255,0.95);
+      border-color: rgba(0,122,255,1);
+      color: #fff;
+    }
+
+    .pill:active { transform: scale(0.985); }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .num {
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: var(--blur);
+      color: var(--text);
+      font-size: 26px;
+      font-weight: 900;
+      text-align: center;
+      outline: none;
+    }
+
+    [data-theme="dark"] .num { background: rgba(28,28,30,0.58); }
+
+    .num:focus {
+      border-color: rgba(0,122,255,0.55);
+    }
+
+    .rlabel {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--text-secondary);
+      margin: 0 0 6px 2px;
+      display: block;
+    }
+
+    .submit-in-card {
+      margin-top: 12px;
+    }
+
+    .list {
+      margin-top: 8px;
+      border-radius: var(--radius-2);
+      overflow: hidden;
+      border: 1px solid rgba(60,60,67,0.12);
+      background: rgba(118,118,128,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    [data-theme="dark"] .list {
+      border: 1px solid rgba(84,84,88,0.45);
+      background: rgba(118,118,128,0.18);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(60,60,67,0.08);
+    }
+
+    .row:last-child { border-bottom: none; }
+
+    .mini {
+      position: relative;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(60,60,67,0.10);
+      background: rgba(118,118,128,0.10);
+    }
+
+    [data-theme="dark"] .mini { border-color: rgba(84,84,88,0.40); }
+
+    .mini.milestone {
+      border: 1px solid rgba(52,199,89,0.55);
+      background: rgba(52,199,89,0.10);
+    }
+
+    .line {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .delta {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+    }
+
+    .delta.win { color: var(--green); }
+    .delta.lose { color: var(--red); }
+
+    .roundtag {
+      position: absolute;
+      right: 10px;
+      bottom: 8px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    [data-theme="dark"] .overlay { background: rgba(0,0,0,0.55); }
+
+    .overlay.show { display: flex; }
+
+    .victory {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 26px;
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      padding: 18px 16px;
+      text-align: center;
+      animation: pop 240ms ease-out;
+    }
+
+    @keyframes pop {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .trophy {
+      font-size: 52px;
+      margin-bottom: 10px;
+    }
+
+    .victory h3 {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.4px;
+      margin-bottom: 4px;
+    }
+
+    .victory p {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .hidden { display: none !important; }
+
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      z-index: 200;
+    }
+
+    .sheet-overlay.show { display: flex; }
+
+    .action-sheet {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto env(safe-area-inset-bottom);
+      padding: 12px;
+      animation: sheetUp 220ms ease-out;
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .sheet-card {
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      margin-bottom: 10px;
+    }
+
+    .sheet-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .sheet-btn + .sheet-btn {
+      border-top: 1px solid rgba(60,60,67,0.15);
+    }
+
+    .sheet-btn.destructive { color: var(--red); }
+
+    .sheet-btn:active {
+      background: rgba(118,118,128,0.14);
+    }
+
+    [data-theme="dark"] .sheet-btn:active {
+      background: rgba(118,118,128,0.24);
+    }
+
+    .history-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 6px 2px 10px;
+      color: var(--text-tertiary);
+      font-weight: 900;
+      font-size: 11px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .history-header > div {
+      text-align: center;
+    }
+
+    @keyframes totalPulse {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.015); }
+      100% { transform: scale(1); }
+    }
+
+    .total-pulse {
+      animation: totalPulse 420ms ease-out;
+    }
+
+    @keyframes turnPulse {
+      0% { transform: scale(1); }
+      35% { transform: scale(1.012); }
+      100% { transform: scale(1); }
+    }
+
+    .turn-pulse {
+      animation: turnPulse 520ms ease-out;
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 30px; }
+      .score-value { font-size: 40px; }
+    }
+  
+    /* UI-only: ensure controls inherit font (Safari/iOS) */
+    button, input, select, textarea { font-family: inherit; }
+
+    /* UI-only: RTL history tag ("دست ۱") sits on the left */
+    [dir="rtl"] .roundtag { right: auto; left: 10px; text-align: left; }
+
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="nav">
+      <div class="nav-row">
+        <div class="brand">
+          <div class="title">Ejbar</div>
+        </div>
+        <div class="nav-actions">
+          
+          <button class="icon-btn" onclick="toggleLang()" aria-label="Language" title="Language">
+            <span style="font-size:18px;">🌐</span>
+          </button>
+          <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Theme">
+            <span id="themeIcon" style="font-size:18px;font-weight:900;">☾</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="setupScreen">
+      <div class="section">
+        <div class="section-title">
+          <h2>Select Game Type</h2>
+          <span class="hint">Choose 7 or 9</span>
+        </div>
+        <div class="segmented">
+          <button class="seg-btn" data-type="7" onclick="selectGameType(7)">7 Ejbar</button>
+          <button class="seg-btn" data-type="9" onclick="selectGameType(9)">9 Ejbar</button>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Team 1 Name</label>
+            <input class="text" id="team1Name" type="text" placeholder="Team 1" value="Team 1" />
+          </div>
+          <div class="field">
+            <label>Team 2 Name</label>
+            <input class="text" id="team2Name" type="text" placeholder="Team 2" value="Team 2" />
+          </div>
+        </div>
+        <div style="margin-top: 12px;">
+          <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameScreen" class="hidden">
+      <div class="section">
+        <div class="section-title">
+          <h2>Scoreboard</h2>
+          <span class="hint" id="targetHint">Target: —</span>
+        </div>
+        <div class="score-grid">
+          <div class="score-card" id="team1Card">
+            <div class="score-top">
+              <div class="team-label" id="displayTeam1Name">TEAM 1</div>
+              <div class="badge" id="team1Points">0</div>
+            </div>
+            <div class="score-value accent-1" id="team1Total">0</div>
+          </div>
+          <div class="score-card" id="team2Card">
+            <div class="score-top">
+              <div class="team-label" id="displayTeam2Name">TEAM 2</div>
+              <div class="badge" id="team2Points">0</div>
+            </div>
+            <div class="score-value accent-2" id="team2Total">0</div>
+          </div>
+        </div>
+        <div class="bid-grid">
+          <div class="bid-box">
+            <div class="bid-title" id="bidLabel1">Team 1 Bid</div>
+            <div class="pill-grid" id="bid1Chips"></div>
+          </div>
+          <div class="bid-box">
+            <div class="bid-title" id="bidLabel2">Team 2 Bid</div>
+            <div class="pill-grid" id="bid2Chips"></div>
+          </div>
+        </div>
+        <div class="result-grid">
+          <div class="field">
+            <span class="rlabel" id="resultLabel1">Team 1 Won</span>
+            <input class="num" id="result1" type="number" placeholder="0" min="0" />
+          </div>
+          <div class="field">
+            <span class="rlabel" id="resultLabel2">Team 2 Won</span>
+            <input class="num" id="result2" type="number" placeholder="0" min="0" />
+          </div>
+        </div>
+        <div class="submit-in-card">
+          <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <h2>History</h2>
+          <span class="hint">Most recent first</span>
+        </div>
+        <div class="history-header">
+          <div id="historyColTeam1">Team 1</div>
+          <div id="historyColTeam2">Team 2</div>
+        </div>
+        <div id="emptyHistory" style="padding: 12px 6px; color: var(--text-secondary); font-weight: 800; font-size: 13px;"></div>
+        <div class="list hidden" id="historyList"></div>
+        <div class="actions">
+          <button class="btn btn-secondary" onclick="newGame()">New Game</button>
+          <button class="btn btn-danger" onclick="clearHistory()">Clear History</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="winnerOverlay" role="dialog" aria-modal="true" aria-label="Winner">
+    <div class="victory">
+      <div class="trophy">🏆</div>
+      <h3 id="winnerName">Team</h3>
+      <p id="winnerMessage">Wins!</p>
+      <button class="btn btn-secondary" onclick="closeWinner()">Close</button>
+    </div>
+  </div>
+
+  <div class="sheet-overlay" id="sheetOverlay">
+    <div class="action-sheet">
+      <div class="sheet-card">
+        <button class="sheet-btn" onclick="sheetEdit()">Edit Round</button>
+        <button class="sheet-btn destructive" onclick="sheetDelete()">Delete Round</button>
+      </div>
+      <div class="sheet-card">
+        <button class="sheet-btn" onclick="closeSheet()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========== DOM ELEMENT CACHE ==========
+    let $ = {};
+    
+    function initDOMElements() {
+      $ = {
+        setupScreen: document.getElementById('setupScreen'),
+        gameScreen: document.getElementById('gameScreen'),
+        team1Name: document.getElementById('team1Name'),
+        team2Name: document.getElementById('team2Name'),
+        team1Total: document.getElementById('team1Total'),
+        team2Total: document.getElementById('team2Total'),
+        team1Points: document.getElementById('team1Points'),
+        team2Points: document.getElementById('team2Points'),
+        team1Card: document.getElementById('team1Card'),
+        team2Card: document.getElementById('team2Card'),
+        bid1Chips: document.getElementById('bid1Chips'),
+        bid2Chips: document.getElementById('bid2Chips'),
+        result1: document.getElementById('result1'),
+        result2: document.getElementById('result2'),
+        submitBtn: document.getElementById('submitBtn'),
+        historyList: document.getElementById('historyList'),
+        emptyHistory: document.getElementById('emptyHistory'),
+        targetHint: document.getElementById('targetHint'),
+        winnerOverlay: document.getElementById('winnerOverlay'),
+        sheetOverlay: document.getElementById('sheetOverlay')
+      };
+    }
+
+    // ========== GAME STATE ==========
+    let gameState = {
+      lastTurn: 1,
+      gameType: null,
+      team1Name: 'Team 1',
+      team2Name: 'Team 2',
+      team1Total: 0,
+      team2Total: 0,
+      team1Points: 0,
+      team2Points: 0,
+      currentBid1: null,
+      currentBid2: null,
+      history: [],
+      winner: null
+    };
+
+    // ========== CONSTANTS ==========
+    const TARGET_7Ejbar = 350;
+    const TARGET_9Ejbar = 550;
+    const FORCED_9_THRESHOLD = 460;
+    let sheetIndex = null;
+    let prevTurnOutlined = null;
+    let pressTimer = null;
+
+    // ========== HELPER FUNCTIONS ==========
+    function enablePills(enabled = true) {
+      document.querySelectorAll('.pill').forEach(btn => {
+        btn.disabled = !enabled;
+        btn.style.opacity = enabled ? '1' : '0.45';
+        btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+      });
+    }
+
+    function clearPillSelection() {
+      document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    // ========== THEME MANAGEMENT ==========
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const icon = document.getElementById('themeIcon');
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (icon) icon.textContent = (theme === 'dark') ? '☀︎' : '☾';
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#000000' : '#F2F2F7');
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    (function() {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') {
+        applyTheme(saved);
+        return;
+      }
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    })();
+
+    // ========== GAME LOGIC ==========
+    function getTargetScore() {
+      return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
+    }
+
+    function getTotalTricks() {
+      return gameState.gameType === 9 ? 13 : 9;
+    }
+
+    function enforceForcedBidIfNeeded() {
+      if (gameState.gameType !== 9) return;
+      const t1Reached = gameState.team1Total >= FORCED_9_THRESHOLD;
+      const t2Reached = gameState.team2Total >= FORCED_9_THRESHOLD;
+      if (!(t1Reached || t2Reached)) return;
+      if (gameState.team1Points < gameState.team2Points) gameState.currentBid1 = 9;
+      else if (gameState.team2Points < gameState.team1Points) gameState.currentBid2 = 9;
+    }
+
+    function calcRoundScore(bid, result) {
+      // TABLE RULES:
+      // - If result < bid:   -bid*10
+      // - 7 Ejbar:
+      //    * bid 3..8 : if result==9 => 90 else +bid*10 (when result>=bid)
+      //    * bid 7    : if result>=7 and result<=8 => 70 (+point handled elsewhere), if result==9 => 90
+      // - 9 Ejbar:
+      //    * bid 4..12: +bid*10 (when result>=bid)
+      //    * bid 9    : +90 (+1 point handled elsewhere)
+      //    * bid 10   : +200 when result>=10
+      if (result < bid) return -bid * 10;
+
+      if (gameState.gameType === 9) {
+        if (bid === 10) return 200;
+        return bid * 10;
+      }
+
+      // gameType === 7
+      if (bid === 7) {
+        if (result === 9) return 90;
+        return 70; // result is 7 or 8 (since result >= bid and total tricks is 9)
+      }
+
+      if (result === 9) return 90;
+      return bid * 10;
+    }
+
+    function checkInstantWinLose(bid1, bid2, result1, result2) {
+      const t = I18N_UI[currentLangUI];
+      // 7 Ejbar: bid 9 => win whole game if bidding team wins 9, else koot (lose whole game)
+      if (gameState.gameType === 7) {
+        if (bid1 === 9) {
+          if (result1 === 9) return { name: gameState.team1Name, message: t.winWholeGame };
+          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
+        }
+        if (bid2 === 9) {
+          if (result2 === 9) return { name: gameState.team2Name, message: t.winWholeGame };
+          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
+        }
+      }
+
+      // 9 Ejbar: bid 13 => win whole game if bidding team wins 13, else koot (lose whole game)
+      if (gameState.gameType === 9) {
+        if (bid1 === 13) {
+          if (result1 === 13) return { name: gameState.team1Name, message: t.winWholeGame };
+          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
+        }
+        if (bid2 === 13) {
+          if (result2 === 13) return { name: gameState.team2Name, message: t.winWholeGame };
+          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
+        }
+      }
+
+      return null;
+    }
+
+    // ========== UI UPDATES ==========
+    function renderBidChips() {
+      const t = gameState.gameType || 7;
+      const minBid = (t === 9) ? 4 : 3;
+      const maxBid = (t === 9) ? 13 : 9;
+
+      if (!$.bid1Chips || !$.bid2Chips) return;
+
+      const build = (team) => {
+        const buttons = [];
+        for (let v = minBid; v <= maxBid; v++) {
+          // Convert digit based on current language
+          const displayValue = (typeof currentLangUI !== 'undefined' && currentLangUI === "fa") 
+            ? toFaDigitsUI(String(v)) 
+            : String(v);
+          buttons.push(`<button class="pill" data-value="${v}" onclick="selectBid(${team},${v},event)">${displayValue}</button>`);
+        }
+        return buttons.join('');
+      };
+      $.bid1Chips.innerHTML = build(1);
+      $.bid2Chips.innerHTML = build(2);
+
+      gameState.currentBid1 = null;
+      gameState.currentBid2 = null;
+    }
+
+    function selectGameType(type) {
+      gameState.gameType = type;
+      renderBidChips();
+      document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+      const sel = document.querySelector(`[data-type="${type}"]`);
+      if (sel) sel.classList.add('selected');
+      if ($.targetHint) $.targetHint.textContent = `Target: ${getTargetScore()} • Need +1 point lead`;
+    }
+
+    function startGame() {
+      if (!gameState.gameType) {
+        const t = I18N_UI[currentLangUI];
+        alert(t.alertSelectGameType);
+        return;
+      }
+
+      gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
+      gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
+
+      updateTeamNames();
+      if ($.setupScreen) $.setupScreen.classList.add('hidden');
+      if ($.gameScreen) $.gameScreen.classList.remove('hidden');
+      renderBidChips();
+      updateUI();
+    }
+
+    function updateTeamNames() {
+      const t = I18N_UI[currentLangUI];
+      const ids = ['displayTeam1Name', 'displayTeam2Name', 'bidLabel1', 'bidLabel2', 'resultLabel1', 'resultLabel2', 'historyColTeam1', 'historyColTeam2'];
+      const els = ids.map(id => document.getElementById(id));
+      if (els[0]) els[0].textContent = gameState.team1Name.toUpperCase();
+      if (els[1]) els[1].textContent = gameState.team2Name.toUpperCase();
+      if (els[2]) els[2].textContent = t.teamBid(gameState.team1Name);
+      if (els[3]) els[3].textContent = t.teamBid(gameState.team2Name);
+      if (els[4]) els[4].textContent = t.teamWon(gameState.team1Name);
+      if (els[5]) els[5].textContent = t.teamWon(gameState.team2Name);
+      if (els[6]) els[6].textContent = gameState.team1Name;
+      if (els[7]) els[7].textContent = gameState.team2Name;
+    }
+
+    function selectBid(team, bid, evt) {
+      const clickedBtn = (evt || window.event)?.target?.closest('.pill');
+      const container = team === 1 ? $.bid1Chips : $.bid2Chips;
+      if (team === 1) gameState.currentBid1 = bid;
+      else gameState.currentBid2 = bid;
+      if (container) {
+        container.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
+        if (clickedBtn?.closest(`#bid${team}Chips`)) clickedBtn.classList.add('selected');
+      }
+    }
+
+    function addScore() {
+      const t = I18N_UI[currentLangUI];
+      const result1 = parseInt($.result1 && $.result1.value) || 0;
+      const result2 = parseInt($.result2 && $.result2.value) || 0;
+      const bid1 = gameState.currentBid1;
+      const bid2 = gameState.currentBid2;
+
+      if (!bid1 && !bid2) {
+        alert(t.alertNeedBid);
+        return;
+      }
+
+      const totalTricks = getTotalTricks();
+      if (result1 + result2 !== totalTricks) {
+        alert(t.alertTotalTricks(totalTricks));
+        return;
+      }
+
+      let score1 = 0, score2 = 0, points1 = 0, points2 = 0;
+
+      if (bid1) {
+        score1 = calcRoundScore(bid1, result1);
+        if (result1 >= bid1 && bid1 === gameState.gameType) points1 = 1;
+      }
+
+      if (bid2) {
+        score2 = calcRoundScore(bid2, result2);
+        if (result2 >= bid2 && bid2 === gameState.gameType) points2 = 1;
+      }
+
+      gameState.team1Total += score1;
+      gameState.team2Total += score2;
+      gameState.team1Points += points1;
+      gameState.team2Points += points2;
+
+      if (gameState.team1Total < gameState.team2Total) {
+        gameState.lastTurn = 1;
+      } else if (gameState.team2Total < gameState.team1Total) {
+        gameState.lastTurn = 2;
+      }
+
+      gameState.history.push({ bid1, bid2, result1, result2, score1, score2, points1, points2 });
+
+      if ($.result1) $.result1.value = '';
+      if ($.result2) $.result2.value = '';
+      gameState.currentBid1 = null;
+      gameState.currentBid2 = null;
+      enablePills();
+      document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
+
+      updateUI();
+      const instant = checkInstantWinLose(bid1, bid2, result1, result2);
+      if (instant) { showWinner(instant.name, instant.message); return; }
+      checkWinner();
+    }
+
+    function updateUI() {
+      enforceForcedBidIfNeeded();
+      
+      if ($.team1Total) $.team1Total.textContent = gameState.team1Total;
+      if ($.team2Total) $.team2Total.textContent = gameState.team2Total;
+      if ($.team1Points) $.team1Points.textContent = gameState.team1Points;
+      if ($.team2Points) $.team2Points.textContent = gameState.team2Points;
+
+      if ($.team1Points && $.team2Points) {
+        $.team1Points.classList.toggle('points-leading', gameState.team1Points > gameState.team2Points);
+        $.team2Points.classList.toggle('points-leading', gameState.team2Points > gameState.team1Points);
+      }
+
+      if ($.team1Card && $.team2Card) {
+        $.team1Card.classList.remove('turn-outline', 'turn-pulse', 'total-highlight', 'total-pulse');
+        $.team2Card.classList.remove('turn-outline', 'turn-pulse', 'total-highlight', 'total-pulse');
+
+        let currentOutlined = null;
+
+        if (gameState.team1Total < gameState.team2Total) {
+          $.team1Card.classList.add('total-highlight', 'total-pulse');
+          gameState.lastTurn = 1;
+          currentOutlined = 1;
+        } else if (gameState.team2Total < gameState.team1Total) {
+          $.team2Card.classList.add('total-highlight', 'total-pulse');
+          gameState.lastTurn = 2;
+          currentOutlined = 2;
+        } else if (gameState.lastTurn === 1) {
+          $.team1Card.classList.add('total-highlight', 'total-pulse');
+          currentOutlined = 1;
+        } else if (gameState.lastTurn === 2) {
+          $.team2Card.classList.add('total-highlight', 'total-pulse');
+          currentOutlined = 2;
+        }
+
+        if (currentOutlined && currentOutlined !== prevTurnOutlined) {
+          const target = currentOutlined === 1 ? $.team1Card : $.team2Card;
+          target.classList.add('turn-pulse');
+          setTimeout(() => target.classList.remove('turn-pulse'), 600);
+        }
+        prevTurnOutlined = currentOutlined;
+      }
+
+      if (!$.historyList || !$.emptyHistory) return;
+
+      if (gameState.history.length === 0) {
+        $.emptyHistory.classList.remove('hidden');
+        $.historyList.classList.add('hidden');
+        $.historyList.innerHTML = '';
+        return;
+      }
+
+      $.emptyHistory.classList.add('hidden');
+      $.historyList.classList.remove('hidden');
+
+      const t = I18N_UI[currentLangUI];
+      const formatTeamLine = (round, team) => {
+        const bid = team === 1 ? round.bid1 : round.bid2;
+        const result = team === 1 ? round.result1 : round.result2;
+        return bid ? `${t.bidWord}: ${bid} • ${t.wonWord}: ${result}` : `${t.wonWord}: ${result}`;
+      };
+      const getScoreClass = (score) => score > 0 ? 'win' : (score < 0 ? 'lose' : '');
+      const formatScore = (score) => score > 0 ? `+${score}` : String(score);
+      
+      const rows = gameState.history.map((round, index) => {
+        const team1Line = formatTeamLine(round, 1);
+        const team2Line = formatTeamLine(round, 2);
+        const score1 = round.bid1 ? `<div class="delta ${getScoreClass(round.score1)}">${formatScore(round.score1)}</div>` : '<div class="line" style="margin:0;">—</div>';
+        const score2 = round.bid2 ? `<div class="delta ${getScoreClass(round.score2)}">${formatScore(round.score2)}</div>` : '<div class="line" style="margin:0;">—</div>';
+
+        return `<div class="row">
+            <div class="mini ${round.points1 > 0 ? 'milestone' : ''}">
+              <div class="line">${escapeHtml(team1Line)}</div>
+              ${score1}
+              <div class="roundtag">R${index + 1}</div>
+            </div>
+            <div class="mini ${round.points2 > 0 ? 'milestone' : ''}">
+              <div class="line">${escapeHtml(team2Line)}</div>
+              ${score2}
+            </div>
+          </div>`;
+      }).reverse().join('');
+
+      $.historyList.innerHTML = rows;
+      bindLongPress();
+    }
+
+    const escapeHtmlMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, ch => escapeHtmlMap[ch]);
+    }
+
+    function checkWinner() {
+      const t = I18N_UI[currentLangUI];
+      const targetScore = getTargetScore();
+      const pointsDiff = Math.abs(gameState.team1Points - gameState.team2Points);
+
+      if ((gameState.team1Total >= targetScore || gameState.team2Total >= targetScore) && pointsDiff >= 1) {
+        const winner = gameState.team1Points > gameState.team2Points ? gameState.team1Name : gameState.team2Name;
+        const winnerScore = Math.max(gameState.team1Total, gameState.team2Total);
+        const winnerPoints = Math.max(gameState.team1Points, gameState.team2Points);
+        showWinner(winner, t.winnerScore(winnerScore, winnerPoints));
+      }
+    }
+
+    function showWinner(name, message) {
+      gameState.winner = name;
+      const winnerNameEl = document.getElementById('winnerName');
+      const winnerMessageEl = document.getElementById('winnerMessage');
+      if (winnerNameEl) winnerNameEl.textContent = name;
+      if (winnerMessageEl) {
+        winnerMessageEl.textContent = message;
+        if (currentLangUI === "fa") {
+          localizeDisplayedNumbersUI();
+        }
+      }
+      if ($.winnerOverlay) $.winnerOverlay.classList.add('show');
+      if ($.result1) $.result1.disabled = true;
+      if ($.result2) $.result2.disabled = true;
+      enablePills(false);
+    }
+
+    function closeWinner() {
+      if ($.winnerOverlay) $.winnerOverlay.classList.remove('show');
+    }
+
+    // ========== HISTORY MANAGEMENT ==========
+    function openSheet(idx) {
+      sheetIndex = idx;
+      if ($.sheetOverlay) $.sheetOverlay.classList.add('show');
+    }
+
+    function closeSheet() {
+      if ($.sheetOverlay) $.sheetOverlay.classList.remove('show');
+      sheetIndex = null;
+    }
+
+    function sheetEdit() {
+      if (sheetIndex !== null) editRound(sheetIndex);
+      closeSheet();
+    }
+
+    function sheetDelete() {
+      if (sheetIndex !== null) deleteRound(sheetIndex);
+      closeSheet();
+    }
+
+    function bindLongPress() {
+      const rows = $.historyList?.querySelectorAll('.row');
+      if (!rows) return;
+      rows.forEach((row, idx) => {
+        let moved = false;
+        const startTimer = () => { moved = false; pressTimer = setTimeout(() => openSheet(idx), 420); };
+        const cancelTimer = () => { moved = true; clearTimeout(pressTimer); };
+        const endTimer = () => clearTimeout(pressTimer);
+        row.addEventListener('touchstart', startTimer, { passive: true });
+        row.addEventListener('touchmove', cancelTimer, { passive: true });
+        row.addEventListener('touchend', endTimer, { passive: true });
+      });
+    }
+
+    function deleteRound(index) {
+      const actualIndex = gameState.history.length - 1 - index;
+      const round = gameState.history[actualIndex];
+      if (!round) return;
+
+      gameState.team1Total -= round.score1;
+      gameState.team2Total -= round.score2;
+      gameState.team1Points -= round.points1;
+      gameState.team2Points -= round.points2;
+
+      gameState.history.splice(actualIndex, 1);
+
+      gameState.winner = null;
+      closeWinner();
+      if ($.result1) $.result1.disabled = false;
+      if ($.result2) $.result2.disabled = false;
+      enablePills(true);
+
+      updateUI();
+      checkWinner();
+    }
+
+    function editRound(index) {
+      const t = I18N_UI[currentLangUI];
+      const actualIndex = gameState.history.length - 1 - index;
+      const round = gameState.history[actualIndex];
+      if (!round) return;
+
+      const totalTricks = getTotalTricks();
+      const maxBid = gameState.gameType === 9 ? 13 : 9;
+      const minBid = gameState.gameType === 9 ? 4 : 3;
+      const team1Bid = prompt(t.promptEditBid(gameState.team1Name, minBid, maxBid), round.bid1 || '');
+      if (team1Bid === null) return;
+      const team1Result = prompt(t.promptEditWon(gameState.team1Name, totalTricks), round.result1);
+      if (team1Result === null) return;
+      const team2Bid = prompt(t.promptEditBid(gameState.team2Name, minBid, maxBid), round.bid2 || '');
+      if (team2Bid === null) return;
+      const team2Result = prompt(t.promptEditWon(gameState.team2Name, totalTricks), round.result2);
+      if (team2Result === null) return;
+
+      const newBid1 = team1Bid.trim() === '' ? null : parseInt(team1Bid);
+      const newResult1 = parseInt(team1Result);
+      const newBid2 = team2Bid.trim() === '' ? null : parseInt(team2Bid);
+      const newResult2 = parseInt(team2Result);
+
+      if ((newBid1 && (newBid1 < minBid || newBid1 > maxBid)) || (newBid2 && (newBid2 < minBid || newBid2 > maxBid))) {
+        alert(t.alertBidRange(minBid, maxBid));
+        return;
+      }
+
+      if (isNaN(newResult1) || isNaN(newResult2) || newResult1 < 0 || newResult1 > totalTricks || newResult2 < 0 || newResult2 > totalTricks) {
+        alert(t.alertResultRange(totalTricks));
+        return;
+      }
+
+      if (newResult1 + newResult2 !== totalTricks) {
+        alert(t.alertTotalTricks(totalTricks));
+        return;
+      }
+
+      if (!newBid1 && !newBid2) {
+        alert(t.alertNeedBid);
+        return;
+      }
+
+      gameState.team1Total -= round.score1;
+      gameState.team2Total -= round.score2;
+      gameState.team1Points -= round.points1;
+      gameState.team2Points -= round.points2;
+
+      let newScore1 = 0, newScore2 = 0, newPoints1 = 0, newPoints2 = 0;
+
+      if (newBid1) {
+        newScore1 = calcRoundScore(newBid1, newResult1);
+        if (newResult1 >= newBid1 && newBid1 === gameState.gameType) newPoints1 = 1;
+      }
+
+      if (newBid2) {
+        newScore2 = calcRoundScore(newBid2, newResult2);
+        if (newResult2 >= newBid2 && newBid2 === gameState.gameType) newPoints2 = 1;
+      }
+
+      gameState.team1Total += newScore1;
+      gameState.team2Total += newScore2;
+      gameState.team1Points += newPoints1;
+      gameState.team2Points += newPoints2;
+
+      gameState.history[actualIndex] = {
+        bid1: newBid1, bid2: newBid2,
+        result1: newResult1, result2: newResult2,
+        score1: newScore1, score2: newScore2,
+        points1: newPoints1, points2: newPoints2
+      };
+
+      gameState.winner = null;
+      closeWinner();
+      if ($.result1) $.result1.disabled = false;
+      if ($.result2) $.result2.disabled = false;
+      enablePills(true);
+
+      updateUI();
+      const instant = checkInstantWinLose(newBid1, newBid2, newResult1, newResult2);
+      if (instant) { showWinner(instant.name, instant.message); return; }
+      checkWinner();
+    }
+
+    function newGame() {
+      const t = I18N_UI[currentLangUI];
+      if (!confirm(t.confirmNewGame)) return;
+
+      gameState = {
+        lastTurn: 1,
+        gameType: null,
+        team1Name: 'Team 1',
+        team2Name: 'Team 2',
+        team1Total: 0,
+        team2Total: 0,
+        team1Points: 0,
+        team2Points: 0,
+        currentBid1: null,
+        currentBid2: null,
+        history: [],
+        winner: null
+      };
+
+      if ($.result1) $.result1.disabled = false;
+      if ($.result2) $.result2.disabled = false;
+      document.querySelectorAll('.pill').forEach(btn => {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.classList.remove('selected');
+      });
+
+      closeWinner();
+      if ($.gameScreen) $.gameScreen.classList.add('hidden');
+      if ($.setupScreen) $.setupScreen.classList.remove('hidden');
+      document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+
+      if ($.team1Name) $.team1Name.value = 'Team 1';
+      if ($.team2Name) $.team2Name.value = 'Team 2';
+      if ($.targetHint) $.targetHint.textContent = 'Target: —';
+
+      updateUI();
+    }
+
+    function clearHistory() {
+      const t = I18N_UI[currentLangUI];
+      if (!confirm(t.confirmClearHistory)) return;
+
+      gameState.history = [];
+      gameState.team1Total = 0;
+      gameState.team2Total = 0;
+      gameState.team1Points = 0;
+      gameState.team2Points = 0;
+      gameState.lastTurn = 1;
+      prevTurnOutlined = null;
+      gameState.winner = null;
+
+      if ($.result1) $.result1.disabled = false;
+      if ($.result2) $.result2.disabled = false;
+      enablePills(true);
+
+      closeWinner();
+      updateUI();
+    }
+
+    // ========== EVENT LISTENERS ==========
+    function syncSubmitEnabled() {
+      if (!$.submitBtn || !$.result1 || !$.result2) return;
+      const v1 = ($.result1.value ?? '').toString().trim();
+      const v2 = ($.result2.value ?? '').toString().trim();
+      const ok = v1 !== '' && v2 !== '';
+      $.submitBtn.disabled = !ok;
+      $.submitBtn.classList.toggle('is-disabled', !ok);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDOMElements();
+      
+      if ($.submitBtn) {
+        $.submitBtn.addEventListener('click', () => {
+          if ($.submitBtn.disabled) return;
+          addScore();
+          syncSubmitEnabled();
+        });
+      }
+      if ($.result1) $.result1.addEventListener('input', syncSubmitEnabled);
+      if ($.result2) $.result2.addEventListener('input', syncSubmitEnabled);
+      syncSubmitEnabled();
+    });
+
+    window.addEventListener('beforeunload', function(e) {
+      const hasData = gameState.history.length > 0 || gameState.team1Total !== 0 || gameState.team2Total !== 0;
+
+      if ($.gameScreen && !$.gameScreen.classList.contains('hidden') && hasData) {
+        const t = I18N_UI[currentLangUI];
+        e.preventDefault();
+        e.returnValue = t.beforeUnloadMessage;
+        return e.returnValue;
+      }
+    });
+
+    let touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      const touchY = e.touches[0].clientY;
+      const touchDelta = touchY - touchStartY;
+      if (touchDelta > 0 && window.scrollY === 0 && touchDelta > 150) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  
+    // ================= UI-ONLY TRANSLATION (NO RULE CHANGES) =================
+    const I18N_UI = {
+      en: {
+        title: "Ejbar",
+        selectGame: "Select Game Type",
+        choose: "Choose 7 or 9",
+        team1NameLabel: "Team 1 Name",
+        team2NameLabel: "Team 2 Name",
+        team1Placeholder: "Team 1",
+        team2Placeholder: "Team 2",
+        start: "Start Game",
+        scoreboard: "Scoreboard",
+        history: "History",
+        mostRecent: "Most recent first",
+        newGame: "New Game",
+        clear: "Clear History",
+        submit: "Submit",
+        editRound: "Edit Round",
+        deleteRound: "Delete Round",
+        cancel: "Cancel",
+        close: "Close",
+        scorer: "Scorer",
+        cardGameScorer: "Card Game Scorer",
+        bidWord: "Bid",
+        wonWord: "Won",
+        teamBid: (name)=>`${name} Bid`,
+        teamWon: (name)=>`${name} Won`,
+        target: (v)=>`Target: ${v} • Need +1 point lead`,
+        noRounds: "No rounds played yet",
+        labels: { game7: "7 Ejbar", game9: "9 Ejbar" },
+        theme: "Theme",
+        language: "Language",
+        alertSelectGameType: "Please select a game type",
+        alertNeedBid: "At least one team must make a bid",
+        alertTotalTricks: (total)=>`Total tricks must equal ${total}!`,
+        alertBidRange: (min, max)=>`Bids must be between ${min} and ${max}`,
+        alertResultRange: (max)=>`Results must be between 0 and ${max}`,
+        confirmNewGame: "Start a new game? This will reset everything.",
+        confirmClearHistory: "Clear all history? This cannot be undone.",
+        promptEditBid: (name, min, max)=>`Edit ${name} Bid (${min}-${max}, or leave empty for no bid):`,
+        promptEditWon: (name, max)=>`Edit ${name} Tricks Won (0-${max}):`,
+        winWholeGame: "Win whole game",
+        kootLoseWholeGame: "Koot (lose whole game)",
+        winnerScore: (score, points)=>`Score: ${score} • ${points} points`,
+        beforeUnloadMessage: "You have unsaved game data. Are you sure you want to leave?",
+        wins: "Wins!"
+      },
+      fa: {
+        title: "اجبار",
+        selectGame: "انتخاب نوع بازی",
+        choose: "۷ یا ۹ را انتخاب کنید",
+        team1NameLabel: "نام تیم ۱",
+        team2NameLabel: "نام تیم ۲",
+        team1Placeholder: "تیم ۱",
+        team2Placeholder: "تیم ۲",
+        start: "شروع بازی",
+        scoreboard: "امتیازها",
+        history: "تاریخچه",
+        mostRecent: "آخرین دست‌ها در بالا",
+        newGame: "بازی جدید",
+        clear: "پاک کردن تاریخچه",
+        submit: "ثبت",
+        editRound: "ویرایش دست",
+        deleteRound: "حذف دست",
+        cancel: "انصراف",
+        close: "بستن",
+        scorer: "امتیازشمار",
+        cardGameScorer: "امتیازشمار بازی کارت",
+        bidWord: "حکم",
+        wonWord: "برد",
+        teamBid: (name)=>`حکم ${name}`,
+        teamWon: (name)=>`برد ${name}`,
+        target: (v)=>`هدف: ${v} • اختلاف حداقل ۱ پوئن`,
+        noRounds: "هنوز دستی ثبت نشده",
+        labels: { game7: "۷ اجبار", game9: "۹ اجبار" },
+        theme: "تم",
+        language: "زبان",
+        alertSelectGameType: "لطفاً نوع بازی را انتخاب کنید",
+        alertNeedBid: "حداقل یک تیم باید حکم بزند",
+        alertTotalTricks: (total)=>`مجموع دست‌ها باید برابر ${total} باشد!`,
+        alertBidRange: (min, max)=>`حکم باید بین ${min} و ${max} باشد`,
+        alertResultRange: (max)=>`نتیجه باید بین ۰ و ${max} باشد`,
+        confirmNewGame: "بازی جدید شروع شود؟ همه چیز بازنشانی می‌شود.",
+        confirmClearHistory: "تمام تاریخچه پاک شود؟ این عمل قابل بازگشت نیست.",
+        promptEditBid: (name, min, max)=>`ویرایش حکم ${name} (${min}-${max}، یا خالی بگذارید برای بدون حکم):`,
+        promptEditWon: (name, max)=>`ویرایش دست‌های برده ${name} (۰-${max}):`,
+        winWholeGame: "برنده کل بازی",
+        kootLoseWholeGame: "کوت (بازنده کل بازی)",
+        winnerScore: (score, points)=>`امتیاز: ${score} • ${points} پوئن`,
+        beforeUnloadMessage: "داده‌های بازی ذخیره نشده‌ای دارید. آیا مطمئن هستید که می‌خواهید خارج شوید؟",
+        wins: "برنده شد!"
+      }
+    };
+
+    let currentLangUI = localStorage.getItem("lang") || "en";
+    const DIGITS_FA_UI = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+    const toFaDigitsUI = (s) => String(s).replace(/\d/g, d => DIGITS_FA_UI[d]);
+    const toEnDigitsUI = (s) => String(s).replace(/[۰-۹]/g, ch => String(DIGITS_FA_UI.indexOf(ch)));
+
+    function localizeDisplayedNumbersUI(){
+      const makeFa = (currentLangUI === "fa");
+
+      const DIGITS_FA = DIGITS_FA_UI;
+      const toFa = (s)=>toFaDigitsUI(toEnDigitsUI(s));
+      const toEn = (s)=>toEnDigitsUI(s);
+
+      // Text-node localization (does NOT replace innerHTML, keeps listeners intact)
+      function localizeTextNodes(root){
+        if(!root) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        let n;
+        while((n = walker.nextNode())){
+          const v = n.nodeValue;
+          if(!v) continue;
+          n.nodeValue = makeFa ? toFa(v) : toEn(v);
+        }
+      }
+
+      // Simple numeric displays
+      ["team1Total","team2Total","team1Points","team2Points","targetHint"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.textContent = makeFa ? toFa(el.textContent) : toEn(el.textContent);
+      });
+
+      // Winner message may contain punctuation; keep as textContent
+      const wm = document.getElementById("winnerMessage");
+      if(wm) wm.textContent = makeFa ? toFa(wm.textContent) : toEn(wm.textContent);
+
+      // History: preserve DOM nodes & event listeners
+      localizeTextNodes(document.getElementById("historyList"));
+      localizeTextNodes(document.getElementById("emptyHistory"));
+
+      // Round tags in history: R1 -> دست ۱ (UI only), without touching markup
+      document.querySelectorAll(".roundtag").forEach(el=>{
+        const txt = (el.textContent || "").trim();
+        if(makeFa){
+          if(txt.startsWith("R")){
+            el.textContent = "دست " + toFaDigitsUI(txt.slice(1));
+          } else {
+            el.textContent = toFa(txt);
+          }
+        } else {
+          if(txt.startsWith("دست")){
+            const n = txt.replace("دست", "").trim();
+            el.textContent = "R" + toEnDigitsUI(n);
+          } else {
+            el.textContent = toEn(txt);
+          }
+        }
+      });
+    }
+
+    function applyLangUI(lang){
+      currentLangUI = (lang === "fa") ? "fa" : "en";
+      localStorage.setItem("lang", currentLangUI);
+      const t = I18N_UI[currentLangUI];
+
+      document.documentElement.dir = (currentLangUI === "fa") ? "rtl" : "ltr";
+      document.documentElement.lang = currentLangUI;
+
+      // Header
+      const titleEl = document.querySelector(".title");
+      if(titleEl) titleEl.textContent = t.title;
+
+      // Setup screen titles
+      const setupTitle = document.querySelector("#setupScreen .section-title h2");
+      const setupHint = document.querySelector("#setupScreen .section-title .hint");
+      if(setupTitle) setupTitle.textContent = t.selectGame;
+      if(setupHint) setupHint.textContent = t.choose;
+
+      // Setup labels and placeholders
+      const setupLabels = document.querySelectorAll("#setupScreen .field label");
+      if(setupLabels && setupLabels.length >= 2){
+        setupLabels[0].textContent = t.team1NameLabel;
+        setupLabels[1].textContent = t.team2NameLabel;
+      }
+      const tn1 = document.getElementById("team1Name");
+      const tn2 = document.getElementById("team2Name");
+      if(tn1) tn1.placeholder = t.team1Placeholder;
+      if(tn2) tn2.placeholder = t.team2Placeholder;
+
+      const startBtn = document.querySelector("#setupScreen .btn.btn-primary");
+      if(startBtn) startBtn.textContent = t.start;
+
+      // Segmented labels (7/9)
+      document.querySelectorAll(".seg-btn").forEach(btn=>{
+        const type = btn.getAttribute("data-type");
+        if(type === "7") btn.textContent = t.labels.game7;
+        if(type === "9") btn.textContent = t.labels.game9;
+      });
+
+      // Game screen titles
+      const sbH2 = document.querySelector("#gameScreen .section:nth-of-type(1) .section-title h2");
+      if(sbH2) sbH2.textContent = t.scoreboard;
+      const histH2 = document.querySelector("#gameScreen .section:nth-of-type(2) .section-title h2");
+      if(histH2) histH2.textContent = t.history;
+      const histHint = document.querySelector("#gameScreen .section:nth-of-type(2) .section-title .hint");
+      if(histHint) histHint.textContent = t.mostRecent;
+
+      // Action buttons (New Game / Clear)
+      const actionBtns = document.querySelectorAll(".actions .btn");
+      if(actionBtns && actionBtns.length >= 2){
+        actionBtns[0].textContent = t.newGame;
+        actionBtns[1].textContent = t.clear;
+      }
+
+      // Submit button
+      const submitBtn = document.getElementById("submitBtn");
+      if(submitBtn) submitBtn.textContent = t.submit;
+
+      // Empty history message
+      const emptyHistory = document.getElementById("emptyHistory");
+      if(emptyHistory) emptyHistory.textContent = t.noRounds;
+
+      // Sheet buttons
+      const sheetBtns = document.querySelectorAll(".sheet-btn");
+      if(sheetBtns && sheetBtns.length >= 3){
+        sheetBtns[0].textContent = t.editRound;
+        sheetBtns[1].textContent = t.deleteRound;
+        sheetBtns[2].textContent = t.cancel;
+      }
+
+      // Winner close
+      const closeBtn = document.querySelector("#winnerOverlay .btn");
+      if(closeBtn) closeBtn.textContent = t.close;
+
+      // Chip label
+      const chipSmall = document.querySelector(".icon-chip .small");
+      if(chipSmall) chipSmall.textContent = t.scorer;
+
+      const chip = document.querySelector(".icon-chip");
+      if(chip) chip.title = t.cardGameScorer;
+
+      // Tooltips
+      const themeBtn = document.querySelector('button[onclick="toggleTheme()"]');
+      if(themeBtn){ themeBtn.title = t.theme; themeBtn.setAttribute("aria-label", t.theme); }
+      const langBtn = document.querySelector('button[onclick="toggleLang()"]');
+      if(langBtn){ langBtn.title = t.language; langBtn.setAttribute("aria-label", t.language); }
+
+      // Team-dependent labels (UI only)
+      try{
+        if(window.gameState){
+          const b1 = document.getElementById("bidLabel1");
+          const b2 = document.getElementById("bidLabel2");
+          const r1 = document.getElementById("resultLabel1");
+          const r2 = document.getElementById("resultLabel2");
+          if(b1) b1.textContent = t.teamBid(gameState.team1Name);
+          if(b2) b2.textContent = t.teamBid(gameState.team2Name);
+          if(r1) r1.textContent = t.teamWon(gameState.team1Name);
+          if(r2) r2.textContent = t.teamWon(gameState.team2Name);
+        }
+      }catch(_){}
+
+      // Target hint (UI only)
+      if($.targetHint && typeof getTargetScore === "function"){
+        const msg = t.target(getTargetScore());
+        $.targetHint.textContent = (currentLangUI === "fa") ? toFaDigitsUI(msg) : msg;
+      }
+
+      // Re-render bid chips so EN/FA digits match (UI only)
+      if (typeof renderBidChips === "function") renderBidChips();
+
+      localizeDisplayedNumbersUI();
+      
+      // Localize pill buttons (bid chips) after rendering
+      const pills = document.querySelectorAll(".pill");
+      if(currentLangUI === "fa"){
+        pills.forEach(btn=>{
+          btn.textContent = toFaDigitsUI(toEnDigitsUI(btn.textContent));
+        });
+      } else {
+        pills.forEach(btn=>{
+          btn.textContent = toEnDigitsUI(btn.textContent);
+        });
+      }
+    }
+
+    function toggleLang(){
+      applyLangUI(currentLangUI === "en" ? "fa" : "en");
+    }
+
+    // UI-only: Wrap updateUI to localize digits after each render. Does not change game logic.
+    (function() {
+      if (typeof updateUI === "function"){
+        const __updateUI_UI = updateUI;
+        updateUI = function(){
+          __updateUI_UI();
+          localizeDisplayedNumbersUI();
+
+          // Localize chip labels only (values remain numeric)
+          const pills = document.querySelectorAll(".pill");
+          if(currentLangUI === "fa"){
+            pills.forEach(btn=>{
+              btn.textContent = toFaDigitsUI(toEnDigitsUI(btn.textContent));
+            });
+          } else {
+            pills.forEach(btn=>{
+              btn.textContent = toEnDigitsUI(btn.textContent);
+            });
+          }
+        };
+      }
+    })();
+
+    // Init language
+    document.addEventListener("DOMContentLoaded", ()=>applyLangUI(currentLangUI));
+
+</script>
+
+<script>
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  const btn=document.getElementById('installBtn');
+  if(btn) btn.classList.remove('hidden');
+});
+function installApp(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; });
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+}
+</script>
+
+</body>
+</html>

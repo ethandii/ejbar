@@ -1,1 +1,2 @@
-# ejbar
+# Ejbar
+GitHub Pages / PWA ready.
