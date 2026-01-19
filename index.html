@@ -993,11 +993,11 @@
       if (gameState.gameType === 7) {
         if (bid1 === 9) {
           if (result1 === 9) return { name: gameState.team1Name, message: t.winWholeGame };
-          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
+          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
         }
         if (bid2 === 9) {
           if (result2 === 9) return { name: gameState.team2Name, message: t.winWholeGame };
-          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
+          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
         }
       }
 
