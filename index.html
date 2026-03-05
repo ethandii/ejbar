@@ -1130,8 +1130,8 @@
       const score1 = raw1.trim() === '' ? 0 : parseInt(raw1, 10);
       const score2 = raw2.trim() === '' ? 0 : parseInt(raw2, 10);
 
-      if (isNaN(score1) || isNaN(score2)) {
-        alert(t.alertResultRange(9999));
+      if (isNaN(score1) || isNaN(score2) || score1 < -13 || score1 > 13 || score2 < -13 || score2 > 13) {
+        alert(t.alertResultRange(13));
         return;
       }
 
@@ -1362,8 +1362,8 @@
       const newScore1 = parseInt(team1ScoreInput, 10);
       const newScore2 = parseInt(team2ScoreInput, 10);
 
-      if (isNaN(newScore1) || isNaN(newScore2)) {
-        alert(t.alertResultRange(9999));
+      if (isNaN(newScore1) || isNaN(newScore2) || newScore1 < -13 || newScore1 > 13 || newScore2 < -13 || newScore2 > 13) {
+        alert(t.alertResultRange(13));
         return;
       }
 
@@ -1552,7 +1552,7 @@
         alertNeedBid: "At least one team must make a bid",
         alertTotalTricks: (total)=>`Total tricks must equal ${total}!`,
         alertBidRange: (min, max)=>`Bids must be between ${min} and ${max}`,
-        alertResultRange: (max)=>`Results must be between 0 and ${max}`,
+        alertResultRange: (max)=>`Results must be between -${max} and +${max}`,
         confirmNewGame: "Start a new game? This will reset everything.",
         confirmClearHistory: "Clear all history? This cannot be undone.",
         promptEditBid: (name, min, max)=>`Edit ${name} Bid (${min}-${max}, or leave empty for no bid):`,
@@ -1598,7 +1598,7 @@
         alertNeedBid: "حداقل یک تیم باید حکم بزند",
         alertTotalTricks: (total)=>`مجموع دست‌ها باید برابر ${total} باشد!`,
         alertBidRange: (min, max)=>`حکم باید بین ${min} و ${max} باشد`,
-        alertResultRange: (max)=>`نتیجه باید بین ۰ و ${max} باشد`,
+        alertResultRange: (max)=>`نتیجه باید بین -${max} و +${max} باشد`,
         confirmNewGame: "بازی جدید شروع شود؟ همه چیز بازنشانی می‌شود.",
         confirmClearHistory: "تمام تاریخچه پاک شود؟ این عمل قابل بازگشت نیست.",
         promptEditBid: (name, min, max)=>`ویرایش حکم ${name} (${min}-${max}، یا خالی بگذارید برای بدون حکم):`,
@@ -1606,7 +1606,7 @@
         winWholeGame: "برنده کل بازی",
         kootLoseWholeGame: "کوت (بازنده کل بازی)",
         winnerScore: (score, points)=>`امتیاز: ${score} • ${points} پوئن`,
-        runningTotal: (total)=>`امتیاز کل: ${total}`,
+        runningTotal: (total)=>`جمع: ${total}`,
         beforeUnloadMessage: "داده‌های بازی ذخیره نشده‌ای دارید. آیا مطمئن هستید که می‌خواهید خارج شوید؟",
         wins: "برنده شد!"
       }
