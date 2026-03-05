@@ -785,24 +785,14 @@
             <div class="score-value accent-2" id="team2Total">0</div>
           </div>
         </div>
-        <div class="bid-grid">
-          <div class="bid-box">
-            <div class="bid-title" id="bidLabel1">Team 1 Bid</div>
-            <div class="pill-grid" id="bid1Chips"></div>
-          </div>
-          <div class="bid-box">
-            <div class="bid-title" id="bidLabel2">Team 2 Bid</div>
-            <div class="pill-grid" id="bid2Chips"></div>
-          </div>
-        </div>
         <div class="result-grid">
           <div class="field">
             <span class="rlabel" id="resultLabel1">Team 1 Won</span>
-            <input class="num" id="result1" type="number" placeholder="0" min="0" />
+            <input class="num" id="result1" type="number" placeholder="0" />
           </div>
           <div class="field">
             <span class="rlabel" id="resultLabel2">Team 2 Won</span>
-            <input class="num" id="result2" type="number" placeholder="0" min="0" />
+            <input class="num" id="result2" type="number" placeholder="0" />
           </div>
         </div>
         <div class="submit-in-card">
@@ -902,6 +892,43 @@
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
+
+    const STORAGE_KEY = 'ejbarGameStateV2';
+
+    function saveGameState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+      } catch (e) {
+        console.warn('Could not save game state', e);
+      }
+    }
+
+    function loadGameState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== 'object') return;
+        gameState = Object.assign(gameState, parsed);
+      } catch (e) {
+        console.warn('Could not load game state', e);
+        return;
+      }
+
+      if ($.team1Name) $.team1Name.value = gameState.team1Name || 'Team 1';
+      if ($.team2Name) $.team2Name.value = gameState.team2Name || 'Team 2';
+
+      updateTeamNames();
+
+      if (gameState.gameType) {
+        if ($.setupScreen) $.setupScreen.classList.add('hidden');
+        if ($.gameScreen) $.gameScreen.classList.remove('hidden');
+        const t = I18N_UI[currentLangUI];
+        if ($.targetHint) $.targetHint.textContent = t.target(getTargetScore());
+      }
+
+      updateUI();
+    }
 
     // ========== HELPER FUNCTIONS ==========
     function enablePills(enabled = true) {
@@ -1048,7 +1075,9 @@
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
       const sel = document.querySelector(`[data-type="${type}"]`);
       if (sel) sel.classList.add('selected');
-      if ($.targetHint) $.targetHint.textContent = `Target: ${getTargetScore()} • Need +1 point lead`;
+      const t = I18N_UI[currentLangUI];
+      if ($.targetHint) $.targetHint.textContent = t.target(getTargetScore());
+      saveGameState();
     }
 
     function startGame() {
@@ -1066,6 +1095,7 @@
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
       renderBidChips();
       updateUI();
+      saveGameState();
     }
 
     function updateTeamNames() {
@@ -1095,36 +1125,28 @@
 
     function addScore() {
       const t = I18N_UI[currentLangUI];
-      const result1 = parseInt($.result1 && $.result1.value) || 0;
-      const result2 = parseInt($.result2 && $.result2.value) || 0;
-      const bid1 = gameState.currentBid1;
-      const bid2 = gameState.currentBid2;
+      const raw1 = ($.result1 && $.result1.value) || '';
+      const raw2 = ($.result2 && $.result2.value) || '';
+      const score1 = raw1.trim() === '' ? 0 : parseInt(raw1, 10);
+      const score2 = raw2.trim() === '' ? 0 : parseInt(raw2, 10);
 
-      if (!bid1 && !bid2) {
-        alert(t.alertNeedBid);
+      if (isNaN(score1) || isNaN(score2)) {
+        alert(t.alertResultRange(9999));
         return;
-      }
-
-      const totalTricks = getTotalTricks();
-      if (result1 + result2 !== totalTricks) {
-        alert(t.alertTotalTricks(totalTricks));
-        return;
-      }
-
-      let score1 = 0, score2 = 0, points1 = 0, points2 = 0;
-
-      if (bid1) {
-        score1 = calcRoundScore(bid1, result1);
-        if (result1 >= bid1 && bid1 === gameState.gameType) points1 = 1;
-      }
-
-      if (bid2) {
-        score2 = calcRoundScore(bid2, result2);
-        if (result2 >= bid2 && bid2 === gameState.gameType) points2 = 1;
       }
 
       gameState.team1Total += score1;
       gameState.team2Total += score2;
+
+      let points1 = 0, points2 = 0;
+      if (gameState.gameType === 7) {
+        if (score1 > 0 && (score1 === 7 || score1 === 9)) points1 = 1;
+        if (score2 > 0 && (score2 === 7 || score2 === 9)) points2 = 1;
+      } else if (gameState.gameType === 9) {
+        if (score1 > 0 && score1 === 9) points1 = 1;
+        if (score2 > 0 && score2 === 9) points2 = 1;
+      }
+
       gameState.team1Points += points1;
       gameState.team2Points += points2;
 
@@ -1134,26 +1156,21 @@
         gameState.lastTurn = 2;
       }
 
-      gameState.history.push({ bid1, bid2, result1, result2, score1, score2, points1, points2 });
+      gameState.history.push({ score1, score2, points1, points2 });
 
       if ($.result1) $.result1.value = '';
       if ($.result2) $.result2.value = '';
-      gameState.currentBid1 = null;
-      gameState.currentBid2 = null;
-      enablePills();
-      document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
 
       updateUI();
-      const instant = checkInstantWinLose(bid1, bid2, result1, result2);
-      if (instant) { showWinner(instant.name, instant.message); return; }
       checkWinner();
+      saveGameState();
     }
 
     function updateUI() {
       enforceForcedBidIfNeeded();
       
-      if ($.team1Total) $.team1Total.textContent = gameState.team1Total;
-      if ($.team2Total) $.team2Total.textContent = gameState.team2Total;
+      if ($.team1Total) $.team1Total.textContent = gameState.team1Total * 10;
+      if ($.team2Total) $.team2Total.textContent = gameState.team2Total * 10;
       if ($.team1Points) $.team1Points.textContent = gameState.team1Points;
       if ($.team2Points) $.team2Points.textContent = gameState.team2Points;
 
@@ -1205,19 +1222,17 @@
       $.historyList.classList.remove('hidden');
 
       const t = I18N_UI[currentLangUI];
-      const formatTeamLine = (round, team) => {
-        const bid = team === 1 ? round.bid1 : round.bid2;
-        const result = team === 1 ? round.result1 : round.result2;
-        return bid ? `${t.bidWord}: ${bid} • ${t.wonWord}: ${result}` : `${t.wonWord}: ${result}`;
-      };
       const getScoreClass = (score) => score > 0 ? 'win' : (score < 0 ? 'lose' : '');
       const formatScore = (score) => score > 0 ? `+${score}` : String(score);
-      
+      let running1 = 0, running2 = 0;
+
       const rows = gameState.history.map((round, index) => {
-        const team1Line = formatTeamLine(round, 1);
-        const team2Line = formatTeamLine(round, 2);
-        const score1 = round.bid1 ? `<div class="delta ${getScoreClass(round.score1)}">${formatScore(round.score1)}</div>` : '<div class="line" style="margin:0;">—</div>';
-        const score2 = round.bid2 ? `<div class="delta ${getScoreClass(round.score2)}">${formatScore(round.score2)}</div>` : '<div class="line" style="margin:0;">—</div>';
+        running1 += round.score1;
+        running2 += round.score2;
+        const team1Line = t.runningTotal(running1 * 10);
+        const team2Line = t.runningTotal(running2 * 10);
+        const score1 = `<div class="delta ${getScoreClass(round.score1)}">${formatScore(round.score1)}</div>`;
+        const score2 = `<div class="delta ${getScoreClass(round.score2)}">${formatScore(round.score2)}</div>`;
 
         return `<div class="row">
             <div class="mini ${round.points1 > 0 ? 'milestone' : ''}">
@@ -1330,6 +1345,7 @@
 
       updateUI();
       checkWinner();
+      saveGameState();
     }
 
     function editRound(index) {
@@ -1338,58 +1354,31 @@
       const round = gameState.history[actualIndex];
       if (!round) return;
 
-      const totalTricks = getTotalTricks();
-      const maxBid = gameState.gameType === 9 ? 13 : 9;
-      const minBid = gameState.gameType === 9 ? 4 : 3;
-      const team1Bid = prompt(t.promptEditBid(gameState.team1Name, minBid, maxBid), round.bid1 || '');
-      if (team1Bid === null) return;
-      const team1Result = prompt(t.promptEditWon(gameState.team1Name, totalTricks), round.result1);
-      if (team1Result === null) return;
-      const team2Bid = prompt(t.promptEditBid(gameState.team2Name, minBid, maxBid), round.bid2 || '');
-      if (team2Bid === null) return;
-      const team2Result = prompt(t.promptEditWon(gameState.team2Name, totalTricks), round.result2);
-      if (team2Result === null) return;
+      const team1ScoreInput = prompt(t.promptEditScore(gameState.team1Name), round.score1);
+      if (team1ScoreInput === null) return;
+      const team2ScoreInput = prompt(t.promptEditScore(gameState.team2Name), round.score2);
+      if (team2ScoreInput === null) return;
 
-      const newBid1 = team1Bid.trim() === '' ? null : parseInt(team1Bid);
-      const newResult1 = parseInt(team1Result);
-      const newBid2 = team2Bid.trim() === '' ? null : parseInt(team2Bid);
-      const newResult2 = parseInt(team2Result);
+      const newScore1 = parseInt(team1ScoreInput, 10);
+      const newScore2 = parseInt(team2ScoreInput, 10);
 
-      if ((newBid1 && (newBid1 < minBid || newBid1 > maxBid)) || (newBid2 && (newBid2 < minBid || newBid2 > maxBid))) {
-        alert(t.alertBidRange(minBid, maxBid));
-        return;
-      }
-
-      if (isNaN(newResult1) || isNaN(newResult2) || newResult1 < 0 || newResult1 > totalTricks || newResult2 < 0 || newResult2 > totalTricks) {
-        alert(t.alertResultRange(totalTricks));
-        return;
-      }
-
-      if (newResult1 + newResult2 !== totalTricks) {
-        alert(t.alertTotalTricks(totalTricks));
-        return;
-      }
-
-      if (!newBid1 && !newBid2) {
-        alert(t.alertNeedBid);
+      if (isNaN(newScore1) || isNaN(newScore2)) {
+        alert(t.alertResultRange(9999));
         return;
       }
 
       gameState.team1Total -= round.score1;
       gameState.team2Total -= round.score2;
-      gameState.team1Points -= round.points1;
-      gameState.team2Points -= round.points2;
+      gameState.team1Points -= round.points1 || 0;
+      gameState.team2Points -= round.points2 || 0;
 
-      let newScore1 = 0, newScore2 = 0, newPoints1 = 0, newPoints2 = 0;
-
-      if (newBid1) {
-        newScore1 = calcRoundScore(newBid1, newResult1);
-        if (newResult1 >= newBid1 && newBid1 === gameState.gameType) newPoints1 = 1;
-      }
-
-      if (newBid2) {
-        newScore2 = calcRoundScore(newBid2, newResult2);
-        if (newResult2 >= newBid2 && newBid2 === gameState.gameType) newPoints2 = 1;
+      let newPoints1 = 0, newPoints2 = 0;
+      if (gameState.gameType === 7) {
+        if (newScore1 > 0 && (newScore1 === 7 || newScore1 === 9)) newPoints1 = 1;
+        if (newScore2 > 0 && (newScore2 === 7 || newScore2 === 9)) newPoints2 = 1;
+      } else if (gameState.gameType === 9) {
+        if (newScore1 > 0 && newScore1 === 9) newPoints1 = 1;
+        if (newScore2 > 0 && newScore2 === 9) newPoints2 = 1;
       }
 
       gameState.team1Total += newScore1;
@@ -1398,8 +1387,6 @@
       gameState.team2Points += newPoints2;
 
       gameState.history[actualIndex] = {
-        bid1: newBid1, bid2: newBid2,
-        result1: newResult1, result2: newResult2,
         score1: newScore1, score2: newScore2,
         points1: newPoints1, points2: newPoints2
       };
@@ -1411,9 +1398,8 @@
       enablePills(true);
 
       updateUI();
-      const instant = checkInstantWinLose(newBid1, newBid2, newResult1, newResult2);
-      if (instant) { showWinner(instant.name, instant.message); return; }
       checkWinner();
+      saveGameState();
     }
 
     function newGame() {
@@ -1454,6 +1440,7 @@
       if ($.targetHint) $.targetHint.textContent = 'Target: —';
 
       updateUI();
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     }
 
     function clearHistory() {
@@ -1475,6 +1462,8 @@
 
       closeWinner();
       updateUI();
+      saveGameState();
+      saveGameState();
     }
 
     // ========== EVENT LISTENERS ==========
@@ -1489,7 +1478,8 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       initDOMElements();
-      
+      loadGameState();
+
       if ($.submitBtn) {
         $.submitBtn.addEventListener('click', () => {
           if ($.submitBtn.disabled) return;
@@ -1570,6 +1560,7 @@
         winWholeGame: "Win whole game",
         kootLoseWholeGame: "Koot (lose whole game)",
         winnerScore: (score, points)=>`Score: ${score} • ${points} points`,
+        runningTotal: (total)=>`Total: ${total}`,
         beforeUnloadMessage: "You have unsaved game data. Are you sure you want to leave?",
         wins: "Wins!"
       },
@@ -1615,6 +1606,7 @@
         winWholeGame: "برنده کل بازی",
         kootLoseWholeGame: "کوت (بازنده کل بازی)",
         winnerScore: (score, points)=>`امتیاز: ${score} • ${points} پوئن`,
+        runningTotal: (total)=>`امتیاز کل: ${total}`,
         beforeUnloadMessage: "داده‌های بازی ذخیره نشده‌ای دارید. آیا مطمئن هستید که می‌خواهید خارج شوید؟",
         wins: "برنده شد!"
       }
