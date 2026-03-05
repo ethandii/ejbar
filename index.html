@@ -993,8 +993,18 @@
         return;
       }
 
-      gameState.team1Total += score1;
-      gameState.team2Total += score2;
+      // 9 Ejbar special rule: winning 10 tricks scores 20, losing 10 tricks scores only -10
+      let effective1 = score1;
+      let effective2 = score2;
+      if (gameState.gameType === 9) {
+        if (score1 === 10) effective1 = 20;
+        if (score2 === 10) effective2 = 20;
+        if (score1 === -10) effective1 = -10;
+        if (score2 === -10) effective2 = -10;
+      }
+
+      gameState.team1Total += effective1;
+      gameState.team2Total += effective2;
 
       let points1 = 0, points2 = 0;
       if (gameState.gameType === 7) {
@@ -1014,7 +1024,7 @@
         gameState.lastTurn = 2;
       }
 
-      gameState.history.push({ score1, score2, points1, points2 });
+      gameState.history.push({ score1, score2, effective1, effective2, points1, points2 });
 
       if ($.result1) $.result1.value = '';
       if ($.result2) $.result2.value = '';
@@ -1098,12 +1108,14 @@
       let running1 = 0, running2 = 0;
 
       const rows = gameState.history.map((round, index) => {
-        running1 += round.score1;
-        running2 += round.score2;
+        const eff1 = round.effective1 !== undefined ? round.effective1 : round.score1;
+        const eff2 = round.effective2 !== undefined ? round.effective2 : round.score2;
+        running1 += eff1;
+        running2 += eff2;
         const team1Line = t.runningTotal(running1 * 10);
         const team2Line = t.runningTotal(running2 * 10);
-        const score1 = `<div class="delta ${getScoreClass(round.score1)}">${formatScore(round.score1)}</div>`;
-        const score2 = `<div class="delta ${getScoreClass(round.score2)}">${formatScore(round.score2)}</div>`;
+        const score1 = `<div class="delta ${getScoreClass(eff1)}">${formatScore(eff1)}</div>`;
+        const score2 = `<div class="delta ${getScoreClass(eff2)}">${formatScore(eff2)}</div>`;
 
         return `<div class="row">
             <div class="mini ${round.points1 > 0 ? 'milestone' : ''}">
@@ -1201,8 +1213,8 @@
       const round = gameState.history[actualIndex];
       if (!round) return;
 
-      gameState.team1Total -= round.score1;
-      gameState.team2Total -= round.score2;
+      gameState.team1Total -= (round.effective1 !== undefined ? round.effective1 : round.score1);
+      gameState.team2Total -= (round.effective2 !== undefined ? round.effective2 : round.score2);
       gameState.team1Points -= round.points1;
       gameState.team2Points -= round.points2;
 
@@ -1238,8 +1250,8 @@
         return;
       }
 
-      gameState.team1Total -= round.score1;
-      gameState.team2Total -= round.score2;
+      gameState.team1Total -= (round.effective1 !== undefined ? round.effective1 : round.score1);
+      gameState.team2Total -= (round.effective2 !== undefined ? round.effective2 : round.score2);
       gameState.team1Points -= round.points1 || 0;
       gameState.team2Points -= round.points2 || 0;
 
@@ -1252,13 +1264,24 @@
         if (newScore2 > 0 && newScore2 === 9) newPoints2 = 1;
       }
 
-      gameState.team1Total += newScore1;
-      gameState.team2Total += newScore2;
+      // Apply 9 Ejbar special rule for edited scores too
+      let newEffective1 = newScore1;
+      let newEffective2 = newScore2;
+      if (gameState.gameType === 9) {
+        if (newScore1 === 10) newEffective1 = 20;
+        if (newScore2 === 10) newEffective2 = 20;
+        if (newScore1 === -10) newEffective1 = -10;
+        if (newScore2 === -10) newEffective2 = -10;
+      }
+
+      gameState.team1Total += newEffective1;
+      gameState.team2Total += newEffective2;
       gameState.team1Points += newPoints1;
       gameState.team2Points += newPoints2;
 
       gameState.history[actualIndex] = {
         score1: newScore1, score2: newScore2,
+        effective1: newEffective1, effective2: newEffective2,
         points1: newPoints1, points2: newPoints2
       };
 
