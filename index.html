@@ -414,8 +414,6 @@
       border-color: rgba(0,122,255,0.55);
     }
 
-      }
-
       .score-btn {
         border-radius: 14px;
         border: 1px solid var(--stroke);
@@ -930,6 +928,17 @@
     // ========== GAME LOGIC ==========
     function getTargetScore() {
       return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
+    }
+
+    // ========== MISSING STUB FUNCTIONS ==========
+    function enforceForcedBidIfNeeded() {
+      // no-op in this game mode
+    }
+
+    function enablePills(enabled) {
+      document.querySelectorAll('.score-btn').forEach(btn => {
+        btn.disabled = !enabled;
+      });
     }
 
     // ========== UI UPDATES ==========
