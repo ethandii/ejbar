@@ -385,57 +385,7 @@
     .accent-1 { color: var(--blue); }
     .accent-2 { color: var(--green); }
 
-    .bid-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .bid-box {
-      padding: 12px;
-      border-radius: var(--radius-2);
-      border: 1px solid var(--stroke);
-      background: rgba(118,118,128,0.10);
-    }
-
-    [data-theme="dark"] .bid-box { background: rgba(118,118,128,0.18); }
-
-    .bid-title {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-
-    .pill-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-    }
-
-    .pill {
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: var(--blur);
-      padding: 10px 0;
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--text);
-      cursor: pointer;
-      transition: transform 120ms ease, background 140ms ease, border-color 140ms ease;
-    }
-
-    [data-theme="dark"] .pill { background: rgba(28,28,30,0.55); }
-
-    .pill.selected {
-      background: rgba(0,122,255,0.95);
-      border-color: rgba(0,122,255,1);
-      color: #fff;
-    }
-
-    .pill:active { transform: scale(0.985); }
+    
 
     .result-grid {
       display: grid;
@@ -463,6 +413,32 @@
     .num:focus {
       border-color: rgba(0,122,255,0.55);
     }
+
+      .score-input {
+        display: grid;
+        grid-template-columns: 40px 1fr 40px;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .score-btn {
+        border-radius: 14px;
+        border: 1px solid var(--stroke);
+        background: rgba(118,118,128,0.16);
+        color: var(--text);
+        font-size: 20px;
+        font-weight: 900;
+        height: 48px;
+        cursor: pointer;
+      }
+
+      [data-theme="dark"] .score-btn {
+        background: rgba(28,28,30,0.58);
+      }
+
+      .score-btn:active {
+        transform: scale(0.96);
+      }
 
     .rlabel {
       font-size: 11px;
@@ -788,12 +764,19 @@
         <div class="result-grid">
           <div class="field">
             <span class="rlabel" id="resultLabel1">Team 1 Won</span>
-            <input class="num" id="result1" type="text" inputmode="decimal" placeholder="0" />
+            <div class="score-input">
+              <button type="button" class="score-btn" onclick="adjustScore(1,-1)">−</button>
+              <input class="num" id="result1" type="text" placeholder="0" />
+              <button type="button" class="score-btn" onclick="adjustScore(1,1)">+</button>
+            </div>
           </div>
           <div class="field">
             <span class="rlabel" id="resultLabel2">Team 2 Won</span>
-            <input class="num" id="result2" type="text" inputmode="decimal" placeholder="0" />
-          </div>
+            <div class="score-input">
+              <button type="button" class="score-btn" onclick="adjustScore(2,-1)">−</button>
+              <input class="num" id="result2" type="text" placeholder="0" />
+              <button type="button" class="score-btn" onclick="adjustScore(2,1)">+</button>
+            </div>
           </div>
         </div>
         <div class="submit-in-card">
@@ -857,8 +840,6 @@
         team2Points: document.getElementById('team2Points'),
         team1Card: document.getElementById('team1Card'),
         team2Card: document.getElementById('team2Card'),
-        bid1Chips: document.getElementById('bid1Chips'),
-        bid2Chips: document.getElementById('bid2Chips'),
         result1: document.getElementById('result1'),
         result2: document.getElementById('result2'),
         submitBtn: document.getElementById('submitBtn'),
@@ -880,8 +861,6 @@
       team2Total: 0,
       team1Points: 0,
       team2Points: 0,
-      currentBid1: null,
-      currentBid2: null,
       history: [],
       winner: null
     };
@@ -889,7 +868,6 @@
     // ========== CONSTANTS ==========
     const TARGET_7Ejbar = 350;
     const TARGET_9Ejbar = 550;
-    const FORCED_9_THRESHOLD = 460;
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
@@ -932,18 +910,6 @@
     }
 
     // ========== HELPER FUNCTIONS ==========
-    function enablePills(enabled = true) {
-      document.querySelectorAll('.pill').forEach(btn => {
-        btn.disabled = !enabled;
-        btn.style.opacity = enabled ? '1' : '0.45';
-        btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
-      });
-    }
-
-    function clearPillSelection() {
-      document.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
-    }
-
     // ========== THEME MANAGEMENT ==========
     function applyTheme(theme) {
       const html = document.documentElement;
@@ -975,104 +941,9 @@
       return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
     }
 
-    function getTotalTricks() {
-      return gameState.gameType === 9 ? 13 : 9;
-    }
-
-    function enforceForcedBidIfNeeded() {
-      if (gameState.gameType !== 9) return;
-      const t1Reached = gameState.team1Total >= FORCED_9_THRESHOLD;
-      const t2Reached = gameState.team2Total >= FORCED_9_THRESHOLD;
-      if (!(t1Reached || t2Reached)) return;
-      if (gameState.team1Points < gameState.team2Points) gameState.currentBid1 = 9;
-      else if (gameState.team2Points < gameState.team1Points) gameState.currentBid2 = 9;
-    }
-
-    function calcRoundScore(bid, result) {
-      // TABLE RULES:
-      // - If result < bid:   -bid*10
-      // - 7 Ejbar:
-      //    * bid 3..8 : if result==9 => 90 else +bid*10 (when result>=bid)
-      //    * bid 7    : if result>=7 and result<=8 => 70 (+point handled elsewhere), if result==9 => 90
-      // - 9 Ejbar:
-      //    * bid 4..12: +bid*10 (when result>=bid)
-      //    * bid 9    : +90 (+1 point handled elsewhere)
-      //    * bid 10   : +200 when result>=10
-      if (result < bid) return -bid * 10;
-
-      if (gameState.gameType === 9) {
-        if (bid === 10) return 200;
-        return bid * 10;
-      }
-
-      // gameType === 7
-      if (bid === 7) {
-        if (result === 9) return 90;
-        return 70; // result is 7 or 8 (since result >= bid and total tricks is 9)
-      }
-
-      if (result === 9) return 90;
-      return bid * 10;
-    }
-
-    function checkInstantWinLose(bid1, bid2, result1, result2) {
-      const t = I18N_UI[currentLangUI];
-      // 7 Ejbar: bid 9 => win whole game if bidding team wins 9, else koot (lose whole game)
-      if (gameState.gameType === 7) {
-        if (bid1 === 9) {
-          if (result1 === 9) return { name: gameState.team1Name, message: t.winWholeGame };
-          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
-        }
-        if (bid2 === 9) {
-          if (result2 === 9) return { name: gameState.team2Name, message: t.winWholeGame };
-          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
-        }
-      }
-
-      // 9 Ejbar: bid 13 => win whole game if bidding team wins 13, else koot (lose whole game)
-      if (gameState.gameType === 9) {
-        if (bid1 === 13) {
-          if (result1 === 13) return { name: gameState.team1Name, message: t.winWholeGame };
-          return { name: gameState.team2Name, message: t.kootLoseWholeGame };
-        }
-        if (bid2 === 13) {
-          if (result2 === 13) return { name: gameState.team2Name, message: t.winWholeGame };
-          return { name: gameState.team1Name, message: t.kootLoseWholeGame };
-        }
-      }
-
-      return null;
-    }
-
     // ========== UI UPDATES ==========
-    function renderBidChips() {
-      const t = gameState.gameType || 7;
-      const minBid = (t === 9) ? 4 : 3;
-      const maxBid = (t === 9) ? 13 : 9;
-
-      if (!$.bid1Chips || !$.bid2Chips) return;
-
-      const build = (team) => {
-        const buttons = [];
-        for (let v = minBid; v <= maxBid; v++) {
-          // Convert digit based on current language
-          const displayValue = (typeof currentLangUI !== 'undefined' && currentLangUI === "fa") 
-            ? toFaDigitsUI(String(v)) 
-            : String(v);
-          buttons.push(`<button class="pill" data-value="${v}" onclick="selectBid(${team},${v},event)">${displayValue}</button>`);
-        }
-        return buttons.join('');
-      };
-      $.bid1Chips.innerHTML = build(1);
-      $.bid2Chips.innerHTML = build(2);
-
-      gameState.currentBid1 = null;
-      gameState.currentBid2 = null;
-    }
-
     function selectGameType(type) {
       gameState.gameType = type;
-      renderBidChips();
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
       const sel = document.querySelector(`[data-type="${type}"]`);
       if (sel) sel.classList.add('selected');
@@ -1094,34 +965,20 @@
       updateTeamNames();
       if ($.setupScreen) $.setupScreen.classList.add('hidden');
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
-      renderBidChips();
       updateUI();
       saveGameState();
     }
 
     function updateTeamNames() {
       const t = I18N_UI[currentLangUI];
-      const ids = ['displayTeam1Name', 'displayTeam2Name', 'bidLabel1', 'bidLabel2', 'resultLabel1', 'resultLabel2', 'historyColTeam1', 'historyColTeam2'];
+      const ids = ['displayTeam1Name', 'displayTeam2Name', 'resultLabel1', 'resultLabel2', 'historyColTeam1', 'historyColTeam2'];
       const els = ids.map(id => document.getElementById(id));
       if (els[0]) els[0].textContent = gameState.team1Name.toUpperCase();
       if (els[1]) els[1].textContent = gameState.team2Name.toUpperCase();
-      if (els[2]) els[2].textContent = t.teamBid(gameState.team1Name);
-      if (els[3]) els[3].textContent = t.teamBid(gameState.team2Name);
-      if (els[4]) els[4].textContent = t.teamWon(gameState.team1Name);
-      if (els[5]) els[5].textContent = t.teamWon(gameState.team2Name);
-      if (els[6]) els[6].textContent = gameState.team1Name;
-      if (els[7]) els[7].textContent = gameState.team2Name;
-    }
-
-    function selectBid(team, bid, evt) {
-      const clickedBtn = (evt || window.event)?.target?.closest('.pill');
-      const container = team === 1 ? $.bid1Chips : $.bid2Chips;
-      if (team === 1) gameState.currentBid1 = bid;
-      else gameState.currentBid2 = bid;
-      if (container) {
-        container.querySelectorAll('.pill').forEach(btn => btn.classList.remove('selected'));
-        if (clickedBtn?.closest(`#bid${team}Chips`)) clickedBtn.classList.add('selected');
-      }
+      if (els[2]) els[2].textContent = `${gameState.team1Name} ${t.wonWord}`;
+      if (els[3]) els[3].textContent = `${gameState.team2Name} ${t.wonWord}`;
+      if (els[4]) els[4].textContent = gameState.team1Name;
+      if (els[5]) els[5].textContent = gameState.team2Name;
     }
 
     function addScore() {
@@ -1165,6 +1022,19 @@
       updateUI();
       checkWinner();
       saveGameState();
+    }
+
+    function adjustScore(team, delta) {
+      const input = team === 1 ? $.result1 : $.result2;
+      if (!input) return;
+      const raw = (input.value || '').trim();
+      let value = raw === '' ? 0 : parseInt(raw, 10);
+      if (isNaN(value)) value = 0;
+      value += delta;
+      if (value < -13) value = -13;
+      if (value > 13) value = 13;
+      input.value = String(value);
+      syncSubmitEnabled();
     }
 
     function updateUI() {
@@ -1416,20 +1286,12 @@
         team2Total: 0,
         team1Points: 0,
         team2Points: 0,
-        currentBid1: null,
-        currentBid2: null,
         history: [],
         winner: null
       };
 
       if ($.result1) $.result1.disabled = false;
       if ($.result2) $.result2.disabled = false;
-      document.querySelectorAll('.pill').forEach(btn => {
-        btn.disabled = false;
-        btn.style.opacity = '1';
-        btn.style.cursor = 'pointer';
-        btn.classList.remove('selected');
-      });
 
       closeWinner();
       if ($.gameScreen) $.gameScreen.classList.add('hidden');
@@ -1540,10 +1402,7 @@
         close: "Close",
         scorer: "Scorer",
         cardGameScorer: "Card Game Scorer",
-        bidWord: "Bid",
         wonWord: "Won",
-        teamBid: (name)=>`${name} Bid`,
-        teamWon: (name)=>`${name} Won`,
         target: (v)=>`Target: ${v} • Need +1 point lead`,
         noRounds: "No rounds played yet",
         labels: { game7: "7 Ejbar", game9: "9 Ejbar" },
@@ -1586,10 +1445,7 @@
         close: "بستن",
         scorer: "امتیازشمار",
         cardGameScorer: "امتیازشمار بازی کارت",
-        bidWord: "حکم",
         wonWord: "برد",
-        teamBid: (name)=>`حکم ${name}`,
-        teamWon: (name)=>`برد ${name}`,
         target: (v)=>`هدف: ${v} • اختلاف حداقل ۱ پوئن`,
         noRounds: "هنوز دستی ثبت نشده",
         labels: { game7: "۷ اجبار", game9: "۹ اجبار" },
@@ -1762,14 +1618,10 @@
       // Team-dependent labels (UI only)
       try{
         if(window.gameState){
-          const b1 = document.getElementById("bidLabel1");
-          const b2 = document.getElementById("bidLabel2");
           const r1 = document.getElementById("resultLabel1");
           const r2 = document.getElementById("resultLabel2");
-          if(b1) b1.textContent = t.teamBid(gameState.team1Name);
-          if(b2) b2.textContent = t.teamBid(gameState.team2Name);
-          if(r1) r1.textContent = t.teamWon(gameState.team1Name);
-          if(r2) r2.textContent = t.teamWon(gameState.team2Name);
+          if(r1) r1.textContent = `${gameState.team1Name} ${t.wonWord}`;
+          if(r2) r2.textContent = `${gameState.team2Name} ${t.wonWord}`;
         }
       }catch(_){}
 
@@ -1779,22 +1631,7 @@
         $.targetHint.textContent = (currentLangUI === "fa") ? toFaDigitsUI(msg) : msg;
       }
 
-      // Re-render bid chips so EN/FA digits match (UI only)
-      if (typeof renderBidChips === "function") renderBidChips();
-
       localizeDisplayedNumbersUI();
-      
-      // Localize pill buttons (bid chips) after rendering
-      const pills = document.querySelectorAll(".pill");
-      if(currentLangUI === "fa"){
-        pills.forEach(btn=>{
-          btn.textContent = toFaDigitsUI(toEnDigitsUI(btn.textContent));
-        });
-      } else {
-        pills.forEach(btn=>{
-          btn.textContent = toEnDigitsUI(btn.textContent);
-        });
-      }
     }
 
     function toggleLang(){
@@ -1808,18 +1645,6 @@
         updateUI = function(){
           __updateUI_UI();
           localizeDisplayedNumbersUI();
-
-          // Localize chip labels only (values remain numeric)
-          const pills = document.querySelectorAll(".pill");
-          if(currentLangUI === "fa"){
-            pills.forEach(btn=>{
-              btn.textContent = toFaDigitsUI(toEnDigitsUI(btn.textContent));
-            });
-          } else {
-            pills.forEach(btn=>{
-              btn.textContent = toEnDigitsUI(btn.textContent);
-            });
-          }
         };
       }
     })();
