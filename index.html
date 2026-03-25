@@ -395,28 +395,103 @@
     }
 
     .num {
-      width: 100%;
-      padding: 14px 12px;
+      /* hidden input, no styles needed */
+      display: none;
+    }
+
+    /* ===== iOS-style scroll wheel picker ===== */
+    .picker-wrap {
+      position: relative;
+      height: 150px;
+      overflow: hidden;
       border-radius: 14px;
       border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.62);
+      background: rgba(255,255,255,0.55);
       backdrop-filter: var(--blur);
-      color: var(--text);
-      font-size: 26px;
+      user-select: none;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    [data-theme="dark"] .picker-wrap {
+      background: rgba(28,28,30,0.58);
+    }
+
+    .picker-wrap:active { cursor: grabbing; }
+
+    .picker-scroll {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      will-change: transform;
+      transition: none;
+    }
+
+    .picker-scroll.snapping {
+      transition: transform 320ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .picker-item {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
       font-weight: 900;
-      text-align: center;
-      outline: none;
+      color: var(--text-tertiary);
+      transition: color 80ms ease, transform 80ms ease, opacity 80ms ease;
+      pointer-events: none;
     }
 
-    [data-theme="dark"] .num { background: rgba(28,28,30,0.58); }
-
-    .num:focus {
-      border-color: rgba(0,122,255,0.55);
+    .picker-item.selected {
+      color: var(--text);
+      font-size: 28px;
     }
 
-    .num.num-active {
-      border-color: rgba(0,122,255,0.55);
-      box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
+    .picker-highlight {
+      position: absolute;
+      top: 50px;
+      left: 8px;
+      right: 8px;
+      height: 50px;
+      border-radius: 10px;
+      background: rgba(0,122,255,0.10);
+      border: 1.5px solid rgba(0,122,255,0.30);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    [data-theme="dark"] .picker-highlight {
+      background: rgba(10,132,255,0.15);
+      border-color: rgba(10,132,255,0.40);
+    }
+
+    .picker-fade {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 50px;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .picker-fade-top {
+      top: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .picker-fade-bottom {
+      bottom: 0;
+      background: linear-gradient(to top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    [data-theme="dark"] .picker-fade-top {
+      background: linear-gradient(to bottom, rgba(28,28,30,0.90) 0%, rgba(28,28,30,0) 100%);
+    }
+
+    [data-theme="dark"] .picker-fade-bottom {
+      background: linear-gradient(to top, rgba(28,28,30,0.90) 0%, rgba(28,28,30,0) 100%);
     }
 
       .score-btn {
@@ -583,126 +658,7 @@
 
     .hidden { display: none !important; }
 
-    /* Virtual keyboard (for scorer inputs) */
-    .vk-overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      background: rgba(0,0,0,0.15);
-      backdrop-filter: blur(6px);
-      z-index: 180;
-      padding: 14px;
-    }
-
-    .vk-overlay.show { display: flex; }
-
-    .vk-panel {
-      width: 100%;
-      max-width: 680px;
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      border-radius: 22px;
-      box-shadow: var(--shadow-2);
-      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
-      animation: vkUp 180ms ease-out;
-    }
-
-    @keyframes vkUp {
-      from { transform: translateY(18px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .vk-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .vk-title {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--text-tertiary);
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-    }
-
-    .vk-hint {
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--text-tertiary);
-      white-space: nowrap;
-    }
-
-    .vk-display {
-      font-size: 32px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: var(--text);
-      text-align: right;
-      padding: 8px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: var(--blur);
-      min-width: 80px;
-      min-height: 50px;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      flex: 1;
-      margin-left: 12px;
-    }
-
-    [data-theme="dark"] .vk-display {
-      background: rgba(28,28,30,0.58);
-    }
-
-    .vk-display:empty::after {
-      content: "0";
-      color: var(--text-tertiary);
-    }
-
-    .vk-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .vk-btn {
-      width: 100%;
-      border-radius: 16px;
-      border: 1px solid var(--stroke);
-      background: rgba(118,118,128,0.16);
-      color: var(--text);
-      padding: 16px 0;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      user-select: none;
-      touch-action: manipulation;
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-    }
-
-    .vk-btn:active { transform: scale(0.97); }
-
-    .vk-btn.fn {
-      background: rgba(60,60,67,0.10);
-    }
-
-    [data-theme="dark"] .vk-btn.fn {
-      background: rgba(118,118,128,0.18);
-    }
-
-    .vk-btn.primary {
-      background: var(--blue);
-      border-color: rgba(0,122,255,0.35);
-      color: #fff;
-    }
+    /* (virtual keyboard removed — using scroll picker instead) */
 
     .sheet-overlay {
       position: fixed;
@@ -883,15 +839,27 @@
         <div class="result-grid">
           <div class="field">
             <span class="rlabel" id="resultLabel1">Team 1 Won</span>
-            <div class="score-input">
-              <input class="num" id="result1" type="text" placeholder="0" readonly />
+            <div class="picker-wrap" id="pickerWrap1">
+              <div class="picker-fade picker-fade-top"></div>
+              <div class="picker-highlight"></div>
+              <div class="picker-scroll" id="pickerScroll1">
+                <!-- items injected by JS -->
+              </div>
+              <div class="picker-fade picker-fade-bottom"></div>
             </div>
+            <input type="hidden" id="result1" value="0" />
           </div>
           <div class="field">
             <span class="rlabel" id="resultLabel2">Team 2 Won</span>
-            <div class="score-input">
-              <input class="num" id="result2" type="text" placeholder="0" readonly />
+            <div class="picker-wrap" id="pickerWrap2">
+              <div class="picker-fade picker-fade-top"></div>
+              <div class="picker-highlight"></div>
+              <div class="picker-scroll" id="pickerScroll2">
+                <!-- items injected by JS -->
+              </div>
+              <div class="picker-fade picker-fade-bottom"></div>
             </div>
+            <input type="hidden" id="result2" value="0" />
           </div>
         </div>
         <div class="submit-in-card">
@@ -939,36 +907,7 @@
     </div>
   </div>
 
-  <div class="vk-overlay" id="vkOverlay" aria-hidden="true">
-    <div class="vk-panel" id="vkPanel" role="dialog" aria-label="Virtual keyboard">
-      <div class="vk-top">
-        <div class="vk-title" id="vkTitle">Score input</div>
-        <div class="vk-display" id="vkDisplay">0</div>
-      </div>
-
-      <div class="vk-grid" role="group" aria-label="Score keys">
-        <button type="button" class="vk-btn" data-key="7">7</button>
-        <button type="button" class="vk-btn" data-key="8">8</button>
-        <button type="button" class="vk-btn" data-key="9">9</button>
-
-        <button type="button" class="vk-btn" data-key="4">4</button>
-        <button type="button" class="vk-btn" data-key="5">5</button>
-        <button type="button" class="vk-btn" data-key="6">6</button>
-
-        <button type="button" class="vk-btn" data-key="1">1</button>
-        <button type="button" class="vk-btn" data-key="2">2</button>
-        <button type="button" class="vk-btn" data-key="3">3</button>
-
-        <button type="button" class="vk-btn" data-key="0">0</button>
-        <button type="button" class="vk-btn fn" data-key="minus">-</button>
-        <button type="button" class="vk-btn fn" data-key="toggleSign">+/-</button>
-
-        <button type="button" class="vk-btn fn" data-key="clear">C</button>
-        <button type="button" class="vk-btn fn" data-key="backspace">DEL</button>
-        <button type="button" class="vk-btn primary" id="vkActionBtn" data-key="done">NEXT</button>
-      </div>
-    </div>
-  </div>
+  <!-- scroll picker JS replaces virtual keyboard -->
 
   <script>
     // ========== DOM ELEMENT CACHE ==========
@@ -993,10 +932,7 @@
         emptyHistory: document.getElementById('emptyHistory'),
         targetHint: document.getElementById('targetHint'),
         winnerOverlay: document.getElementById('winnerOverlay'),
-        sheetOverlay: document.getElementById('sheetOverlay'),
-        vkOverlay: document.getElementById('vkOverlay'),
-        vkPanel: document.getElementById('vkPanel'),
-        vkTitle: document.getElementById('vkTitle')
+        sheetOverlay: document.getElementById('sheetOverlay')
       };
     }
 
@@ -1103,190 +1039,210 @@
       });
     }
 
-    // ========== VIRTUAL KEYBOARD ==========
+    // ========== SCROLL WHEEL PICKER ==========
+    const PICKER_ITEM_H = 50;
+    const PICKER_VISIBLE = 3; // show 3 items (top, selected, bottom)
+    const PICKER_PAD = 1; // 1 blank slot top & bottom for centering
+    const PICKER_MIN = -13;
+    const PICKER_MAX = 13;
+    const PICKER_COUNT = PICKER_MAX - PICKER_MIN + 1; // 27 items
+
     function parseScoreValue(raw) {
       const s = (raw ?? '').toString().trim();
       if (s === '' || s === '-') return null;
       if (!/^-?\d+$/.test(s)) return null;
       const n = parseInt(s, 10);
-      if (isNaN(n) || n < -13 || n > 13) return null;
+      if (isNaN(n) || n < PICKER_MIN || n > PICKER_MAX) return null;
       return n;
     }
 
-    function showVirtualKeyboard() {
-      if (!$.vkOverlay) return;
-      $.vkOverlay.classList.add('show');
-      $.vkOverlay.setAttribute('aria-hidden', 'false');
+    function pickerValueToOffset(val) {
+      const idx = val - PICKER_MIN; // 0-based index
+      return -(idx * PICKER_ITEM_H);
     }
 
-    function hideVirtualKeyboard() {
-      if (!$.vkOverlay) return;
-      $.vkOverlay.classList.remove('show');
-      $.vkOverlay.setAttribute('aria-hidden', 'true');
-      if ($.result1) $.result1.classList.remove('num-active');
-      if ($.result2) $.result2.classList.remove('num-active');
-      activeScoreInput = null;
+    function pickerOffsetToValue(offset) {
+      const idx = Math.round(-offset / PICKER_ITEM_H);
+      return Math.max(PICKER_MIN, Math.min(PICKER_MAX, idx + PICKER_MIN));
     }
 
-    function setActiveScoreInput(input) {
-      activeScoreInput = input;
-      const isTeam1 = input === $.result1;
-      const t = I18N_UI[currentLangUI];
-      if ($.vkTitle) {
-        $.vkTitle.textContent = isTeam1 
-          ? `${gameState.team1Name} ${t.wonWord}` 
-          : `${gameState.team2Name} ${t.wonWord}`;
+    function buildPickerItems(scrollEl) {
+      let html = '';
+      for (let v = PICKER_MIN; v <= PICKER_MAX; v++) {
+        html += `<div class="picker-item" data-value="${v}">${v}</div>`;
       }
-      // Update action button: Next for first input, Submit for second
-      const actionBtn = document.getElementById('vkActionBtn');
-      if (actionBtn) {
-        if (isTeam1) {
-          actionBtn.textContent = currentLangUI === 'fa' ? 'بعدی' : 'NEXT';
-          actionBtn.setAttribute('data-key', 'next');
-        } else {
-          actionBtn.textContent = currentLangUI === 'fa' ? 'ثبت' : 'SUBMIT';
-          actionBtn.setAttribute('data-key', 'submit');
-        }
-      }
-      // Update display to show current value
-      updateVkDisplay();
+      scrollEl.innerHTML = html;
     }
 
-    function updateVkDisplay() {
-      const display = document.getElementById('vkDisplay');
-      if (!display || !activeScoreInput) return;
-      const val = (activeScoreInput.value ?? '').toString();
-      const displayVal = val === '' ? '0' : val;
-      display.textContent = currentLangUI === 'fa' ? toFaDigitsUI(displayVal) : displayVal;
+    function updatePickerHighlight(scrollEl, currentValue) {
+      scrollEl.querySelectorAll('.picker-item').forEach(item => {
+        const v = parseInt(item.getAttribute('data-value'), 10);
+        item.classList.toggle('selected', v === currentValue);
+      });
     }
 
-    function toggleSignString(current) {
-      if (current === '') return '-';
-      if (current === '-') return '';
-      if (current.startsWith('-')) return current.slice(1);
-      return `-${current}`;
-    }
+    function initPicker(scrollEl, hiddenInput) {
+      buildPickerItems(scrollEl);
 
-    function minusString(current) {
-      if (current === '') return '-';
-      if (current === '-') return '-';
-      if (current.startsWith('-')) return current;
-      return `-${current}`;
-    }
+      const state = {
+        offset: pickerValueToOffset(0), // start at 0
+        startY: 0,
+        startOffset: 0,
+        dragging: false,
+        velocity: 0,
+        lastY: 0,
+        lastTime: 0,
+        animFrame: null
+      };
 
-    function applyVirtualKey(key) {
-      if (!activeScoreInput) return;
+      // Initial position
+      scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+      updatePickerHighlight(scrollEl, 0);
 
-      const input = activeScoreInput;
-      const current = (input.value ?? '').toString();
-
-      let candidate = current;
-      if (key === 'clear') {
-        candidate = '';
-      } else if (key === 'backspace') {
-        candidate = current.slice(0, -1);
-        if (candidate === '-') candidate = '';
-      } else if (key === 'toggleSign') {
-        candidate = toggleSignString(current);
-      } else if (key === 'minus') {
-        candidate = minusString(current);
-      } else if (/^\d$/.test(key)) {
-        const digit = key;
-        if (current === '' || current === '-') {
-          candidate = (current === '-') ? `-${digit}` : digit;
-        } else if (current === '0') {
-          candidate = digit; // avoid leading zeros
-        } else if (current === '-0') {
-          candidate = `-${digit}`;
-        } else {
-          candidate = current + digit;
-        }
-      } else if (key === 'next') {
-        // Move to second input
-        if ($.result2) {
-          setActiveScoreInput($.result2);
-          // Highlight second input
-          $.result2.classList.add('num-active');
-          if ($.result1) $.result1.classList.remove('num-active');
-        }
-        return;
-      } else if (key === 'submit') {
-        // Submit the scores
-        hideVirtualKeyboard();
-        if ($.submitBtn && !$.submitBtn.disabled) {
-          $.submitBtn.click();
-        }
-        return;
-      } else if (key === 'done') {
-        hideVirtualKeyboard();
-        return;
+      function clampOffset(off) {
+        const minOff = -((PICKER_COUNT - 1) * PICKER_ITEM_H);
+        return Math.max(minOff, Math.min(0, off));
       }
 
-      if (candidate === '' || candidate === '-') {
-        input.value = candidate;
+      function snapToNearest() {
+        scrollEl.classList.add('snapping');
+        const idx = Math.round(-state.offset / PICKER_ITEM_H);
+        const snapped = -(idx * PICKER_ITEM_H);
+        state.offset = clampOffset(snapped);
+        scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+
+        const val = pickerOffsetToValue(state.offset);
+        hiddenInput.value = String(val);
+        updatePickerHighlight(scrollEl, val);
         syncSubmitEnabled();
-        updateVkDisplay();
-        return;
+
+        setTimeout(() => scrollEl.classList.remove('snapping'), 340);
       }
 
-      const n = parseScoreValue(candidate);
-      if (n === null) return; // ignore keys that would put it out of range
-      input.value = String(n);
-      syncSubmitEnabled();
-      updateVkDisplay();
+      function getY(e) {
+        if (e.touches && e.touches.length) return e.touches[0].clientY;
+        return e.clientY;
+      }
+
+      function onStart(e) {
+        if (scrollEl.classList.contains('snapping')) scrollEl.classList.remove('snapping');
+        cancelAnimationFrame(state.animFrame);
+        state.dragging = true;
+        state.startY = getY(e);
+        state.startOffset = state.offset;
+        state.lastY = state.startY;
+        state.lastTime = Date.now();
+        state.velocity = 0;
+      }
+
+      function onMove(e) {
+        if (!state.dragging) return;
+        e.preventDefault();
+        const y = getY(e);
+        const delta = y - state.startY;
+        state.offset = clampOffset(state.startOffset + delta);
+        scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+
+        // Track velocity
+        const now = Date.now();
+        const dt = now - state.lastTime;
+        if (dt > 0) {
+          state.velocity = (y - state.lastY) / dt;
+        }
+        state.lastY = y;
+        state.lastTime = now;
+
+        // Live update highlight
+        const liveVal = pickerOffsetToValue(state.offset);
+        updatePickerHighlight(scrollEl, liveVal);
+      }
+
+      function onEnd(e) {
+        if (!state.dragging) return;
+        state.dragging = false;
+
+        // Momentum
+        const momentum = state.velocity * 120;
+        state.offset = clampOffset(state.offset + momentum);
+
+        snapToNearest();
+      }
+
+      // Touch events
+      scrollEl.parentElement.addEventListener('touchstart', onStart, { passive: true });
+      scrollEl.parentElement.addEventListener('touchmove', onMove, { passive: false });
+      scrollEl.parentElement.addEventListener('touchend', onEnd, { passive: true });
+
+      // Mouse events
+      scrollEl.parentElement.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        onStart(e);
+        const moveHandler = (ev) => onMove(ev);
+        const upHandler = (ev) => {
+          onEnd(ev);
+          document.removeEventListener('mousemove', moveHandler);
+          document.removeEventListener('mouseup', upHandler);
+        };
+        document.addEventListener('mousemove', moveHandler);
+        document.addEventListener('mouseup', upHandler);
+      });
+
+      // Scroll wheel on desktop
+      scrollEl.parentElement.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (scrollEl.classList.contains('snapping')) scrollEl.classList.remove('snapping');
+        const delta = e.deltaY > 0 ? PICKER_ITEM_H : -PICKER_ITEM_H;
+        state.offset = clampOffset(state.offset - delta);
+        snapToNearest();
+      }, { passive: false });
+
+      return {
+        setValue(val) {
+          val = Math.max(PICKER_MIN, Math.min(PICKER_MAX, val));
+          state.offset = pickerValueToOffset(val);
+          scrollEl.classList.add('snapping');
+          scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+          hiddenInput.value = String(val);
+          updatePickerHighlight(scrollEl, val);
+          setTimeout(() => scrollEl.classList.remove('snapping'), 340);
+        },
+        getValue() {
+          return parseInt(hiddenInput.value, 10) || 0;
+        }
+      };
     }
+
+    let picker1 = null;
+    let picker2 = null;
+
+    function setPickersEnabled(enabled) {
+      const pw1 = document.getElementById('pickerWrap1');
+      const pw2 = document.getElementById('pickerWrap2');
+      if (pw1) { pw1.style.pointerEvents = enabled ? '' : 'none'; pw1.style.opacity = enabled ? '' : '0.4'; }
+      if (pw2) { pw2.style.pointerEvents = enabled ? '' : 'none'; pw2.style.opacity = enabled ? '' : '0.4'; }
+    }
+
+    function showVirtualKeyboard() { /* no-op, pickers are inline */ }
+    function hideVirtualKeyboard() { /* no-op */ }
+    function setActiveScoreInput() { /* no-op */ }
+    function updateVkDisplay() { /* no-op */ }
 
     function initVirtualKeyboard() {
+      // Initialize scroll pickers instead
       if (vkInitialized) return;
       vkInitialized = true;
-      if (!$.vkOverlay || !$.vkPanel || !$.result1 || !$.result2) return;
 
-      // Use click instead of focus since inputs are readonly (no native keyboard)
-      if ($.result1) {
-        $.result1.addEventListener('click', (e) => {
-          e.preventDefault();
-          setActiveScoreInput($.result1);
-          $.result1.classList.add('num-active');
-          if ($.result2) $.result2.classList.remove('num-active');
-          showVirtualKeyboard();
-        });
-        // Prevent focus from triggering native keyboard on readonly inputs
-        $.result1.addEventListener('focus', (e) => {
-          e.target.blur();
-        });
-      }
-      if ($.result2) {
-        $.result2.addEventListener('click', (e) => {
-          e.preventDefault();
-          setActiveScoreInput($.result2);
-          $.result2.classList.add('num-active');
-          if ($.result1) $.result1.classList.remove('num-active');
-          showVirtualKeyboard();
-        });
-        $.result2.addEventListener('focus', (e) => {
-          e.target.blur();
-        });
-      }
+      const scroll1 = document.getElementById('pickerScroll1');
+      const scroll2 = document.getElementById('pickerScroll2');
+      if (!scroll1 || !scroll2 || !$.result1 || !$.result2) return;
 
-      const buttons = $.vkPanel.querySelectorAll('[data-key]');
-      buttons.forEach(btn => {
-        btn.addEventListener('pointerdown', (e) => {
-          e.preventDefault();
-          const key = btn.getAttribute('data-key');
-          applyVirtualKey(key);
-        });
-      });
+      picker1 = initPicker(scroll1, $.result1);
+      picker2 = initPicker(scroll2, $.result2);
 
-      // Hide keyboard when tapping outside it.
-      document.addEventListener('pointerdown', (e) => {
-        if (!$.vkOverlay || !$.vkOverlay.classList.contains('show')) return;
-        const t = e.target;
-        if ($.vkPanel && $.vkPanel.contains(t)) return;
-        if (t === $.result1 || t === $.result2) return;
-        hideVirtualKeyboard();
-        if ($.result1) $.result1.classList.remove('num-active');
-        if ($.result2) $.result2.classList.remove('num-active');
-      });
+      // Set initial value to 0
+      $.result1.value = '0';
+      $.result2.value = '0';
+      syncSubmitEnabled();
     }
 
     // ========== UI UPDATES ==========
@@ -1374,8 +1330,10 @@
 
       gameState.history.push({ score1, score2, effective1, effective2, points1, points2 });
 
-      if ($.result1) $.result1.value = '';
-      if ($.result2) $.result2.value = '';
+      if ($.result1) $.result1.value = '0';
+      if ($.result2) $.result2.value = '0';
+      if (picker1) picker1.setValue(0);
+      if (picker2) picker2.setValue(0);
 
       updateUI();
       checkWinner();
@@ -1514,6 +1472,7 @@
       if ($.winnerOverlay) $.winnerOverlay.classList.add('show');
       if ($.result1) $.result1.disabled = true;
       if ($.result2) $.result2.disabled = true;
+      setPickersEnabled(false);
       enablePills(false);
       hideVirtualKeyboard();
     }
@@ -1574,6 +1533,7 @@
       closeWinner();
       if ($.result1) $.result1.disabled = false;
       if ($.result2) $.result2.disabled = false;
+      setPickersEnabled(true);
       enablePills(true);
 
       updateUI();
@@ -1639,6 +1599,7 @@
       closeWinner();
       if ($.result1) $.result1.disabled = false;
       if ($.result2) $.result2.disabled = false;
+      setPickersEnabled(true);
       enablePills(true);
 
       updateUI();
@@ -1665,6 +1626,9 @@
 
       if ($.result1) $.result1.disabled = false;
       if ($.result2) $.result2.disabled = false;
+      setPickersEnabled(true);
+      if (picker1) picker1.setValue(0);
+      if (picker2) picker2.setValue(0);
 
       closeWinner();
       if ($.gameScreen) $.gameScreen.classList.add('hidden');
@@ -1694,11 +1658,13 @@
 
       if ($.result1) $.result1.disabled = false;
       if ($.result2) $.result2.disabled = false;
+      setPickersEnabled(true);
+      if (picker1) picker1.setValue(0);
+      if (picker2) picker2.setValue(0);
       enablePills(true);
 
       closeWinner();
       updateUI();
-      saveGameState();
       saveGameState();
     }
 
@@ -1899,6 +1865,12 @@
             el.textContent = toEn(txt);
           }
         }
+      });
+
+      // Picker items: localize displayed numbers
+      document.querySelectorAll(".picker-item").forEach(el=>{
+        const v = el.getAttribute("data-value");
+        el.textContent = makeFa ? toFa(v) : v;
       });
     }
 
