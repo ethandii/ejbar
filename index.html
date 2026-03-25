@@ -578,6 +578,97 @@
 
     .hidden { display: none !important; }
 
+    /* Virtual keyboard (for scorer inputs) */
+    .vk-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(0,0,0,0.15);
+      backdrop-filter: blur(6px);
+      z-index: 180;
+      padding: 14px;
+    }
+
+    .vk-overlay.show { display: flex; }
+
+    .vk-panel {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 22px;
+      box-shadow: var(--shadow-2);
+      padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+      animation: vkUp 180ms ease-out;
+    }
+
+    @keyframes vkUp {
+      from { transform: translateY(18px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .vk-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .vk-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--text-tertiary);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .vk-hint {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    .vk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .vk-btn {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(118,118,128,0.16);
+      color: var(--text);
+      padding: 16px 0;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .vk-btn:active { transform: scale(0.97); }
+
+    .vk-btn.fn {
+      background: rgba(60,60,67,0.10);
+    }
+
+    [data-theme="dark"] .vk-btn.fn {
+      background: rgba(118,118,128,0.18);
+    }
+
+    .vk-btn.primary {
+      background: var(--blue);
+      border-color: rgba(0,122,255,0.35);
+      color: #fff;
+    }
+
     .sheet-overlay {
       position: fixed;
       inset: 0;
@@ -813,6 +904,37 @@
     </div>
   </div>
 
+  <div class="vk-overlay" id="vkOverlay" aria-hidden="true">
+    <div class="vk-panel" id="vkPanel" role="dialog" aria-label="Virtual keyboard">
+      <div class="vk-top">
+        <div class="vk-title" id="vkTitle">Score input</div>
+        <div class="vk-hint">Tap to enter</div>
+      </div>
+
+      <div class="vk-grid" role="group" aria-label="Score keys">
+        <button type="button" class="vk-btn" data-key="7">7</button>
+        <button type="button" class="vk-btn" data-key="8">8</button>
+        <button type="button" class="vk-btn" data-key="9">9</button>
+
+        <button type="button" class="vk-btn" data-key="4">4</button>
+        <button type="button" class="vk-btn" data-key="5">5</button>
+        <button type="button" class="vk-btn" data-key="6">6</button>
+
+        <button type="button" class="vk-btn" data-key="1">1</button>
+        <button type="button" class="vk-btn" data-key="2">2</button>
+        <button type="button" class="vk-btn" data-key="3">3</button>
+
+        <button type="button" class="vk-btn" data-key="0">0</button>
+        <button type="button" class="vk-btn fn" data-key="minus">-</button>
+        <button type="button" class="vk-btn fn" data-key="toggleSign">+/-</button>
+
+        <button type="button" class="vk-btn fn" data-key="clear">C</button>
+        <button type="button" class="vk-btn fn" data-key="backspace">DEL</button>
+        <button type="button" class="vk-btn primary" data-key="done">DONE</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ========== DOM ELEMENT CACHE ==========
     let $ = {};
@@ -836,7 +958,10 @@
         emptyHistory: document.getElementById('emptyHistory'),
         targetHint: document.getElementById('targetHint'),
         winnerOverlay: document.getElementById('winnerOverlay'),
-        sheetOverlay: document.getElementById('sheetOverlay')
+        sheetOverlay: document.getElementById('sheetOverlay'),
+        vkOverlay: document.getElementById('vkOverlay'),
+        vkPanel: document.getElementById('vkPanel'),
+        vkTitle: document.getElementById('vkTitle')
       };
     }
 
@@ -860,6 +985,8 @@
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
+    let activeScoreInput = null;
+    let vkInitialized = false;
 
     const STORAGE_KEY = 'ejbarGameStateV2';
 
@@ -938,6 +1065,134 @@
     function enablePills(enabled) {
       document.querySelectorAll('.score-btn').forEach(btn => {
         btn.disabled = !enabled;
+      });
+    }
+
+    // ========== VIRTUAL KEYBOARD ==========
+    function parseScoreValue(raw) {
+      const s = (raw ?? '').toString().trim();
+      if (s === '' || s === '-') return null;
+      if (!/^-?\d+$/.test(s)) return null;
+      const n = parseInt(s, 10);
+      if (isNaN(n) || n < -13 || n > 13) return null;
+      return n;
+    }
+
+    function showVirtualKeyboard() {
+      if (!$.vkOverlay) return;
+      $.vkOverlay.classList.add('show');
+      $.vkOverlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideVirtualKeyboard() {
+      if (!$.vkOverlay) return;
+      $.vkOverlay.classList.remove('show');
+      $.vkOverlay.setAttribute('aria-hidden', 'true');
+    }
+
+    function setActiveScoreInput(input) {
+      activeScoreInput = input;
+      if ($.vkTitle) {
+        const isTeam1 = input === $.result1;
+        $.vkTitle.textContent = isTeam1 ? 'Team 1 score' : 'Team 2 score';
+      }
+    }
+
+    function toggleSignString(current) {
+      if (current === '') return '-';
+      if (current === '-') return '';
+      if (current.startsWith('-')) return current.slice(1);
+      return `-${current}`;
+    }
+
+    function minusString(current) {
+      if (current === '') return '-';
+      if (current === '-') return '-';
+      if (current.startsWith('-')) return current;
+      return `-${current}`;
+    }
+
+    function applyVirtualKey(key) {
+      if (!activeScoreInput) return;
+
+      const input = activeScoreInput;
+      const current = (input.value ?? '').toString();
+
+      let candidate = current;
+      if (key === 'clear') {
+        candidate = '';
+      } else if (key === 'backspace') {
+        candidate = current.slice(0, -1);
+        if (candidate === '-') candidate = '';
+      } else if (key === 'toggleSign') {
+        candidate = toggleSignString(current);
+      } else if (key === 'minus') {
+        candidate = minusString(current);
+      } else if (/^\d$/.test(key)) {
+        const digit = key;
+        if (current === '' || current === '-') {
+          candidate = (current === '-') ? `-${digit}` : digit;
+        } else if (current === '0') {
+          candidate = digit; // avoid leading zeros
+        } else if (current === '-0') {
+          candidate = `-${digit}`;
+        } else {
+          candidate = current + digit;
+        }
+      } else if (key === 'done') {
+        hideVirtualKeyboard();
+        return;
+      }
+
+      if (candidate === '' || candidate === '-') {
+        input.value = candidate;
+        syncSubmitEnabled();
+        return;
+      }
+
+      const n = parseScoreValue(candidate);
+      if (n === null) return; // ignore keys that would put it out of range
+      input.value = String(n);
+      syncSubmitEnabled();
+
+      // Keep focus on the input so physical keyboard still works.
+      try { input.focus(); } catch (e) {}
+    }
+
+    function initVirtualKeyboard() {
+      if (vkInitialized) return;
+      vkInitialized = true;
+      if (!$.vkOverlay || !$.vkPanel || !$.result1 || !$.result2) return;
+
+      if ($.result1) {
+        $.result1.addEventListener('focus', () => {
+          setActiveScoreInput($.result1);
+          showVirtualKeyboard();
+        });
+      }
+      if ($.result2) {
+        $.result2.addEventListener('focus', () => {
+          setActiveScoreInput($.result2);
+          showVirtualKeyboard();
+        });
+      }
+
+      const buttons = $.vkPanel.querySelectorAll('[data-key]');
+      buttons.forEach(btn => {
+        btn.addEventListener('pointerdown', (e) => {
+          e.preventDefault();
+          const key = btn.getAttribute('data-key');
+          applyVirtualKey(key);
+        });
+      });
+
+      // Hide keyboard when tapping outside it.
+      document.addEventListener('pointerdown', (e) => {
+        if (!$.vkOverlay || !$.vkOverlay.classList.contains('show')) return;
+        const t = e.target;
+        if ($.vkPanel && $.vkPanel.contains(t)) return;
+        if (t === $.result1 || t === $.result2) return;
+        hideVirtualKeyboard();
       });
     }
 
@@ -1167,6 +1422,7 @@
       if ($.result1) $.result1.disabled = true;
       if ($.result2) $.result2.disabled = true;
       enablePills(false);
+      hideVirtualKeyboard();
     }
 
     function closeWinner() {
@@ -1177,6 +1433,7 @@
     function openSheet(idx) {
       sheetIndex = idx;
       if ($.sheetOverlay) $.sheetOverlay.classList.add('show');
+      hideVirtualKeyboard();
     }
 
     function closeSheet() {
@@ -1355,9 +1612,9 @@
     // ========== EVENT LISTENERS ==========
     function syncSubmitEnabled() {
       if (!$.submitBtn || !$.result1 || !$.result2) return;
-      const v1 = ($.result1.value ?? '').toString().trim();
-      const v2 = ($.result2.value ?? '').toString().trim();
-      const ok = v1 !== '' && v2 !== '';
+      const n1 = parseScoreValue($.result1.value);
+      const n2 = parseScoreValue($.result2.value);
+      const ok = n1 !== null && n2 !== null;
       $.submitBtn.disabled = !ok;
       $.submitBtn.classList.toggle('is-disabled', !ok);
     }
@@ -1365,6 +1622,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initDOMElements();
       loadGameState();
+      initVirtualKeyboard();
 
       if ($.submitBtn) {
         $.submitBtn.addEventListener('click', () => {
