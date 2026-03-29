@@ -226,6 +226,41 @@
 
     .seg-btn:active { transform: scale(0.985); }
 
+    .segmented-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .direct-score-input {
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.62);
+      backdrop-filter: var(--blur);
+      color: var(--text);
+      font-size: 26px;
+      font-weight: 900;
+      text-align: center;
+      outline: none;
+    }
+
+    [data-theme="dark"] .direct-score-input { background: rgba(28,28,30,0.58); }
+
+    .direct-score-input:focus {
+      border-color: rgba(0,122,255,0.55);
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
+    }
+
+    .shalam-note {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -432,6 +467,47 @@
       transition: transform 320ms cubic-bezier(0.23, 1, 0.32, 1);
     }
 
+    .picker-wrap {
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .picker-wrap.is-dragging {
+      transform: scale(1.02);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.10);
+    }
+
+    .picker-item {
+      transition: color 120ms ease, transform 120ms ease, opacity 120ms ease, filter 120ms ease;
+    }
+
+    .picker-item.selected {
+      filter: saturate(1.1);
+    }
+
+    .score-value {
+      transition: transform 120ms ease;
+    }
+
+    .score-value.bump-up {
+      animation: totalBumpUp 380ms ease;
+    }
+
+    .score-value.bump-down {
+      animation: totalBumpDown 380ms ease;
+    }
+
+    @keyframes totalBumpUp {
+      0% { transform: translateY(8px); opacity: 0.55; }
+      45% { transform: translateY(-4px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes totalBumpDown {
+      0% { transform: translateY(-8px); opacity: 0.55; }
+      45% { transform: translateY(4px); opacity: 1; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
     .picker-item {
       height: 50px;
       display: flex;
@@ -525,6 +601,62 @@
       margin-top: 12px;
     }
 
+    .section-caption {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      pointer-events: none;
+    }
+
+    .section-caption.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-caption.success { color: var(--success); }
+    .section-caption.warning { color: var(--warning); }
+    .section-caption.info { color: var(--accent-1); }
+    .section-caption.danger { color: var(--danger); }
+
+    .score-card {
+      transition: border-color 220ms ease, background 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .score-card.round-flash-win {
+      animation: roundFlashWin 680ms ease;
+    }
+
+    .score-card.round-flash-lose {
+      animation: roundFlashLose 680ms ease;
+    }
+
+    @keyframes roundFlashWin {
+      0% { box-shadow: 0 0 0 rgba(52,199,89,0); transform: scale(1); }
+      28% { box-shadow: 0 0 0 3px rgba(52,199,89,0.20), 0 16px 28px rgba(52,199,89,0.10); transform: scale(1.012); }
+      100% { box-shadow: 0 0 0 rgba(52,199,89,0); transform: scale(1); }
+    }
+
+    @keyframes roundFlashLose {
+      0% { box-shadow: 0 0 0 rgba(255,59,48,0); transform: scale(1); }
+      28% { box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 16px 28px rgba(255,59,48,0.08); transform: scale(0.996); }
+      100% { box-shadow: 0 0 0 rgba(255,59,48,0); transform: scale(1); }
+    }
+
+    .picker-wrap.is-dragging {
+      transform: scale(1.012);
+      box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+
+    html, body, .header, .section, .score-card, .icon-btn, .lang-toggle, .picker-wrap, .history-item {
+      transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+    }
+
     .list {
       margin-top: 8px;
       border-radius: var(--radius-2);
@@ -563,6 +695,24 @@
     .mini.milestone {
       border: 1px solid rgba(52,199,89,0.55);
       background: rgba(52,199,89,0.10);
+    }
+
+    .mini.shelem-green {
+      border: 1px solid rgba(52,199,89,0.65);
+      background: rgba(52,199,89,0.14);
+      box-shadow: inset 0 0 0 1px rgba(52,199,89,0.12);
+    }
+
+    .mini.shelem-gold {
+      border: 1px solid rgba(255,204,0,0.75);
+      background: rgba(255,204,0,0.16);
+      box-shadow: inset 0 0 0 1px rgba(255,204,0,0.14);
+    }
+
+    .mini.shelem-red {
+      border: 1px solid rgba(255,59,48,0.65);
+      background: rgba(255,59,48,0.14);
+      box-shadow: inset 0 0 0 1px rgba(255,59,48,0.12);
     }
 
     .line {
@@ -792,11 +942,12 @@
       <div class="section">
         <div class="section-title">
           <h2>Select Game Type</h2>
-          <span class="hint">Choose 7 or 9</span>
+          <span class="hint">Choose 7, 9, or Shelem</span>
         </div>
-        <div class="segmented">
+        <div class="segmented segmented-3">
           <button class="seg-btn" data-type="7" onclick="selectGameType(7)">7 Ejbar</button>
           <button class="seg-btn" data-type="9" onclick="selectGameType(9)">9 Ejbar</button>
+          <button class="seg-btn" data-type="shalam" onclick="selectGameType('shalam')">Shelem</button>
         </div>
         <div class="form-grid">
           <div class="field">
@@ -811,8 +962,10 @@
         <div style="margin-top: 12px;">
           <button class="btn btn-primary" onclick="startGame()">Start Game</button>
         </div>
+        <div class="section-caption" id="setupCaption"></div>
       </div>
-    </div>
+
+          </div>
 
     <div id="gameScreen" class="hidden">
       <div class="section">
@@ -847,6 +1000,7 @@
               </div>
               <div class="picker-fade picker-fade-bottom"></div>
             </div>
+            <input class="direct-score-input hidden" id="directInput1" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
             <input type="hidden" id="result1" value="0" />
           </div>
           <div class="field">
@@ -859,12 +1013,15 @@
               </div>
               <div class="picker-fade picker-fade-bottom"></div>
             </div>
+            <input class="direct-score-input hidden" id="directInput2" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
             <input type="hidden" id="result2" value="0" />
           </div>
         </div>
+        <div class="shalam-note hidden" id="shalamNote">Scores must be multiples of 5 or zero.</div>
         <div class="submit-in-card">
           <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
         </div>
+        <div class="section-caption" id="scoreCaption"></div>
       </div>
 
       <div class="section">
@@ -882,6 +1039,7 @@
           <button class="btn btn-secondary" onclick="newGame()">New Game</button>
           <button class="btn btn-danger" onclick="clearHistory()">Clear History</button>
         </div>
+        <div class="section-caption" id="historyCaption"></div>
       </div>
     </div>
   </div>
@@ -927,12 +1085,36 @@
         team2Card: document.getElementById('team2Card'),
         result1: document.getElementById('result1'),
         result2: document.getElementById('result2'),
+        directInput1: document.getElementById('directInput1'),
+        directInput2: document.getElementById('directInput2'),
+        shalamNote: document.getElementById('shalamNote'),
         submitBtn: document.getElementById('submitBtn'),
         historyList: document.getElementById('historyList'),
         emptyHistory: document.getElementById('emptyHistory'),
         targetHint: document.getElementById('targetHint'),
         winnerOverlay: document.getElementById('winnerOverlay'),
-        sheetOverlay: document.getElementById('sheetOverlay')
+        sheetOverlay: document.getElementById('sheetOverlay'),
+        setupCaption: document.getElementById('setupCaption'),
+        scoreCaption: document.getElementById('scoreCaption'),
+        historyCaption: document.getElementById('historyCaption'),
+        archiveList: document.getElementById('archiveList'),
+        emptyArchive: document.getElementById('emptyArchive'),
+        archiveTitle: document.getElementById('archiveTitle'),
+        archiveHint: document.getElementById('archiveHint'),
+        clearArchiveBtn: document.getElementById('clearArchiveBtn'),
+        archiveOverlay: document.getElementById('archiveOverlay'),
+        archiveOverlayTitle: document.getElementById('archiveOverlayTitle'),
+        archiveOverlayMeta: document.getElementById('archiveOverlayMeta'),
+        archiveOverlayBody: document.getElementById('archiveOverlayBody'),
+        archiveOverlayGameType: document.getElementById('archiveOverlayGameType'),
+        archiveSummaryTeam1: document.getElementById('archiveSummaryTeam1'),
+        archiveSummaryTeam2: document.getElementById('archiveSummaryTeam2'),
+        archiveSummaryScore1: document.getElementById('archiveSummaryScore1'),
+        archiveSummaryScore2: document.getElementById('archiveSummaryScore2'),
+        archiveSummaryPoints1: document.getElementById('archiveSummaryPoints1'),
+        archiveSummaryPoints2: document.getElementById('archiveSummaryPoints2'),
+        archiveHistoryCol1: document.getElementById('archiveHistoryCol1'),
+        archiveHistoryCol2: document.getElementById('archiveHistoryCol2')
       };
     }
 
@@ -953,13 +1135,15 @@
     // ========== CONSTANTS ==========
     const TARGET_7Ejbar = 350;
     const TARGET_9Ejbar = 550;
+    const TARGET_SHALAM = 1200;
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
     let activeScoreInput = null;
     let vkInitialized = false;
 
-    const STORAGE_KEY = 'ejbarGameStateV2';
+    const STORAGE_KEY = 'ejbarGameStateV3';
+    const ARCHIVE_KEY = 'ejbarGameArchiveV1';
 
     function saveGameState() {
       try {
@@ -996,6 +1180,224 @@
       updateUI();
     }
 
+    function getArchive() {
+      try {
+        const raw = localStorage.getItem(ARCHIVE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveArchive(items) {
+      try {
+        localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items));
+      } catch (e) {
+        console.warn('Could not save archive', e);
+      }
+    }
+
+    function getGameTypeLabel(type) {
+      if (type === 'shalam') return 'Shelem';
+      if (type === 9 || type === '9') return '9 Ejbar';
+      return '7 Ejbar';
+    }
+
+    function archiveCurrentGame() {
+      if (!gameState.history || !gameState.history.length) return;
+      if (gameState.archivedAt) return;
+
+      const archive = getArchive();
+      const winnerName = gameState.winner || (
+        gameState.team1Total === gameState.team2Total
+          ? (currentLangUI === 'fa' ? 'مساوی' : 'Draw')
+          : (gameState.team1Total > gameState.team2Total ? gameState.team1Name : gameState.team2Name)
+      );
+
+      const item = {
+        id: 'g_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        gameType: gameState.gameType,
+        team1Name: gameState.team1Name,
+        team2Name: gameState.team2Name,
+        team1Total: gameState.team1Total,
+        team2Total: gameState.team2Total,
+        team1Points: gameState.team1Points,
+        team2Points: gameState.team2Points,
+        winner: winnerName,
+        rounds: gameState.history.length,
+        finishedAt: new Date().toISOString(),
+        history: JSON.parse(JSON.stringify(gameState.history || []))
+      };
+
+      archive.unshift(item);
+      saveArchive(archive.slice(0, 50));
+      gameState.archivedAt = item.finishedAt;
+      saveGameState();
+      renderArchive();
+    }
+
+    function formatArchiveDate(iso) {
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString(currentLangUI === 'fa' ? 'fa-IR' : 'en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (e) {
+        return iso || '';
+      }
+    }
+
+    function renderArchive() {
+      if (!$.archiveList || !$.emptyArchive) return;
+      const items = getArchive();
+
+      $.archiveList.innerHTML = '';
+      $.archiveList.classList.toggle('hidden', items.length === 0);
+      $.emptyArchive.classList.toggle('hidden', items.length > 0);
+      $.emptyArchive.textContent = currentLangUI === 'fa' ? 'هنوز بازی ذخیره‌شده‌ای نیست' : 'No saved games yet';
+
+      items.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'archive-item';
+        const isShelem = item.gameType === 'shalam';
+        const gameLabel = getGameTypeLabel(item.gameType);
+        const pointsLine = isShelem
+          ? ''
+          : `<div>${currentLangUI === 'fa' ? 'پوینت:' : 'Points:'} ${item.team1Points} - ${item.team2Points}</div>`;
+
+        el.innerHTML = `
+          <div class="archive-top">
+            <div class="archive-game">${gameLabel}</div>
+            <div class="archive-date">${formatArchiveDate(item.finishedAt)}</div>
+          </div>
+          <div class="archive-winner">${item.winner}</div>
+          <div class="archive-meta">
+            <div>${item.team1Name}: ${item.team1Total}</div>
+            <div>${item.team2Name}: ${item.team2Total}</div>
+            <div>${currentLangUI === 'fa' ? 'دست‌ها:' : 'Rounds:'} ${item.rounds}</div>
+            ${pointsLine || '<div></div>'}
+          </div>
+        `;
+        el.addEventListener('click', () => openArchiveDetails(item.id));
+        $.archiveList.appendChild(el);
+      });
+
+      if (currentLangUI === 'fa') localizeDisplayedNumbersUI();
+    }
+
+    function clearArchive() {
+      const msg = currentLangUI === 'fa' ? 'همه بازی‌های ذخیره‌شده پاک شوند؟' : 'Clear all saved games?';
+      if (!confirm(msg)) return;
+      saveArchive([]);
+      renderArchive();
+    }
+
+    function formatSignedScore(score) {
+      return score > 0 ? `+${score}` : String(score);
+    }
+
+    function openArchiveDetails(id) {
+      const item = getArchive().find(x => x.id === id);
+      if (!item || !$.archiveOverlay || !$.archiveOverlayBody) return;
+
+      const isShelem = item.gameType === 'shalam';
+      const gameLabel = getGameTypeLabel(item.gameType);
+
+      if ($.archiveOverlayGameType) $.archiveOverlayGameType.textContent = gameLabel;
+      if ($.archiveOverlayTitle) $.archiveOverlayTitle.textContent = currentLangUI === 'fa' ? 'تاریخچه' : 'History';
+      if ($.archiveOverlayMeta) {
+        $.archiveOverlayMeta.textContent =
+          `${item.team1Name} vs ${item.team2Name} • ` +
+          `${currentLangUI === 'fa' ? 'برنده' : 'Winner'}: ${item.winner} • ` +
+          `${formatArchiveDate(item.finishedAt)}`;
+      }
+
+      if ($.archiveSummaryTeam1) $.archiveSummaryTeam1.textContent = item.team1Name;
+      if ($.archiveSummaryTeam2) $.archiveSummaryTeam2.textContent = item.team2Name;
+      if ($.archiveSummaryScore1) $.archiveSummaryScore1.textContent = item.team1Total;
+      if ($.archiveSummaryScore2) $.archiveSummaryScore2.textContent = item.team2Total;
+      if ($.archiveHistoryCol1) $.archiveHistoryCol1.textContent = item.team1Name;
+      if ($.archiveHistoryCol2) $.archiveHistoryCol2.textContent = item.team2Name;
+      const roundsHint = document.getElementById('archiveRoundsHint');
+      if (roundsHint) roundsHint.textContent = currentLangUI === 'fa' ? 'آخرین دست‌ها در بالا' : 'Most recent first';
+
+      if ($.archiveSummaryPoints1 && $.archiveSummaryPoints2) {
+        $.archiveSummaryPoints1.textContent = item.team1Points ?? 0;
+        $.archiveSummaryPoints2.textContent = item.team2Points ?? 0;
+        $.archiveSummaryPoints1.classList.toggle('hidden', isShelem);
+        $.archiveSummaryPoints2.classList.toggle('hidden', isShelem);
+      }
+
+      const getShelemRoundClass = (score) => {
+        if (score >= 800) return 'shelem-gold';
+        if (score >= 400) return 'shelem-green';
+        if (score <= -300) return 'shelem-red';
+        return '';
+      };
+
+      let running1 = 0;
+      let running2 = 0;
+      const rows = item.history || [];
+
+      $.archiveOverlayBody.innerHTML = rows.map((round, index) => {
+        const eff1 = round.effective1 !== undefined ? round.effective1 : round.score1;
+        const eff2 = round.effective2 !== undefined ? round.effective2 : round.score2;
+        running1 += eff1;
+        running2 += eff2;
+
+        const c1 = isShelem ? getShelemRoundClass(eff1) : ((round.points1 || 0) > 0 ? 'milestone' : '');
+        const c2 = isShelem ? getShelemRoundClass(eff2) : ((round.points2 || 0) > 0 ? 'milestone' : '');
+
+        const line1 = currentLangUI === 'fa' ? `جمع: ${running1}` : `Total: ${running1}`;
+        const line2 = currentLangUI === 'fa' ? `جمع: ${running2}` : `Total: ${running2}`;
+        const sub1 = isShelem
+          ? (currentLangUI === 'fa' ? `همین دور: ${eff1}` : `This round: ${eff1}`)
+          : (currentLangUI === 'fa'
+              ? `موثر: ${eff1}${round.points1 ? ` • پوینت +${round.points1}` : ''}`
+              : `Effective: ${eff1}${round.points1 ? ` • Point +${round.points1}` : ''}`);
+        const sub2 = isShelem
+          ? (currentLangUI === 'fa' ? `همین دور: ${eff2}` : `This round: ${eff2}`)
+          : (currentLangUI === 'fa'
+              ? `موثر: ${eff2}${round.points2 ? ` • پوینت +${round.points2}` : ''}`
+              : `Effective: ${eff2}${round.points2 ? ` • Point +${round.points2}` : ''}`);
+
+        const score1 = eff1 > 0 ? `+${eff1}` : `${eff1}`;
+        const score2 = eff2 > 0 ? `+${eff2}` : `${eff2}`;
+
+        return `
+          <div class="archive-history-row">
+            <div class="archive-history-card ${c1}">
+              <div class="line">${line1}</div>
+              <div class="delta">${score1}</div>
+              <div class="sub">${sub1}</div>
+              <div class="roundtag">${currentLangUI === 'fa' ? 'دور' : 'Round'} ${index + 1}</div>
+            </div>
+            <div class="archive-history-card ${c2}">
+              <div class="line">${line2}</div>
+              <div class="delta">${score2}</div>
+              <div class="sub">${sub2}</div>
+              <div class="roundtag">${currentLangUI === 'fa' ? 'دور' : 'Round'} ${index + 1}</div>
+            </div>
+          </div>`;
+      }).reverse().join('');
+
+      if (!rows.length) {
+        $.archiveOverlayBody.innerHTML = `<div class="archive-history-card">${currentLangUI === 'fa' ? 'جزئیاتی برای این بازی ذخیره نشده.' : 'No details saved for this game.'}</div>`;
+      }
+
+      if (currentLangUI === 'fa') localizeDisplayedNumbersUI();
+      $.archiveOverlay.classList.add('show');
+    }
+
+    function closeArchiveDetails() {
+      if ($.archiveOverlay) $.archiveOverlay.classList.remove('show');
+    }
+
     // ========== HELPER FUNCTIONS ==========
     // ========== THEME MANAGEMENT ==========
     function applyTheme(theme) {
@@ -1025,6 +1427,7 @@
 
     // ========== GAME LOGIC ==========
     function getTargetScore() {
+      if (gameState.gameType === 'shalam') return TARGET_SHALAM;
       return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
     }
 
@@ -1047,12 +1450,34 @@
     const PICKER_MAX = 13;
     const PICKER_COUNT = PICKER_MAX - PICKER_MIN + 1; // 27 items
 
+    function getScoreBounds() {
+      if (gameState.gameType === 'shalam') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
+      if (gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 4 };
+      return { min: -9, max: 9, absMin: 3, defaultValue: 3 };
+    }
+
     function parseScoreValue(raw) {
       const s = (raw ?? '').toString().trim();
       if (s === '' || s === '-') return null;
       if (!/^-?\d+$/.test(s)) return null;
       const n = parseInt(s, 10);
-      if (isNaN(n) || n < PICKER_MIN || n > PICKER_MAX) return null;
+      const bounds = getScoreBounds();
+      if (isNaN(n) || n < bounds.min || n > bounds.max) return null;
+      if (gameState.gameType !== 'shalam') {
+        if (n > 0 && n < bounds.absMin) return null;
+        if (n < 0 && Math.abs(n) < bounds.absMin) return null;
+        if (n === 0) return null;
+      }
+      return n;
+    }
+
+    function parseShelemScoreValue(raw) {
+      const s = toEnDigitsUI((raw ?? '').toString()).trim();
+      if (s === '') return null;
+      if (!/^-?\d+$/.test(s)) return null;
+      const n = parseInt(s, 10);
+      if (isNaN(n)) return null;
+      if (n !== 0 && n % 5 !== 0) return null;
       return n;
     }
 
@@ -1066,10 +1491,24 @@
       return Math.max(PICKER_MIN, Math.min(PICKER_MAX, idx + PICKER_MIN));
     }
 
+    function getAllowedPickerValues() {
+      const bounds = getScoreBounds();
+      if (gameState.gameType === 'shalam') {
+        const vals = [];
+        for (let v = PICKER_MIN; v <= PICKER_MAX; v++) vals.push(v);
+        return vals;
+      }
+      const vals = [];
+      for (let v = bounds.min; v <= -bounds.absMin; v++) vals.push(v);
+      for (let v = bounds.absMin; v <= bounds.max; v++) vals.push(v);
+      return vals;
+    }
+
     function buildPickerItems(scrollEl) {
+      const values = getAllowedPickerValues();
       let html = '';
-      for (let v = PICKER_MIN; v <= PICKER_MAX; v++) {
-        html += `<div class="picker-item" data-value="${v}">${v}</div>`;
+      for (const v of values) {
+        html += `<div class="picker-item" data-value="${v}">${v > 0 ? '+' + v : v}</div>`;
       }
       scrollEl.innerHTML = html;
     }
@@ -1082,41 +1521,62 @@
     }
 
     function initPicker(scrollEl, hiddenInput) {
-      buildPickerItems(scrollEl);
-
       const state = {
-        offset: pickerValueToOffset(0), // start at 0
+        index: 0,
+        visualIndex: 0,
         startY: 0,
-        startOffset: 0,
+        startIndex: 0,
         dragging: false,
         velocity: 0,
         lastY: 0,
-        lastTime: 0,
-        animFrame: null
+        lastTime: 0
       };
 
-      // Initial position
-      scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
-      updatePickerHighlight(scrollEl, 0);
-
-      function clampOffset(off) {
-        const minOff = -((PICKER_COUNT - 1) * PICKER_ITEM_H);
-        return Math.max(minOff, Math.min(0, off));
+      function getValues() {
+        return getAllowedPickerValues();
       }
 
-      function snapToNearest() {
-        scrollEl.classList.add('snapping');
-        const idx = Math.round(-state.offset / PICKER_ITEM_H);
-        const snapped = -(idx * PICKER_ITEM_H);
-        state.offset = clampOffset(snapped);
-        scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+      function rebuild() {
+        buildPickerItems(scrollEl);
+      }
 
-        const val = pickerOffsetToValue(state.offset);
-        hiddenInput.value = String(val);
-        updatePickerHighlight(scrollEl, val);
-        syncSubmitEnabled();
+      function clampIndex(i) {
+        const values = getValues();
+        return Math.max(0, Math.min(values.length - 1, i));
+      }
 
-        setTimeout(() => scrollEl.classList.remove('snapping'), 340);
+      function findClosestIndex(val) {
+        const values = getValues();
+        let bestIndex = 0;
+        let bestDist = Infinity;
+        values.forEach((v, i) => {
+          const dist = Math.abs(v - val);
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIndex = i;
+          }
+        });
+        return bestIndex;
+      }
+
+      function renderAtVisualIndex(extraOffset = 0) {
+        const values = getValues();
+        const nearestIndex = clampIndex(Math.round(state.visualIndex));
+        const value = values[nearestIndex] ?? 0;
+        const offset = -(state.visualIndex * PICKER_ITEM_H);
+        scrollEl.style.transform = `translateY(${offset + PICKER_ITEM_H + extraOffset}px)`;
+        hiddenInput.value = String(value);
+        updatePickerHighlight(scrollEl, value);
+      }
+
+      function applyIndex(i, animated = false, extraOffset = 0) {
+        rebuild();
+        state.index = clampIndex(i);
+        state.visualIndex = state.index;
+        if (animated) scrollEl.classList.add('snapping');
+        else scrollEl.classList.remove('snapping');
+        renderAtVisualIndex(extraOffset);
+        if (animated) setTimeout(() => scrollEl.classList.remove('snapping'), 340);
       }
 
       function getY(e) {
@@ -1125,14 +1585,16 @@
       }
 
       function onStart(e) {
-        if (scrollEl.classList.contains('snapping')) scrollEl.classList.remove('snapping');
-        cancelAnimationFrame(state.animFrame);
+        if (gameState.gameType === 'shalam') return;
+        scrollEl.classList.remove('snapping');
+        if (scrollEl.parentElement) scrollEl.parentElement.classList.add('is-dragging');
         state.dragging = true;
         state.startY = getY(e);
-        state.startOffset = state.offset;
+        state.startIndex = state.visualIndex;
         state.lastY = state.startY;
         state.lastTime = Date.now();
         state.velocity = 0;
+        state.lastHapticIndex = Math.round(state.visualIndex);
       }
 
       function onMove(e) {
@@ -1140,46 +1602,53 @@
         e.preventDefault();
         const y = getY(e);
         const delta = y - state.startY;
-        state.offset = clampOffset(state.startOffset + delta);
-        scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
+        state.visualIndex = clampIndex(state.startIndex - (delta / PICKER_ITEM_H));
 
-        // Track velocity
         const now = Date.now();
         const dt = now - state.lastTime;
-        if (dt > 0) {
-          state.velocity = (y - state.lastY) / dt;
-        }
+        if (dt > 0) state.velocity = (y - state.lastY) / dt;
         state.lastY = y;
         state.lastTime = now;
 
-        // Live update highlight
-        const liveVal = pickerOffsetToValue(state.offset);
-        updatePickerHighlight(scrollEl, liveVal);
+        const currentStep = Math.round(state.visualIndex);
+        if (currentStep !== state.lastHapticIndex) {
+          triggerPickerHaptic(Math.abs(state.velocity) > 0.9 ? 'medium' : 'soft');
+          state.lastHapticIndex = currentStep;
+        }
+
+        renderAtVisualIndex(0);
+        syncSubmitEnabled();
       }
 
-      function onEnd(e) {
+      function onEnd() {
         if (!state.dragging) return;
         state.dragging = false;
+        if (scrollEl.parentElement) scrollEl.parentElement.classList.remove('is-dragging');
 
-        // Momentum
-        const momentum = state.velocity * 120;
-        state.offset = clampOffset(state.offset + momentum);
+        const momentumSteps = Math.round((-state.velocity * 120) / PICKER_ITEM_H);
+        const finalIndex = clampIndex(Math.round(state.visualIndex) + momentumSteps);
+        state.index = finalIndex;
+        state.visualIndex = finalIndex;
 
-        snapToNearest();
+        const bounce = Math.max(-8, Math.min(8, -state.velocity * 14));
+        applyIndex(finalIndex, true, bounce);
+        triggerPickerHaptic(Math.abs(state.velocity) > 0.9 ? 'medium' : 'soft');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => applyIndex(finalIndex, true, 0));
+        });
+        syncSubmitEnabled();
       }
 
-      // Touch events
       scrollEl.parentElement.addEventListener('touchstart', onStart, { passive: true });
       scrollEl.parentElement.addEventListener('touchmove', onMove, { passive: false });
       scrollEl.parentElement.addEventListener('touchend', onEnd, { passive: true });
 
-      // Mouse events
       scrollEl.parentElement.addEventListener('mousedown', (e) => {
         e.preventDefault();
         onStart(e);
         const moveHandler = (ev) => onMove(ev);
-        const upHandler = (ev) => {
-          onEnd(ev);
+        const upHandler = () => {
+          onEnd();
           document.removeEventListener('mousemove', moveHandler);
           document.removeEventListener('mouseup', upHandler);
         };
@@ -1187,27 +1656,27 @@
         document.addEventListener('mouseup', upHandler);
       });
 
-      // Scroll wheel on desktop
       scrollEl.parentElement.addEventListener('wheel', (e) => {
+        if (gameState.gameType === 'shalam') return;
         e.preventDefault();
-        if (scrollEl.classList.contains('snapping')) scrollEl.classList.remove('snapping');
-        const delta = e.deltaY > 0 ? PICKER_ITEM_H : -PICKER_ITEM_H;
-        state.offset = clampOffset(state.offset - delta);
-        snapToNearest();
+        state.index = clampIndex(state.index + (e.deltaY > 0 ? 1 : -1));
+        applyIndex(state.index, true);
+        triggerPickerHaptic('soft');
+        syncSubmitEnabled();
       }, { passive: false });
+
+      applyIndex(findClosestIndex(getScoreBounds().defaultValue), false);
 
       return {
         setValue(val) {
-          val = Math.max(PICKER_MIN, Math.min(PICKER_MAX, val));
-          state.offset = pickerValueToOffset(val);
-          scrollEl.classList.add('snapping');
-          scrollEl.style.transform = `translateY(${state.offset + PICKER_ITEM_H}px)`;
-          hiddenInput.value = String(val);
-          updatePickerHighlight(scrollEl, val);
-          setTimeout(() => scrollEl.classList.remove('snapping'), 340);
+          applyIndex(findClosestIndex(parseInt(val, 10) || getScoreBounds().defaultValue), true);
         },
         getValue() {
-          return parseInt(hiddenInput.value, 10) || 0;
+          const values = getValues();
+          return values[state.index] ?? 0;
+        },
+        refresh() {
+          applyIndex(findClosestIndex(parseInt(hiddenInput.value, 10) || getScoreBounds().defaultValue), false);
         }
       };
     }
@@ -1220,6 +1689,48 @@
       const pw2 = document.getElementById('pickerWrap2');
       if (pw1) { pw1.style.pointerEvents = enabled ? '' : 'none'; pw1.style.opacity = enabled ? '' : '0.4'; }
       if (pw2) { pw2.style.pointerEvents = enabled ? '' : 'none'; pw2.style.opacity = enabled ? '' : '0.4'; }
+    }
+
+    function syncDirectInputsFromHidden() {
+      if (gameState.gameType === 'shalam') {
+        if ($.directInput1 && $.directInput1.value === '0') $.directInput1.value = '';
+        if ($.directInput2 && $.directInput2.value === '0') $.directInput2.value = '';
+        return;
+      }
+      if ($.directInput1) $.directInput1.value = $.result1 ? $.result1.value : '';
+      if ($.directInput2) $.directInput2.value = $.result2 ? $.result2.value : '';
+    }
+
+    function syncHiddenInputsFromDirect() {
+      if (gameState.gameType === 'shalam') {
+        const raw1 = toEnDigitsUI($.directInput1?.value || '').trim();
+        const raw2 = toEnDigitsUI($.directInput2?.value || '').trim();
+        const n1 = parseShelemScoreValue(raw1);
+        const n2 = parseShelemScoreValue(raw2);
+        if ($.result1) $.result1.value = n1 === null ? '' : String(n1);
+        if ($.result2) $.result2.value = n2 === null ? '' : String(n2);
+        return;
+      }
+      if ($.directInput1 && $.result1) $.result1.value = toEnDigitsUI($.directInput1.value || '').trim();
+      if ($.directInput2 && $.result2) $.result2.value = toEnDigitsUI($.directInput2.value || '').trim();
+    }
+
+    function updateScoreInputMode() {
+      const isShalam = gameState.gameType === 'shalam';
+      const pw1 = document.getElementById('pickerWrap1');
+      const pw2 = document.getElementById('pickerWrap2');
+      if (pw1) pw1.classList.toggle('hidden', isShalam);
+      if (pw2) pw2.classList.toggle('hidden', isShalam);
+      if ($.directInput1) $.directInput1.classList.toggle('hidden', !isShalam);
+      if ($.directInput2) $.directInput2.classList.toggle('hidden', !isShalam);
+      if ($.shalamNote) $.shalamNote.classList.toggle('hidden', !isShalam);
+
+      if (isShalam) {
+        if ($.directInput1 && $.directInput1.value === '0') $.directInput1.value = '';
+        if ($.directInput2 && $.directInput2.value === '0') $.directInput2.value = '';
+      } else {
+        syncDirectInputsFromHidden();
+      }
     }
 
     function showVirtualKeyboard() { /* no-op, pickers are inline */ }
@@ -1242,6 +1753,8 @@
       // Set initial value to 0
       $.result1.value = '0';
       $.result2.value = '0';
+      syncDirectInputsFromHidden();
+      updateScoreInputMode();
       syncSubmitEnabled();
     }
 
@@ -1249,10 +1762,32 @@
     function selectGameType(type) {
       gameState.gameType = type;
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+      triggerHaptics(8);
       const sel = document.querySelector(`[data-type="${type}"]`);
       if (sel) sel.classList.add('selected');
       const t = I18N_UI[currentLangUI];
       if ($.targetHint) $.targetHint.textContent = t.target(getTargetScore());
+      updateScoreInputMode();
+
+      if (gameState.gameType !== 'shalam') {
+        const defaultVal = getScoreBounds().defaultValue;
+        if ($.result1) $.result1.value = String(defaultVal);
+        if ($.result2) $.result2.value = String(defaultVal);
+        if (picker1) picker1.refresh();
+        if (picker2) picker2.refresh();
+      } else {
+        if ($.directInput1) $.directInput1.value = '';
+        if ($.directInput2) $.directInput2.value = '';
+        if ($.result1) $.result1.value = '';
+        if ($.result2) $.result2.value = '';
+      }
+
+      showSectionCaption('setup', gameState.gameType === 'shalam'
+        ? (currentLangUI === 'fa' ? 'شلم انتخاب شد' : 'Shelem selected')
+        : (gameState.gameType === 9
+          ? (currentLangUI === 'fa' ? '۹ اجبار انتخاب شد' : '9 Ejbar selected')
+          : (currentLangUI === 'fa' ? '۷ اجبار انتخاب شد' : '7 Ejbar selected')), 'info');
+      syncSubmitEnabled();
       saveGameState();
     }
 
@@ -1260,17 +1795,151 @@
       if (!gameState.gameType) {
         const t = I18N_UI[currentLangUI];
         alert(t.alertSelectGameType);
+        showSectionCaption('setup', currentLangUI === 'fa' ? 'اول نوع بازی را انتخاب کن' : 'Select a game type first', 'warning');
         return;
       }
 
+      triggerHaptics(12);
+      primeInteractionFeedback();
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
+
+      if (gameState.gameType !== 'shalam') {
+        const defaultVal = getScoreBounds().defaultValue;
+        if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
+        if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
+        if (picker1) picker1.refresh();
+        if (picker2) picker2.refresh();
+      } else {
+        if ($.directInput1) $.directInput1.value = '';
+        if ($.directInput2) $.directInput2.value = '';
+        if ($.result1) $.result1.value = '';
+        if ($.result2) $.result2.value = '';
+      }
 
       updateTeamNames();
       if ($.setupScreen) $.setupScreen.classList.add('hidden');
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
       updateUI();
+      showSectionCaption('score', currentLangUI === 'fa' ? 'بازی شروع شد' : 'Game started', 'success');
+      syncSubmitEnabled();
       saveGameState();
+    }
+
+
+    const __captionTimers = {};
+    let __lastPickerHaptic = 0;
+
+    function showSectionCaption(key, message, variant = 'info') {
+      const el = key === 'setup' ? $.setupCaption : key === 'score' ? $.scoreCaption : $.historyCaption;
+      if (!el) return;
+      el.textContent = message;
+      el.classList.remove('success', 'warning', 'info', 'danger', 'show');
+      el.classList.add(variant);
+      void el.offsetWidth;
+      el.classList.add('show');
+      clearTimeout(__captionTimers[key]);
+      __captionTimers[key] = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    function triggerHaptics(pattern = 10) {
+      try {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+      } catch (e) {}
+    }
+
+    function triggerPickerHaptic(intensity = 'soft') {
+      const now = performance.now();
+      if (now - __lastPickerHaptic < 42) return;
+      __lastPickerHaptic = now;
+      if (intensity === 'medium') triggerHaptics(8);
+      else triggerHaptics(5);
+    }
+
+    async function playSoftTick() {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) {
+          triggerHaptics(8);
+          return;
+        }
+        if (!window.__audioCtx) window.__audioCtx = new Ctx();
+        const ctx = window.__audioCtx;
+        if (ctx.state === 'suspended') {
+          try { await ctx.resume(); } catch (e) {}
+        }
+
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const noise = ctx.createBufferSource();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        const buffer = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * 0.006)), ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.18;
+        }
+        noise.buffer = buffer;
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(2600, now);
+        osc.frequency.exponentialRampToValueAtTime(1700, now + 0.012);
+
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(1400, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.06, now + 0.0025);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
+
+        osc.connect(filter);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        noise.start(now);
+        osc.stop(now + 0.02);
+        noise.stop(now + 0.012);
+
+        triggerHaptics(6);
+      } catch (e) {
+        triggerHaptics(8);
+      }
+    }
+
+    function primeInteractionFeedback() {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        if (!window.__audioCtx) window.__audioCtx = new Ctx();
+        if (window.__audioCtx.state === 'suspended') {
+          window.__audioCtx.resume().catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    function flashRoundResult(delta1, delta2) {
+      if (!$.team1Card || !$.team2Card) return;
+
+      $.team1Card.classList.remove('round-flash-win', 'round-flash-lose');
+      $.team2Card.classList.remove('round-flash-win', 'round-flash-lose');
+      void $.team1Card.offsetWidth;
+
+      if (delta1 > delta2) {
+        $.team1Card.classList.add('round-flash-win');
+        $.team2Card.classList.add('round-flash-lose');
+      } else if (delta2 > delta1) {
+        $.team2Card.classList.add('round-flash-win');
+        $.team1Card.classList.add('round-flash-lose');
+      }
+
+      setTimeout(() => {
+        $.team1Card?.classList.remove('round-flash-win', 'round-flash-lose');
+        $.team2Card?.classList.remove('round-flash-win', 'round-flash-lose');
+      }, 760);
     }
 
     function updateTeamNames() {
@@ -1287,17 +1956,59 @@
 
     function addScore() {
       const t = I18N_UI[currentLangUI];
+
+      if (gameState.gameType === 'shalam') {
+        const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
+        const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
+
+        const score1 = parseShelemScoreValue(raw1);
+        const score2 = parseShelemScoreValue(raw2);
+
+        if (score1 === null || score2 === null) {
+          alert(currentLangUI === 'fa'
+            ? 'در شلم امتیازها باید مضربی از ۵ یا صفر باشند.'
+            : 'In Shelem, scores must be multiples of 5 or zero.');
+          return;
+        }
+
+        gameState.team1Total += score1;
+        gameState.team2Total += score2;
+
+        if (gameState.team1Total < gameState.team2Total) {
+          gameState.lastTurn = 1;
+        } else if (gameState.team2Total < gameState.team1Total) {
+          gameState.lastTurn = 2;
+        }
+
+        gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0 });
+
+        if ($.directInput1) $.directInput1.value = '';
+        if ($.directInput2) $.directInput2.value = '';
+        if ($.result1) $.result1.value = '';
+        if ($.result2) $.result2.value = '';
+
+        updateUI();
+        flashRoundResult(score1, score2);
+        playSoftTick();
+        showSectionCaption('score', currentLangUI === 'fa' ? 'امتیاز ثبت شد' : 'Score saved', 'success');
+        checkWinner();
+        saveGameState();
+        return;
+      }
+
       const raw1 = ($.result1 && $.result1.value) || '';
       const raw2 = ($.result2 && $.result2.value) || '';
       const score1 = raw1.trim() === '' ? 0 : parseInt(raw1, 10);
       const score2 = raw2.trim() === '' ? 0 : parseInt(raw2, 10);
+      const bounds = getScoreBounds();
 
-      if (isNaN(score1) || isNaN(score2) || score1 < -13 || score1 > 13 || score2 < -13 || score2 > 13) {
-        alert(t.alertResultRange(13));
+      if (parseScoreValue(String(score1)) === null || parseScoreValue(String(score2)) === null) {
+        alert(gameState.gameType === 9
+          ? (currentLangUI === 'fa' ? 'در ۹ اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : 'In 9 Ejbar, only 4 to 13 and -4 to -13 are allowed.')
+          : (currentLangUI === 'fa' ? 'در ۷ اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : 'In 7 Ejbar, only 3 to 9 and -3 to -9 are allowed.'));
         return;
       }
 
-      // 9 Ejbar special rule: winning 10 tricks scores 20, losing 10 tricks scores only -10
       let effective1 = score1;
       let effective2 = score2;
       if (gameState.gameType === 9) {
@@ -1332,10 +2043,17 @@
 
       if ($.result1) $.result1.value = '0';
       if ($.result2) $.result2.value = '0';
+      if ($.directInput1) $.directInput1.value = '';
+      if ($.directInput2) $.directInput2.value = '';
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
+      if ($.directInput1) $.directInput1.value = '';
+      if ($.directInput2) $.directInput2.value = '';
 
       updateUI();
+      flashRoundResult(effective1, effective2);
+      playSoftTick();
+      showSectionCaption('score', currentLangUI === 'fa' ? 'دست ثبت شد' : 'Round saved', 'success');
       checkWinner();
       saveGameState();
     }
@@ -1347,23 +2065,86 @@
       let value = raw === '' ? 0 : parseInt(raw, 10);
       if (isNaN(value)) value = 0;
       value += delta;
-      if (value < -13) value = -13;
-      if (value > 13) value = 13;
+      const bounds = getScoreBounds();
+      if (value < bounds.min) value = bounds.min;
+      if (value > bounds.max) value = bounds.max;
       input.value = String(value);
       syncSubmitEnabled();
+    }
+
+
+    let displayedTeam1Total = null;
+    let displayedTeam2Total = null;
+    let animFrame1 = null;
+    let animFrame2 = null;
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function animateTotal(el, from, to, which) {
+      if (!el) return;
+      if (from === null || from === undefined) {
+        el.textContent = String(to);
+        return;
+      }
+      if (from === to) {
+        el.textContent = String(to);
+        return;
+      }
+
+      if (which === 1 && animFrame1) cancelAnimationFrame(animFrame1);
+      if (which === 2 && animFrame2) cancelAnimationFrame(animFrame2);
+
+      el.classList.remove('bump-up', 'bump-down');
+      void el.offsetWidth;
+      el.classList.add(to > from ? 'bump-up' : 'bump-down');
+
+      const diff = to - from;
+      const duration = Math.min(700, Math.max(260, Math.abs(diff) * 35));
+      const start = performance.now();
+
+      function frame(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const val = Math.round(from + diff * easeOutCubic(p));
+        el.textContent = String(val);
+        if (currentLangUI === 'fa') localizeDisplayedNumbersUI();
+
+        if (p < 1) {
+          if (which === 1) animFrame1 = requestAnimationFrame(frame);
+          else animFrame2 = requestAnimationFrame(frame);
+        } else {
+          el.textContent = String(to);
+          setTimeout(() => el.classList.remove('bump-up', 'bump-down'), 180);
+          if (currentLangUI === 'fa') localizeDisplayedNumbersUI();
+        }
+      }
+
+      if (which === 1) animFrame1 = requestAnimationFrame(frame);
+      else animFrame2 = requestAnimationFrame(frame);
     }
 
     function updateUI() {
       enforceForcedBidIfNeeded();
       
-      if ($.team1Total) $.team1Total.textContent = gameState.team1Total * 10;
-      if ($.team2Total) $.team2Total.textContent = gameState.team2Total * 10;
+      const totalMultiplier = gameState.gameType === 'shalam' ? 1 : 10;
+      if ($.team1Total) $.team1Total.textContent = gameState.team1Total * totalMultiplier;
+      if ($.team2Total) $.team2Total.textContent = gameState.team2Total * totalMultiplier;
       if ($.team1Points) $.team1Points.textContent = gameState.team1Points;
       if ($.team2Points) $.team2Points.textContent = gameState.team2Points;
 
       if ($.team1Points && $.team2Points) {
-        $.team1Points.classList.toggle('points-leading', gameState.team1Points > gameState.team2Points);
-        $.team2Points.classList.toggle('points-leading', gameState.team2Points > gameState.team1Points);
+        const isShelem = gameState.gameType === 'shalam';
+        $.team1Points.classList.toggle('hidden', isShelem);
+        $.team2Points.classList.toggle('hidden', isShelem);
+
+        if (isShelem) {
+          $.team1Points.classList.remove('points-leading');
+          $.team2Points.classList.remove('points-leading');
+        } else {
+          $.team1Points.classList.toggle('points-leading', gameState.team1Points > gameState.team2Points);
+          $.team2Points.classList.toggle('points-leading', gameState.team2Points > gameState.team1Points);
+        }
       }
 
       if ($.team1Card && $.team2Card) {
@@ -1411,6 +2192,12 @@
       const t = I18N_UI[currentLangUI];
       const getScoreClass = (score) => score > 0 ? 'win' : (score < 0 ? 'lose' : '');
       const formatScore = (score) => score > 0 ? `+${score}` : String(score);
+      const getShelemHistoryClass = (score) => {
+        if (score >= 800) return 'shelem-gold';
+        if (score >= 400) return 'shelem-green';
+        if (score <= -300) return 'shelem-red';
+        return '';
+      };
       let running1 = 0, running2 = 0;
 
       const rows = gameState.history.map((round, index) => {
@@ -1418,18 +2205,21 @@
         const eff2 = round.effective2 !== undefined ? round.effective2 : round.score2;
         running1 += eff1;
         running2 += eff2;
-        const team1Line = t.runningTotal(running1 * 10);
-        const team2Line = t.runningTotal(running2 * 10);
+        const totalMultiplier = gameState.gameType === 'shalam' ? 1 : 10;
+        const team1Line = t.runningTotal(running1 * totalMultiplier);
+        const team2Line = t.runningTotal(running2 * totalMultiplier);
         const score1 = `<div class="delta ${getScoreClass(eff1)}">${formatScore(eff1)}</div>`;
         const score2 = `<div class="delta ${getScoreClass(eff2)}">${formatScore(eff2)}</div>`;
+        const team1Class = gameState.gameType === 'shalam' ? getShelemHistoryClass(eff1) : (round.points1 > 0 ? 'milestone' : '');
+        const team2Class = gameState.gameType === 'shalam' ? getShelemHistoryClass(eff2) : (round.points2 > 0 ? 'milestone' : '');
 
         return `<div class="row">
-            <div class="mini ${round.points1 > 0 ? 'milestone' : ''}">
+            <div class="mini ${team1Class}">
               <div class="line">${escapeHtml(team1Line)}</div>
               ${score1}
               <div class="roundtag">R${index + 1}</div>
             </div>
-            <div class="mini ${round.points2 > 0 ? 'milestone' : ''}">
+            <div class="mini ${team2Class}">
               <div class="line">${escapeHtml(team2Line)}</div>
               ${score2}
             </div>
@@ -1448,6 +2238,15 @@
     function checkWinner() {
       const t = I18N_UI[currentLangUI];
       const targetScore = getTargetScore();
+      if (gameState.gameType === 'shalam') {
+        if (gameState.team1Total >= targetScore || gameState.team2Total >= targetScore) {
+          const winner = gameState.team1Total >= targetScore && gameState.team1Total >= gameState.team2Total ? gameState.team1Name : gameState.team2Name;
+          const winnerScore = Math.max(gameState.team1Total, gameState.team2Total);
+          showWinner(winner, t.winnerScoreSimple(winnerScore));
+        }
+        return;
+      }
+
       const pointsDiff = Math.abs(gameState.team1Points - gameState.team2Points);
 
       if ((gameState.team1Total >= targetScore || gameState.team2Total >= targetScore) && pointsDiff >= 1) {
@@ -1475,6 +2274,7 @@
       setPickersEnabled(false);
       enablePills(false);
       hideVirtualKeyboard();
+      archiveCurrentGame();
     }
 
     function closeWinner() {
@@ -1555,8 +2355,9 @@
       const newScore1 = parseInt(team1ScoreInput, 10);
       const newScore2 = parseInt(team2ScoreInput, 10);
 
-      if (isNaN(newScore1) || isNaN(newScore2) || newScore1 < -13 || newScore1 > 13 || newScore2 < -13 || newScore2 > 13) {
-        alert(t.alertResultRange(13));
+      const bounds = getScoreBounds();
+      if (isNaN(newScore1) || isNaN(newScore2) || newScore1 < bounds.min || newScore1 > bounds.max || newScore2 < bounds.min || newScore2 > bounds.max) {
+        alert(t.alertResultRange(bounds.max));
         return;
       }
 
@@ -1610,7 +2411,9 @@
     function newGame() {
       const t = I18N_UI[currentLangUI];
       if (!confirm(t.confirmNewGame)) return;
+      archiveCurrentGame();
 
+      triggerHaptics([8, 20, 8]);
       gameState = {
         lastTurn: 1,
         gameType: null,
@@ -1629,6 +2432,8 @@
       setPickersEnabled(true);
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
+      if ($.directInput1) $.directInput1.value = '';
+      if ($.directInput2) $.directInput2.value = '';
 
       closeWinner();
       if ($.gameScreen) $.gameScreen.classList.add('hidden');
@@ -1638,8 +2443,12 @@
       if ($.team1Name) $.team1Name.value = 'Team 1';
       if ($.team2Name) $.team2Name.value = 'Team 2';
       if ($.targetHint) $.targetHint.textContent = 'Target: —';
+      updateScoreInputMode();
 
+      displayedTeam1Total = 0;
+      displayedTeam2Total = 0;
       updateUI();
+      showSectionCaption('setup', currentLangUI === 'fa' ? 'بازی جدید آماده است' : 'Ready for a new game', 'info');
       try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     }
 
@@ -1647,6 +2456,7 @@
       const t = I18N_UI[currentLangUI];
       if (!confirm(t.confirmClearHistory)) return;
 
+      triggerHaptics([10, 30, 10]);
       gameState.history = [];
       gameState.team1Total = 0;
       gameState.team2Total = 0;
@@ -1661,9 +2471,13 @@
       setPickersEnabled(true);
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
+      if ($.directInput1) $.directInput1.value = '';
+      if ($.directInput2) $.directInput2.value = '';
       enablePills(true);
 
       closeWinner();
+      displayedTeam1Total = 0;
+      displayedTeam2Total = 0;
       updateUI();
       saveGameState();
     }
@@ -1671,6 +2485,18 @@
     // ========== EVENT LISTENERS ==========
     function syncSubmitEnabled() {
       if (!$.submitBtn || !$.result1 || !$.result2) return;
+
+      if (gameState.gameType === 'shalam') {
+        const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
+        const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
+        const n1 = parseShelemScoreValue(raw1);
+        const n2 = parseShelemScoreValue(raw2);
+        const ok = raw1 !== '' && raw2 !== '' && n1 !== null && n2 !== null;
+        $.submitBtn.disabled = !ok;
+        $.submitBtn.classList.toggle('is-disabled', !ok);
+        return;
+      }
+
       const n1 = parseScoreValue($.result1.value);
       const n2 = parseScoreValue($.result2.value);
       const ok = n1 !== null && n2 !== null;
@@ -1681,10 +2507,28 @@
     document.addEventListener('DOMContentLoaded', () => {
       initDOMElements();
       loadGameState();
+      renderArchive();
+      if (gameState.gameType !== null) {
+        document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+        const selected = document.querySelector(`[data-type="${gameState.gameType}"]`);
+        if (selected) selected.classList.add('selected');
+      }
       initVirtualKeyboard();
+      if (gameState.gameType === 'shalam') {
+        if ($.directInput1) $.directInput1.value = '';
+        if ($.directInput2) $.directInput2.value = '';
+        if ($.result1) $.result1.value = '';
+        if ($.result2) $.result2.value = '';
+      } else {
+        if (picker1) picker1.refresh();
+        if (picker2) picker2.refresh();
+      }
+
+      document.addEventListener('pointerdown', primeInteractionFeedback, { once: true });
 
       if ($.submitBtn) {
         $.submitBtn.addEventListener('click', () => {
+          primeInteractionFeedback();
           if ($.submitBtn.disabled) return;
           addScore();
           syncSubmitEnabled();
@@ -1692,6 +2536,9 @@
       }
       if ($.result1) $.result1.addEventListener('input', syncSubmitEnabled);
       if ($.result2) $.result2.addEventListener('input', syncSubmitEnabled);
+      if ($.directInput1) $.directInput1.addEventListener('input', syncSubmitEnabled);
+      if ($.directInput2) $.directInput2.addEventListener('input', syncSubmitEnabled);
+      updateScoreInputMode();
       syncSubmitEnabled();
     });
 
@@ -1724,7 +2571,7 @@
       en: {
         title: "Ejbar",
         selectGame: "Select Game Type",
-        choose: "Choose 7 or 9",
+        choose: "Choose 7, 9, or Shelem",
         team1NameLabel: "Team 1 Name",
         team2NameLabel: "Team 2 Name",
         team1Placeholder: "Team 1",
@@ -1743,9 +2590,9 @@
         scorer: "Scorer",
         cardGameScorer: "Card Game Scorer",
         wonWord: "Won",
-        target: (v)=>`Target: ${v} • Need +1 point lead`,
+        target: (v)=> gameState && gameState.gameType === 'shalam' ? `Target: ${v}` : `Target: ${v} • Need +1 point lead`,
         noRounds: "No rounds played yet",
-        labels: { game7: "7 Ejbar", game9: "9 Ejbar" },
+        labels: { game7: "7 Ejbar", game9: "9 Ejbar", shalam: "Shelem" },
         theme: "Theme",
         language: "Language",
         alertSelectGameType: "Please select a game type",
@@ -1753,6 +2600,7 @@
         alertTotalTricks: (total)=>`Total tricks must equal ${total}!`,
         alertBidRange: (min, max)=>`Bids must be between ${min} and ${max}`,
         alertResultRange: (max)=>`Results must be between -${max} and +${max}`,
+        alertShalamTotal: "In Shelem, scores can be entered freely.",
         confirmNewGame: "Start a new game? This will reset everything.",
         confirmClearHistory: "Clear all history? This cannot be undone.",
         promptEditBid: (name, min, max)=>`Edit ${name} Bid (${min}-${max}, or leave empty for no bid):`,
@@ -1760,14 +2608,16 @@
         winWholeGame: "Win whole game",
         kootLoseWholeGame: "Koot (lose whole game)",
         winnerScore: (score, points)=>`Score: ${score} • ${points} points`,
+        winnerScoreSimple: (score)=>`Score: ${score}`,
         runningTotal: (total)=>`Total: ${total}`,
+        promptEditScore: (name)=>`Edit ${name} score:`,
         beforeUnloadMessage: "You have unsaved game data. Are you sure you want to leave?",
         wins: "Wins!"
       },
       fa: {
         title: "اجبار",
         selectGame: "انتخاب نوع بازی",
-        choose: "۷ یا ۹ را انتخاب کنید",
+        choose: "۷، ۹ یا شلم را انتخاب کنید",
         team1NameLabel: "نام تیم ۱",
         team2NameLabel: "نام تیم ۲",
         team1Placeholder: "تیم ۱",
@@ -1786,9 +2636,9 @@
         scorer: "امتیازشمار",
         cardGameScorer: "امتیازشمار بازی کارت",
         wonWord: "برد",
-        target: (v)=>`هدف: ${v} • اختلاف حداقل ۱ پوئن`,
+        target: (v)=> gameState && gameState.gameType === 'shalam' ? `هدف: ${v}` : `هدف: ${v} • اختلاف حداقل ۱ پوئن`,
         noRounds: "هنوز دستی ثبت نشده",
-        labels: { game7: "۷ اجبار", game9: "۹ اجبار" },
+        labels: { game7: "۷ اجبار", game9: "۹ اجبار", shalam: "شلم" },
         theme: "تم",
         language: "زبان",
         alertSelectGameType: "لطفاً نوع بازی را انتخاب کنید",
@@ -1796,6 +2646,7 @@
         alertTotalTricks: (total)=>`مجموع دست‌ها باید برابر ${total} باشد!`,
         alertBidRange: (min, max)=>`حکم باید بین ${min} و ${max} باشد`,
         alertResultRange: (max)=>`نتیجه باید بین -${max} و +${max} باشد`,
+        alertShalamTotal: "در شلم امتیازها باید مضربی از ۵ یا صفر باشند.",
         confirmNewGame: "بازی جدید شروع شود؟ همه چیز بازنشانی می‌شود.",
         confirmClearHistory: "تمام تاریخچه پاک شود؟ این عمل قابل بازگشت نیست.",
         promptEditBid: (name, min, max)=>`ویرایش حکم ${name} (${min}-${max}، یا خالی بگذارید برای بدون حکم):`,
@@ -1803,7 +2654,9 @@
         winWholeGame: "برنده کل بازی",
         kootLoseWholeGame: "کوت (بازنده کل بازی)",
         winnerScore: (score, points)=>`امتیاز: ${score} • ${points} پوئن`,
+        winnerScoreSimple: (score)=>`امتیاز: ${score}`,
         runningTotal: (total)=>`جمع: ${total}`,
+        promptEditScore: (name)=>`ویرایش امتیاز ${name}:`,
         beforeUnloadMessage: "داده‌های بازی ذخیره نشده‌ای دارید. آیا مطمئن هستید که می‌خواهید خارج شوید؟",
         wins: "برنده شد!"
       }
@@ -1911,6 +2764,7 @@
         const type = btn.getAttribute("data-type");
         if(type === "7") btn.textContent = t.labels.game7;
         if(type === "9") btn.textContent = t.labels.game9;
+        if(type === "shalam") btn.textContent = t.labels.shalam;
       });
 
       // Game screen titles
@@ -1960,6 +2814,9 @@
       if(themeBtn){ themeBtn.title = t.theme; themeBtn.setAttribute("aria-label", t.theme); }
       const langBtn = document.querySelector('button[onclick="toggleLang()"]');
       if(langBtn){ langBtn.title = t.language; langBtn.setAttribute("aria-label", t.language); }
+
+      const shalamNote = document.getElementById('shalamNote');
+      if (shalamNote) shalamNote.textContent = currentLangUI === 'fa' ? 'امتیازها باید مضربی از ۵ یا صفر باشند.' : 'Scores must be multiples of 5 or zero.';
 
       // Team-dependent labels (UI only)
       try{
@@ -2017,6 +2874,45 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
 }
 </script>
+
+
+  <div class="overlay" id="archiveOverlay" role="dialog" aria-modal="true" aria-label="Saved Game Details">
+    <div class="victory archive-modal">
+      <div class="archive-modal-head">
+        <div>
+          <div class="archive-modal-kicker" id="archiveOverlayGameType">Saved Game</div>
+          <h3 id="archiveOverlayTitle">Team 1 vs Team 2</h3>
+          <p id="archiveOverlayMeta"></p>
+        </div>
+        <button class="icon-btn" type="button" onclick="closeArchiveDetails()" aria-label="Close">✕</button>
+      </div>
+
+      <div class="archive-summary">
+        <div class="score-card">
+          <div class="score-top">
+            <div class="team-label" id="archiveSummaryTeam1">TEAM 1</div>
+            <div class="badge hidden" id="archiveSummaryPoints1">0</div>
+          </div>
+          <div class="score-value accent-1" id="archiveSummaryScore1">0</div>
+        </div>
+        <div class="score-card">
+          <div class="score-top">
+            <div class="team-label" id="archiveSummaryTeam2">TEAM 2</div>
+            <div class="badge hidden" id="archiveSummaryPoints2">0</div>
+          </div>
+          <div class="score-value accent-2" id="archiveSummaryScore2">0</div>
+        </div>
+      </div>
+
+      <div class="archive-rounds-wrap">
+        <div class="history-header archive-history-header">
+          <div id="archiveHistoryCol1">Team 1</div>
+          <div id="archiveHistoryCol2">Team 2</div>
+        </div>
+        <div id="archiveOverlayBody" class="list"></div>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
