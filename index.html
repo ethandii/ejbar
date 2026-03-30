@@ -601,74 +601,13 @@
       margin-top: 12px;
     }
 
-    .section-caption {
-      margin-top: 10px;
-      min-height: 18px;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text-secondary);
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 180ms ease, transform 180ms ease;
-      pointer-events: none;
-    }
-
-    .section-caption.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .section-caption.success { color: var(--success); }
-    .section-caption.warning { color: var(--warning); }
-    .section-caption.info { color: var(--accent-1); }
-    .section-caption.danger { color: var(--danger); }
-
-    .score-card {
-      transition: border-color 220ms ease, background 220ms ease, transform 220ms ease, box-shadow 220ms ease;
-    }
-
-    .score-card.round-flash-win {
-      animation: roundFlashWin 680ms ease;
-    }
-
-    .score-card.round-flash-lose {
-      animation: roundFlashLose 680ms ease;
-    }
-
-    @keyframes roundFlashWin {
-      0% { box-shadow: 0 0 0 rgba(52,199,89,0); transform: scale(1); }
-      28% { box-shadow: 0 0 0 3px rgba(52,199,89,0.20), 0 16px 28px rgba(52,199,89,0.10); transform: scale(1.012); }
-      100% { box-shadow: 0 0 0 rgba(52,199,89,0); transform: scale(1); }
-    }
-
-    @keyframes roundFlashLose {
-      0% { box-shadow: 0 0 0 rgba(255,59,48,0); transform: scale(1); }
-      28% { box-shadow: 0 0 0 3px rgba(255,59,48,0.16), 0 16px 28px rgba(255,59,48,0.08); transform: scale(0.996); }
-      100% { box-shadow: 0 0 0 rgba(255,59,48,0); transform: scale(1); }
-    }
-
-    .picker-wrap.is-dragging {
-      transform: scale(1.012);
-      box-shadow: 0 16px 34px rgba(0,0,0,0.12);
-      transition: transform 140ms ease, box-shadow 140ms ease;
-    }
-
-    html, body, .header, .section, .score-card, .icon-btn, .lang-toggle, .picker-wrap, .history-item {
-      transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
-    }
-
     .list {
       margin-top: 8px;
-      border-radius: var(--radius-2);
       overflow: hidden;
-      border: 1px solid rgba(60,60,67,0.12);
-      background: rgba(118,118,128,0.08);
-      backdrop-filter: blur(10px);
     }
 
     [data-theme="dark"] .list {
-      border: 1px solid rgba(84,84,88,0.45);
-      background: rgba(118,118,128,0.18);
+      border: 0px;
     }
 
     .row {
@@ -676,7 +615,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       align-items: center;
-      padding: 10px 12px;
+      padding-top: 10px;
       border-bottom: 1px solid rgba(60,60,67,0.08);
     }
 
@@ -803,7 +742,6 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-top: 10px;
     }
 
     .hidden { display: none !important; }
@@ -962,7 +900,6 @@
         <div style="margin-top: 12px;">
           <button class="btn btn-primary" onclick="startGame()">Start Game</button>
         </div>
-        <div class="section-caption" id="setupCaption"></div>
       </div>
 
           </div>
@@ -1021,7 +958,6 @@
         <div class="submit-in-card">
           <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
         </div>
-        <div class="section-caption" id="scoreCaption"></div>
       </div>
 
       <div class="section">
@@ -1035,11 +971,13 @@
         </div>
         <div id="emptyHistory" style="padding: 12px 6px; color: var(--text-secondary); font-weight: 800; font-size: 13px;"></div>
         <div class="list hidden" id="historyList"></div>
+      </div>
+
+      <div class="section" style="border: none; background: none; backdrop-filter: none; padding: 0; margin: 0;">
         <div class="actions">
           <button class="btn btn-secondary" onclick="newGame()">New Game</button>
           <button class="btn btn-danger" onclick="clearHistory()">Clear History</button>
         </div>
-        <div class="section-caption" id="historyCaption"></div>
       </div>
     </div>
   </div>
@@ -1094,9 +1032,6 @@
         targetHint: document.getElementById('targetHint'),
         winnerOverlay: document.getElementById('winnerOverlay'),
         sheetOverlay: document.getElementById('sheetOverlay'),
-        setupCaption: document.getElementById('setupCaption'),
-        scoreCaption: document.getElementById('scoreCaption'),
-        historyCaption: document.getElementById('historyCaption'),
         archiveList: document.getElementById('archiveList'),
         emptyArchive: document.getElementById('emptyArchive'),
         archiveTitle: document.getElementById('archiveTitle'),
@@ -1452,8 +1387,8 @@
 
     function getScoreBounds() {
       if (gameState.gameType === 'shalam') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
-      if (gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 4 };
-      return { min: -9, max: 9, absMin: 3, defaultValue: 3 };
+      if (gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 0 };
+      return { min: -9, max: 9, absMin: 3, defaultValue: 0 };
     }
 
     function parseScoreValue(raw) {
@@ -1464,9 +1399,9 @@
       const bounds = getScoreBounds();
       if (isNaN(n) || n < bounds.min || n > bounds.max) return null;
       if (gameState.gameType !== 'shalam') {
+        if (n === 0) return 0;
         if (n > 0 && n < bounds.absMin) return null;
         if (n < 0 && Math.abs(n) < bounds.absMin) return null;
-        if (n === 0) return null;
       }
       return n;
     }
@@ -1500,6 +1435,7 @@
       }
       const vals = [];
       for (let v = bounds.min; v <= -bounds.absMin; v++) vals.push(v);
+      vals.push(0);
       for (let v = bounds.absMin; v <= bounds.max; v++) vals.push(v);
       return vals;
     }
@@ -1594,7 +1530,6 @@
         state.lastY = state.startY;
         state.lastTime = Date.now();
         state.velocity = 0;
-        state.lastHapticIndex = Math.round(state.visualIndex);
       }
 
       function onMove(e) {
@@ -1609,12 +1544,6 @@
         if (dt > 0) state.velocity = (y - state.lastY) / dt;
         state.lastY = y;
         state.lastTime = now;
-
-        const currentStep = Math.round(state.visualIndex);
-        if (currentStep !== state.lastHapticIndex) {
-          triggerPickerHaptic(Math.abs(state.velocity) > 0.9 ? 'medium' : 'soft');
-          state.lastHapticIndex = currentStep;
-        }
 
         renderAtVisualIndex(0);
         syncSubmitEnabled();
@@ -1632,7 +1561,6 @@
 
         const bounce = Math.max(-8, Math.min(8, -state.velocity * 14));
         applyIndex(finalIndex, true, bounce);
-        triggerPickerHaptic(Math.abs(state.velocity) > 0.9 ? 'medium' : 'soft');
         requestAnimationFrame(() => {
           requestAnimationFrame(() => applyIndex(finalIndex, true, 0));
         });
@@ -1661,7 +1589,6 @@
         e.preventDefault();
         state.index = clampIndex(state.index + (e.deltaY > 0 ? 1 : -1));
         applyIndex(state.index, true);
-        triggerPickerHaptic('soft');
         syncSubmitEnabled();
       }, { passive: false });
 
@@ -1762,7 +1689,6 @@
     function selectGameType(type) {
       gameState.gameType = type;
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
-      triggerHaptics(8);
       const sel = document.querySelector(`[data-type="${type}"]`);
       if (sel) sel.classList.add('selected');
       const t = I18N_UI[currentLangUI];
@@ -1775,18 +1701,8 @@
         if ($.result2) $.result2.value = String(defaultVal);
         if (picker1) picker1.refresh();
         if (picker2) picker2.refresh();
-      } else {
-        if ($.directInput1) $.directInput1.value = '';
-        if ($.directInput2) $.directInput2.value = '';
-        if ($.result1) $.result1.value = '';
-        if ($.result2) $.result2.value = '';
       }
 
-      showSectionCaption('setup', gameState.gameType === 'shalam'
-        ? (currentLangUI === 'fa' ? 'شلم انتخاب شد' : 'Shelem selected')
-        : (gameState.gameType === 9
-          ? (currentLangUI === 'fa' ? '۹ اجبار انتخاب شد' : '9 Ejbar selected')
-          : (currentLangUI === 'fa' ? '۷ اجبار انتخاب شد' : '7 Ejbar selected')), 'info');
       syncSubmitEnabled();
       saveGameState();
     }
@@ -1795,12 +1711,9 @@
       if (!gameState.gameType) {
         const t = I18N_UI[currentLangUI];
         alert(t.alertSelectGameType);
-        showSectionCaption('setup', currentLangUI === 'fa' ? 'اول نوع بازی را انتخاب کن' : 'Select a game type first', 'warning');
         return;
       }
 
-      triggerHaptics(12);
-      primeInteractionFeedback();
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
 
@@ -1810,136 +1723,14 @@
         if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
         if (picker1) picker1.refresh();
         if (picker2) picker2.refresh();
-      } else {
-        if ($.directInput1) $.directInput1.value = '';
-        if ($.directInput2) $.directInput2.value = '';
-        if ($.result1) $.result1.value = '';
-        if ($.result2) $.result2.value = '';
       }
 
       updateTeamNames();
       if ($.setupScreen) $.setupScreen.classList.add('hidden');
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
       updateUI();
-      showSectionCaption('score', currentLangUI === 'fa' ? 'بازی شروع شد' : 'Game started', 'success');
       syncSubmitEnabled();
       saveGameState();
-    }
-
-
-    const __captionTimers = {};
-    let __lastPickerHaptic = 0;
-
-    function showSectionCaption(key, message, variant = 'info') {
-      const el = key === 'setup' ? $.setupCaption : key === 'score' ? $.scoreCaption : $.historyCaption;
-      if (!el) return;
-      el.textContent = message;
-      el.classList.remove('success', 'warning', 'info', 'danger', 'show');
-      el.classList.add(variant);
-      void el.offsetWidth;
-      el.classList.add('show');
-      clearTimeout(__captionTimers[key]);
-      __captionTimers[key] = setTimeout(() => el.classList.remove('show'), 1800);
-    }
-
-    function triggerHaptics(pattern = 10) {
-      try {
-        if (navigator.vibrate) navigator.vibrate(pattern);
-      } catch (e) {}
-    }
-
-    function triggerPickerHaptic(intensity = 'soft') {
-      const now = performance.now();
-      if (now - __lastPickerHaptic < 42) return;
-      __lastPickerHaptic = now;
-      if (intensity === 'medium') triggerHaptics(8);
-      else triggerHaptics(5);
-    }
-
-    async function playSoftTick() {
-      try {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) {
-          triggerHaptics(8);
-          return;
-        }
-        if (!window.__audioCtx) window.__audioCtx = new Ctx();
-        const ctx = window.__audioCtx;
-        if (ctx.state === 'suspended') {
-          try { await ctx.resume(); } catch (e) {}
-        }
-
-        const now = ctx.currentTime;
-
-        const osc = ctx.createOscillator();
-        const noise = ctx.createBufferSource();
-        const filter = ctx.createBiquadFilter();
-        const gain = ctx.createGain();
-
-        const buffer = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * 0.006)), ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < data.length; i++) {
-          data[i] = (Math.random() * 2 - 1) * 0.18;
-        }
-        noise.buffer = buffer;
-
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(2600, now);
-        osc.frequency.exponentialRampToValueAtTime(1700, now + 0.012);
-
-        filter.type = 'highpass';
-        filter.frequency.setValueAtTime(1400, now);
-
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.06, now + 0.0025);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.022);
-
-        osc.connect(filter);
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        noise.start(now);
-        osc.stop(now + 0.02);
-        noise.stop(now + 0.012);
-
-        triggerHaptics(6);
-      } catch (e) {
-        triggerHaptics(8);
-      }
-    }
-
-    function primeInteractionFeedback() {
-      try {
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if (!Ctx) return;
-        if (!window.__audioCtx) window.__audioCtx = new Ctx();
-        if (window.__audioCtx.state === 'suspended') {
-          window.__audioCtx.resume().catch(() => {});
-        }
-      } catch (e) {}
-    }
-
-    function flashRoundResult(delta1, delta2) {
-      if (!$.team1Card || !$.team2Card) return;
-
-      $.team1Card.classList.remove('round-flash-win', 'round-flash-lose');
-      $.team2Card.classList.remove('round-flash-win', 'round-flash-lose');
-      void $.team1Card.offsetWidth;
-
-      if (delta1 > delta2) {
-        $.team1Card.classList.add('round-flash-win');
-        $.team2Card.classList.add('round-flash-lose');
-      } else if (delta2 > delta1) {
-        $.team2Card.classList.add('round-flash-win');
-        $.team1Card.classList.add('round-flash-lose');
-      }
-
-      setTimeout(() => {
-        $.team1Card?.classList.remove('round-flash-win', 'round-flash-lose');
-        $.team2Card?.classList.remove('round-flash-win', 'round-flash-lose');
-      }, 760);
     }
 
     function updateTeamNames() {
@@ -1988,9 +1779,6 @@
         if ($.result2) $.result2.value = '';
 
         updateUI();
-        flashRoundResult(score1, score2);
-        playSoftTick();
-        showSectionCaption('score', currentLangUI === 'fa' ? 'امتیاز ثبت شد' : 'Score saved', 'success');
         checkWinner();
         saveGameState();
         return;
@@ -2051,9 +1839,6 @@
       if ($.directInput2) $.directInput2.value = '';
 
       updateUI();
-      flashRoundResult(effective1, effective2);
-      playSoftTick();
-      showSectionCaption('score', currentLangUI === 'fa' ? 'دست ثبت شد' : 'Round saved', 'success');
       checkWinner();
       saveGameState();
     }
@@ -2413,7 +2198,6 @@
       if (!confirm(t.confirmNewGame)) return;
       archiveCurrentGame();
 
-      triggerHaptics([8, 20, 8]);
       gameState = {
         lastTurn: 1,
         gameType: null,
@@ -2448,7 +2232,6 @@
       displayedTeam1Total = 0;
       displayedTeam2Total = 0;
       updateUI();
-      showSectionCaption('setup', currentLangUI === 'fa' ? 'بازی جدید آماده است' : 'Ready for a new game', 'info');
       try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     }
 
@@ -2456,7 +2239,6 @@
       const t = I18N_UI[currentLangUI];
       if (!confirm(t.confirmClearHistory)) return;
 
-      triggerHaptics([10, 30, 10]);
       gameState.history = [];
       gameState.team1Total = 0;
       gameState.team2Total = 0;
@@ -2524,11 +2306,8 @@
         if (picker2) picker2.refresh();
       }
 
-      document.addEventListener('pointerdown', primeInteractionFeedback, { once: true });
-
       if ($.submitBtn) {
         $.submitBtn.addEventListener('click', () => {
-          primeInteractionFeedback();
           if ($.submitBtn.disabled) return;
           addScore();
           syncSubmitEnabled();
