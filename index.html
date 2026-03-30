@@ -46,9 +46,8 @@
       --orange: #FF9500;
       --shadow-1: 0 1px 1px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.06);
       --shadow-2: 0 10px 30px rgba(0,0,0,0.10);
-      --radius-1: 14px;
-      --radius-2: 18px;
-      --radius-3: 22px;
+      --radius: 32px;
+      --corner-shape: squircle;
       --blur: blur(24px) saturate(180%);
     }
 
@@ -131,7 +130,8 @@
       gap: 8px;
       height: 38px;
       padding: 0 12px;
-      border-radius: 999px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.35);
       backdrop-filter: var(--blur);
@@ -149,7 +149,8 @@
     .icon-btn {
       width: 40px;
       height: 40px;
-      border-radius: 999px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.35);
       backdrop-filter: var(--blur);
@@ -167,7 +168,8 @@
     .section {
       margin: 10px 0 14px;
       padding: 14px;
-      border-radius: var(--radius-3);
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: var(--card);
       backdrop-filter: var(--blur);
@@ -198,7 +200,8 @@
       grid-template-columns: 1fr 1fr;
       background: rgba(118,118,128,0.12);
       border: 1px solid var(--stroke);
-      border-radius: 12px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       padding: 3px;
       gap: 3px;
       margin: 8px 0 14px;
@@ -211,7 +214,8 @@
       border: none;
       background: transparent;
       padding: 10px 12px;
-      border-radius: 10px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       font-size: 14px;
       font-weight: 800;
       color: var(--text);
@@ -233,7 +237,8 @@
     .direct-score-input {
       width: 100%;
       padding: 14px 12px;
-      border-radius: 14px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.62);
       backdrop-filter: var(--blur);
@@ -279,7 +284,8 @@
     .text {
       width: 100%;
       padding: 12px;
-      border-radius: 12px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.62);
       backdrop-filter: var(--blur);
@@ -299,7 +305,8 @@
     .btn {
       width: 100%;
       border: none;
-      border-radius: 14px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       padding: 14px;
       font-size: 16px;
       font-weight: 900;
@@ -344,7 +351,8 @@
     }
 
     .score-card {
-      border-radius: var(--radius-3);
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       padding: 14px 14px 16px;
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.55);
@@ -384,7 +392,8 @@
       width: 28px;
       min-width: 28px;
       padding: 0;
-      border-radius: 9999px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(118,118,128,0.16);
       color: var(--text);
@@ -439,7 +448,8 @@
       position: relative;
       height: 150px;
       overflow: hidden;
-      border-radius: 14px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: rgba(255,255,255,0.55);
       backdrop-filter: var(--blur);
@@ -531,7 +541,8 @@
       left: 8px;
       right: 8px;
       height: 50px;
-      border-radius: 10px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       background: rgba(0,122,255,0.10);
       border: 1.5px solid rgba(0,122,255,0.30);
       pointer-events: none;
@@ -571,7 +582,8 @@
     }
 
       .score-btn {
-        border-radius: 14px;
+        border-radius: var(--radius);
+        corner-shape: var(--corner-shape);
         border: 1px solid var(--stroke);
         background: rgba(118,118,128,0.16);
         color: var(--text);
@@ -624,7 +636,8 @@
     .mini {
       position: relative;
       padding: 10px;
-      border-radius: 12px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid rgba(60,60,67,0.10);
       background: rgba(118,118,128,0.10);
     }
@@ -705,7 +718,8 @@
     .victory {
       width: 100%;
       max-width: 420px;
-      border-radius: 26px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       border: 1px solid var(--stroke);
       background: var(--card);
       backdrop-filter: var(--blur);
@@ -776,7 +790,8 @@
     .sheet-card {
       background: var(--card);
       backdrop-filter: var(--blur);
-      border-radius: 16px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
       overflow: hidden;
       border: 1px solid var(--stroke);
       margin-bottom: 10px;
@@ -867,10 +882,10 @@
         <div class="nav-actions">
           
           <button class="icon-btn" onclick="toggleLang()" aria-label="Language" title="Language">
-            <span style="font-size:18px;">🌐</span>
+            <span style="font-size:18px;padding-top: 3px;">🌐</span>
           </button>
           <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme" title="Theme">
-            <span id="themeIcon" style="font-size:18px;font-weight:900;">☾</span>
+            <span id="themeIcon" style="font-size:18px;padding-top: 3px;font-weight:900;">☾</span>
           </button>
         </div>
       </div>
