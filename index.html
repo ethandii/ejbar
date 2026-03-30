@@ -1080,6 +1080,16 @@
     const STORAGE_KEY = 'ejbarGameStateV3';
     const ARCHIVE_KEY = 'ejbarGameArchiveV1';
 
+    // ========== HAPTIC FEEDBACK ==========
+    const Haptic = {
+      light:   () => navigator.vibrate?.(4),
+      medium:  () => navigator.vibrate?.(10),
+      heavy:   () => navigator.vibrate?.(25),
+      success: () => navigator.vibrate?.([10, 60, 15]),
+      error:   () => navigator.vibrate?.([30, 40, 30]),
+      warning: () => navigator.vibrate?.(20),
+    };
+
     function saveGameState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
@@ -1346,6 +1356,7 @@
     }
 
     function toggleTheme() {
+      Haptic.light();
       const current = document.documentElement.getAttribute('data-theme') || 'light';
       applyTheme(current === 'dark' ? 'light' : 'dark');
     }
@@ -1465,7 +1476,8 @@
         dragging: false,
         velocity: 0,
         lastY: 0,
-        lastTime: 0
+        lastTime: 0,
+        lastHapticIndex: 0
       };
 
       function getValues() {
@@ -1530,6 +1542,7 @@
         state.lastY = state.startY;
         state.lastTime = Date.now();
         state.velocity = 0;
+        state.lastHapticIndex = Math.round(state.visualIndex);
       }
 
       function onMove(e) {
@@ -1538,6 +1551,12 @@
         const y = getY(e);
         const delta = y - state.startY;
         state.visualIndex = clampIndex(state.startIndex - (delta / PICKER_ITEM_H));
+
+        const nearestNow = Math.round(state.visualIndex);
+        if (nearestNow !== state.lastHapticIndex) {
+          state.lastHapticIndex = nearestNow;
+          Haptic.light();
+        }
 
         const now = Date.now();
         const dt = now - state.lastTime;
@@ -1559,6 +1578,7 @@
         state.index = finalIndex;
         state.visualIndex = finalIndex;
 
+        Haptic.light();
         const bounce = Math.max(-8, Math.min(8, -state.velocity * 14));
         applyIndex(finalIndex, true, bounce);
         requestAnimationFrame(() => {
@@ -1588,6 +1608,7 @@
         if (gameState.gameType === 'shalam') return;
         e.preventDefault();
         state.index = clampIndex(state.index + (e.deltaY > 0 ? 1 : -1));
+        Haptic.light();
         applyIndex(state.index, true);
         syncSubmitEnabled();
       }, { passive: false });
@@ -1687,6 +1708,7 @@
 
     // ========== UI UPDATES ==========
     function selectGameType(type) {
+      Haptic.light();
       gameState.gameType = type;
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
       const sel = document.querySelector(`[data-type="${type}"]`);
@@ -1709,10 +1731,12 @@
 
     function startGame() {
       if (!gameState.gameType) {
+        Haptic.error();
         const t = I18N_UI[currentLangUI];
         alert(t.alertSelectGameType);
         return;
       }
+      Haptic.medium();
 
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
@@ -1756,6 +1780,7 @@
         const score2 = parseShelemScoreValue(raw2);
 
         if (score1 === null || score2 === null) {
+          Haptic.error();
           alert(currentLangUI === 'fa'
             ? 'در شلم امتیازها باید مضربی از ۵ یا صفر باشند.'
             : 'In Shelem, scores must be multiples of 5 or zero.');
@@ -1771,6 +1796,7 @@
           gameState.lastTurn = 2;
         }
 
+        Haptic.medium();
         gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0 });
 
         if ($.directInput1) $.directInput1.value = '';
@@ -1791,6 +1817,7 @@
       const bounds = getScoreBounds();
 
       if (parseScoreValue(String(score1)) === null || parseScoreValue(String(score2)) === null) {
+        Haptic.error();
         alert(gameState.gameType === 9
           ? (currentLangUI === 'fa' ? 'در ۹ اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : 'In 9 Ejbar, only 4 to 13 and -4 to -13 are allowed.')
           : (currentLangUI === 'fa' ? 'در ۷ اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : 'In 7 Ejbar, only 3 to 9 and -3 to -9 are allowed.'));
@@ -1827,6 +1854,7 @@
         gameState.lastTurn = 2;
       }
 
+      Haptic.medium();
       gameState.history.push({ score1, score2, effective1, effective2, points1, points2 });
 
       if ($.result1) $.result1.value = '0';
@@ -2043,6 +2071,7 @@
     }
 
     function showWinner(name, message) {
+      Haptic.success();
       gameState.winner = name;
       const winnerNameEl = document.getElementById('winnerName');
       const winnerMessageEl = document.getElementById('winnerMessage');
@@ -2063,11 +2092,13 @@
     }
 
     function closeWinner() {
+      Haptic.light();
       if ($.winnerOverlay) $.winnerOverlay.classList.remove('show');
     }
 
     // ========== HISTORY MANAGEMENT ==========
     function openSheet(idx) {
+      Haptic.heavy();
       sheetIndex = idx;
       if ($.sheetOverlay) $.sheetOverlay.classList.add('show');
       hideVirtualKeyboard();
@@ -2196,6 +2227,7 @@
     function newGame() {
       const t = I18N_UI[currentLangUI];
       if (!confirm(t.confirmNewGame)) return;
+      Haptic.medium();
       archiveCurrentGame();
 
       gameState = {
@@ -2238,6 +2270,7 @@
     function clearHistory() {
       const t = I18N_UI[currentLangUI];
       if (!confirm(t.confirmClearHistory)) return;
+      Haptic.warning();
 
       gameState.history = [];
       gameState.team1Total = 0;
@@ -2617,6 +2650,7 @@
     }
 
     function toggleLang(){
+      Haptic.light();
       applyLangUI(currentLangUI === "en" ? "fa" : "en");
     }
 
