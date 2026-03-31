@@ -251,6 +251,8 @@
       font-weight: 900;
       text-align: center;
       outline: none;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
 
     [data-theme="dark"] .direct-score-input { background: rgba(28,28,30,0.58); }
@@ -462,6 +464,8 @@
       letter-spacing: -1.6px;
       line-height: 1;
       margin-top: 2px;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
 
     .accent-1 { color: var(--blue); }
@@ -665,7 +669,6 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       align-items: center;
-      padding-top: 10px;
       border-bottom: 1px solid rgba(60,60,67,0.08);
     }
 
@@ -724,6 +727,8 @@
       font-size: 18px;
       font-weight: 900;
       letter-spacing: -0.4px;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
 
     .delta.win { color: var(--green); }
@@ -869,7 +874,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      padding: 6px 2px 10px;
+      padding: 6px 2px 2px;
       color: var(--text-tertiary);
       font-weight: 900;
       font-size: 11px;
@@ -951,6 +956,33 @@
     }
 
   </style>
+  <script>
+    (function() {
+      function makeAppleTouchPNG() {
+        const svgLink = document.querySelector('link[rel="icon"]');
+        const appleLink = document.querySelector('link[rel="apple-touch-icon"]');
+        if (!svgLink || !appleLink) return;
+        const img = new Image();
+        img.onload = function() {
+          try {
+            const c = document.createElement('canvas');
+            c.width = c.height = 180;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 180, 180);
+            ctx.drawImage(img, 0, 0, 180, 180);
+            appleLink.href = c.toDataURL('image/png');
+          } catch (e) {}
+        };
+        img.src = svgLink.getAttribute('href');
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', makeAppleTouchPNG);
+      } else {
+        makeAppleTouchPNG();
+      }
+    })();
+  </script>
 </head>
 
 <body>
@@ -1070,7 +1102,6 @@
       <div class="section">
         <div class="section-title">
           <h2>History</h2>
-          <span class="hint">Most recent first</span>
         </div>
         <div class="history-header">
           <div id="historyColTeam1">Team 1</div>
