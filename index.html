@@ -256,17 +256,53 @@
     [data-theme="dark"] .direct-score-input { background: rgba(28,28,30,0.58); }
 
     .direct-score-input:focus {
+      outline: none;
       border-color: rgba(0,122,255,0.55);
-      box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
     }
 
-    .shalam-note {
-      margin-top: 10px;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--text-secondary);
-      text-align: center;
+    .direct-input-row {
+      position: relative;
+      display: block;
     }
+
+    .direct-input-row .direct-score-input {
+      width: 100%;
+      padding-left: 54px;
+    }
+
+    .minus-btn {
+      position: absolute;
+      left: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: calc(100% - 14px);
+      border-radius: calc(var(--radius) * 0.55);
+      corner-shape: var(--corner-shape);
+      border: 0px solid var(--stroke);
+      background: rgba(118,118,128,0.12);
+      color: var(--text-secondary);
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      z-index: 1;
+    }
+
+    [data-theme="dark"] .minus-btn { background: rgba(118,118,128,0.20); }
+
+    .minus-btn.active {
+      background: rgba(255,59,48,0.18);
+      border-color: rgba(255,59,48,0.60);
+      color: var(--red);
+    }
+
+    .minus-btn:active { transform: translateY(-50%) scale(0.93); }
 
     .hidden { display: none !important; }
 
@@ -303,7 +339,6 @@
 
     .text:focus {
       border-color: rgba(0,122,255,0.55);
-      box-shadow: 0 0 0 4px rgba(0,122,255,0.18);
     }
 
     .btn {
@@ -404,7 +439,6 @@
       font-size: 12px;
       font-weight: 900;
       display: inline-flex;
-      align-items: center;
       justify-content: center;
       line-height: 28px;
       box-sizing: border-box;
@@ -609,7 +643,7 @@
       font-size: 11px;
       font-weight: 900;
       color: var(--text-secondary);
-      margin: 0 0 6px 2px;
+      margin: 0 10px 2px;
       display: block;
     }
 
@@ -644,6 +678,9 @@
       corner-shape: var(--corner-shape);
       border: 1px solid rgba(60,60,67,0.10);
       background: rgba(118,118,128,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     [data-theme="dark"] .mini { border-color: rgba(84,84,88,0.40); }
@@ -680,6 +717,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    .mini > .line { margin-bottom: 0; }
 
     .delta {
       font-size: 18px;
@@ -873,6 +912,44 @@
     /* UI-only: RTL history tag ("دست ۱") sits on the left */
     [dir="rtl"] .roundtag { right: auto; left: 10px; text-align: left; }
 
+    .suit-row {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0 4px;
+    }
+
+    .suit-btn {
+      flex: 1;
+      height: 60px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
+      border: 0px solid var(--stroke);
+      background: rgba(118,118,128,0.10);
+      font-size: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .suit-btn:active { transform: scale(0.94); }
+
+    .suit-btn.heart,
+    .suit-btn.diamond,
+    .suit-btn.spade,
+    .suit-btn.club  { color: var(--text); }
+
+    .suit-btn.selected.spade,
+    .suit-btn.selected.club,
+    .suit-btn.selected.heart,
+    .suit-btn.selected.diamond {
+      background: rgb(255 159 10 / 0.30);
+      border-color: rgba(255,59,48,0.55);
+    }
+
   </style>
 </head>
 
@@ -904,16 +981,16 @@
         <div class="segmented segmented-3">
           <button class="seg-btn" data-type="7" onclick="selectGameType(7)">7 Ejbar</button>
           <button class="seg-btn" data-type="9" onclick="selectGameType(9)">9 Ejbar</button>
-          <button class="seg-btn" data-type="shalam" onclick="selectGameType('shalam')">Shelem</button>
+          <button class="seg-btn" data-type="shelem" onclick="selectGameType('shelem')">Shelem</button>
         </div>
         <div class="form-grid">
           <div class="field">
             <label>Team 1 Name</label>
-            <input class="text" id="team1Name" type="text" placeholder="Team 1" value="Team 1" />
+            <input class="text" id="team1Name" type="text" placeholder="Ma" value="Ma" />
           </div>
           <div class="field">
             <label>Team 2 Name</label>
-            <input class="text" id="team2Name" type="text" placeholder="Team 2" value="Team 2" />
+            <input class="text" id="team2Name" type="text" placeholder="Shoma" value="Shoma" />
           </div>
         </div>
         <div style="margin-top: 12px;">
@@ -945,6 +1022,12 @@
             <div class="score-value accent-2" id="team2Total">0</div>
           </div>
         </div>
+        <div class="suit-row hidden">
+          <button class="suit-btn spade" onclick="selectSuit('♠')">♠</button>
+          <button class="suit-btn heart" onclick="selectSuit('♥')">♥</button>
+          <button class="suit-btn diamond" onclick="selectSuit('♦')">♦</button>
+          <button class="suit-btn club" onclick="selectSuit('♣')">♣</button>
+        </div>
         <div class="result-grid">
           <div class="field">
             <span class="rlabel" id="resultLabel1">Team 1 Won</span>
@@ -956,7 +1039,10 @@
               </div>
               <div class="picker-fade picker-fade-bottom"></div>
             </div>
-            <input class="direct-score-input hidden" id="directInput1" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
+            <div class="direct-input-row hidden" id="directInputWrap1">
+              <button class="minus-btn" type="button" id="minusBtn1" onclick="toggleMinus(1)">−</button>
+              <input class="direct-score-input" id="directInput1" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
+            </div>
             <input type="hidden" id="result1" value="0" />
           </div>
           <div class="field">
@@ -969,11 +1055,13 @@
               </div>
               <div class="picker-fade picker-fade-bottom"></div>
             </div>
-            <input class="direct-score-input hidden" id="directInput2" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
+            <div class="direct-input-row hidden" id="directInputWrap2">
+              <button class="minus-btn" type="button" id="minusBtn2" onclick="toggleMinus(2)">−</button>
+              <input class="direct-score-input" id="directInput2" type="text" inputmode="numeric" pattern="-?[0-9]*" autocomplete="off" placeholder="0" />
+            </div>
             <input type="hidden" id="result2" value="0" />
           </div>
         </div>
-        <div class="shalam-note hidden" id="shalamNote">Scores must be multiples of 5 or zero.</div>
         <div class="submit-in-card">
           <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
         </div>
@@ -1044,7 +1132,9 @@
         result2: document.getElementById('result2'),
         directInput1: document.getElementById('directInput1'),
         directInput2: document.getElementById('directInput2'),
-        shalamNote: document.getElementById('shalamNote'),
+        directInputWrap1: document.getElementById('directInputWrap1'),
+        directInputWrap2: document.getElementById('directInputWrap2'),
+        shelemNote: document.getElementById('shelemNote'),
         submitBtn: document.getElementById('submitBtn'),
         historyList: document.getElementById('historyList'),
         emptyHistory: document.getElementById('emptyHistory'),
@@ -1089,7 +1179,7 @@
     // ========== CONSTANTS ==========
     const TARGET_7Ejbar = 350;
     const TARGET_9Ejbar = 550;
-    const TARGET_SHALAM = 1200;
+    const TARGET_shelem = 1200;
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
@@ -1163,7 +1253,7 @@
     }
 
     function getGameTypeLabel(type) {
-      if (type === 'shalam') return 'Shelem';
+      if (type === 'shelem') return 'Shelem';
       if (type === 9 || type === '9') return '9 Ejbar';
       return '7 Ejbar';
     }
@@ -1228,7 +1318,7 @@
       items.forEach(item => {
         const el = document.createElement('div');
         el.className = 'archive-item';
-        const isShelem = item.gameType === 'shalam';
+        const isShelem = item.gameType === 'shelem';
         const gameLabel = getGameTypeLabel(item.gameType);
         const pointsLine = isShelem
           ? ''
@@ -1269,7 +1359,7 @@
       const item = getArchive().find(x => x.id === id);
       if (!item || !$.archiveOverlay || !$.archiveOverlayBody) return;
 
-      const isShelem = item.gameType === 'shalam';
+      const isShelem = item.gameType === 'shelem';
       const gameLabel = getGameTypeLabel(item.gameType);
 
       if ($.archiveOverlayGameType) $.archiveOverlayGameType.textContent = gameLabel;
@@ -1392,7 +1482,7 @@
 
     // ========== GAME LOGIC ==========
     function getTargetScore() {
-      if (gameState.gameType === 'shalam') return TARGET_SHALAM;
+      if (gameState.gameType === 'shelem') return TARGET_shelem;
       return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
     }
 
@@ -1416,7 +1506,7 @@
     const PICKER_COUNT = PICKER_MAX - PICKER_MIN + 1; // 27 items
 
     function getScoreBounds() {
-      if (gameState.gameType === 'shalam') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
+      if (gameState.gameType === 'shelem') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
       if (gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 0 };
       return { min: -9, max: 9, absMin: 3, defaultValue: 0 };
     }
@@ -1428,12 +1518,48 @@
       const n = parseInt(s, 10);
       const bounds = getScoreBounds();
       if (isNaN(n) || n < bounds.min || n > bounds.max) return null;
-      if (gameState.gameType !== 'shalam') {
+      if (gameState.gameType !== 'shelem') {
         if (n === 0) return 0;
         if (n > 0 && n < bounds.absMin) return null;
         if (n < 0 && Math.abs(n) < bounds.absMin) return null;
       }
       return n;
+    }
+
+    let selectedSuit = null;
+
+    function selectSuit(suit) {
+      selectedSuit = (selectedSuit === suit) ? null : suit;
+      document.querySelectorAll('.suit-btn').forEach(btn => {
+        btn.classList.toggle('selected', btn.textContent === selectedSuit);
+      });
+      Haptic.light();
+    }
+
+    function resetSuit() {
+      selectedSuit = null;
+      document.querySelectorAll('.suit-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function updateMinusBtnState(n) {
+      const input = document.getElementById(`directInput${n}`);
+      const btn = document.getElementById(`minusBtn${n}`);
+      if (!btn) return;
+      const isNeg = input && input.value.trimStart().startsWith('-');
+      btn.classList.toggle('active', !!isNeg);
+    }
+
+    function toggleMinus(n) {
+      const input = document.getElementById(`directInput${n}`);
+      if (!input) return;
+      const val = input.value;
+      if (val.trimStart().startsWith('-')) {
+        input.value = val.replace(/^\s*-/, '');
+      } else {
+        input.value = val ? `-${val}` : '-';
+      }
+      updateMinusBtnState(n);
+      syncSubmitEnabled();
     }
 
     function parseShelemScoreValue(raw) {
@@ -1458,7 +1584,7 @@
 
     function getAllowedPickerValues() {
       const bounds = getScoreBounds();
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         const vals = [];
         for (let v = PICKER_MIN; v <= PICKER_MAX; v++) vals.push(v);
         return vals;
@@ -1474,7 +1600,7 @@
       const values = getAllowedPickerValues();
       let html = '';
       for (const v of values) {
-        html += `<div class="picker-item" data-value="${v}">${v > 0 ? '+' + v : v}</div>`;
+        html += `<div class="picker-item" data-value="${v}">${v > 0 ? '' + v : v}</div>`;
       }
       scrollEl.innerHTML = html;
     }
@@ -1552,7 +1678,7 @@
       }
 
       function onStart(e) {
-        if (gameState.gameType === 'shalam') return;
+        if (gameState.gameType === 'shelem') return;
         scrollEl.classList.remove('snapping');
         if (scrollEl.parentElement) scrollEl.parentElement.classList.add('is-dragging');
         state.dragging = true;
@@ -1624,7 +1750,7 @@
       });
 
       scrollEl.parentElement.addEventListener('wheel', (e) => {
-        if (gameState.gameType === 'shalam') return;
+        if (gameState.gameType === 'shelem') return;
         e.preventDefault();
         state.index = clampIndex(state.index + (e.deltaY > 0 ? 1 : -1));
         Haptic.light();
@@ -1659,7 +1785,7 @@
     }
 
     function syncDirectInputsFromHidden() {
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         if ($.directInput1 && $.directInput1.value === '0') $.directInput1.value = '';
         if ($.directInput2 && $.directInput2.value === '0') $.directInput2.value = '';
         return;
@@ -1669,7 +1795,7 @@
     }
 
     function syncHiddenInputsFromDirect() {
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         const raw1 = toEnDigitsUI($.directInput1?.value || '').trim();
         const raw2 = toEnDigitsUI($.directInput2?.value || '').trim();
         const n1 = parseShelemScoreValue(raw1);
@@ -1683,16 +1809,19 @@
     }
 
     function updateScoreInputMode() {
-      const isShalam = gameState.gameType === 'shalam';
+      const isshelem = gameState.gameType === 'shelem';
       const pw1 = document.getElementById('pickerWrap1');
       const pw2 = document.getElementById('pickerWrap2');
-      if (pw1) pw1.classList.toggle('hidden', isShalam);
-      if (pw2) pw2.classList.toggle('hidden', isShalam);
-      if ($.directInput1) $.directInput1.classList.toggle('hidden', !isShalam);
-      if ($.directInput2) $.directInput2.classList.toggle('hidden', !isShalam);
-      if ($.shalamNote) $.shalamNote.classList.toggle('hidden', !isShalam);
+      if (pw1) pw1.classList.toggle('hidden', isshelem);
+      if (pw2) pw2.classList.toggle('hidden', isshelem);
+      if ($.directInputWrap1) $.directInputWrap1.classList.toggle('hidden', !isshelem);
+      if ($.directInputWrap2) $.directInputWrap2.classList.toggle('hidden', !isshelem);
+      if ($.shelemNote) $.shelemNote.classList.toggle('hidden', !isshelem);
+      const suitRowEl = document.querySelector('.suit-row');
+      if (suitRowEl) suitRowEl.classList.toggle('hidden', !isshelem);
+      if (!isshelem) resetSuit();
 
-      if (isShalam) {
+      if (isshelem) {
         if ($.directInput1 && $.directInput1.value === '0') $.directInput1.value = '';
         if ($.directInput2 && $.directInput2.value === '0') $.directInput2.value = '';
       } else {
@@ -1736,7 +1865,7 @@
       if ($.targetHint) $.targetHint.textContent = t.target(getTargetScore());
       updateScoreInputMode();
 
-      if (gameState.gameType !== 'shalam') {
+      if (gameState.gameType !== 'shelem') {
         const defaultVal = getScoreBounds().defaultValue;
         if ($.result1) $.result1.value = String(defaultVal);
         if ($.result2) $.result2.value = String(defaultVal);
@@ -1760,7 +1889,7 @@
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
 
-      if (gameState.gameType !== 'shalam') {
+      if (gameState.gameType !== 'shelem') {
         const defaultVal = getScoreBounds().defaultValue;
         if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
         if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
@@ -1791,7 +1920,7 @@
     function addScore() {
       const t = I18N_UI[currentLangUI];
 
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
         const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
 
@@ -1816,10 +1945,12 @@
         }
 
         Haptic.medium();
-        gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0 });
+        gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0, suit: selectedSuit });
 
         if ($.directInput1) $.directInput1.value = '';
         if ($.directInput2) $.directInput2.value = '';
+        updateMinusBtnState(1); updateMinusBtnState(2);
+        resetSuit();
         if ($.result1) $.result1.value = '';
         if ($.result2) $.result2.value = '';
 
@@ -1874,7 +2005,7 @@
       }
 
       Haptic.medium();
-      gameState.history.push({ score1, score2, effective1, effective2, points1, points2 });
+      gameState.history.push({ score1, score2, effective1, effective2, points1, points2, suit: selectedSuit });
 
       if ($.result1) $.result1.value = '0';
       if ($.result2) $.result2.value = '0';
@@ -1884,6 +2015,8 @@
       if (picker2) picker2.setValue(0);
       if ($.directInput1) $.directInput1.value = '';
       if ($.directInput2) $.directInput2.value = '';
+      updateMinusBtnState(1); updateMinusBtnState(2);
+      resetSuit();
 
       updateUI();
       checkWinner();
@@ -1959,14 +2092,14 @@
     function updateUI() {
       enforceForcedBidIfNeeded();
       
-      const totalMultiplier = gameState.gameType === 'shalam' ? 1 : 10;
+      const totalMultiplier = gameState.gameType === 'shelem' ? 1 : 10;
       if ($.team1Total) $.team1Total.textContent = gameState.team1Total * totalMultiplier;
       if ($.team2Total) $.team2Total.textContent = gameState.team2Total * totalMultiplier;
       if ($.team1Points) $.team1Points.textContent = gameState.team1Points;
       if ($.team2Points) $.team2Points.textContent = gameState.team2Points;
 
       if ($.team1Points && $.team2Points) {
-        const isShelem = gameState.gameType === 'shalam';
+        const isShelem = gameState.gameType === 'shelem';
         $.team1Points.classList.toggle('hidden', isShelem);
         $.team2Points.classList.toggle('hidden', isShelem);
 
@@ -2037,23 +2170,25 @@
         const eff2 = round.effective2 !== undefined ? round.effective2 : round.score2;
         running1 += eff1;
         running2 += eff2;
-        const totalMultiplier = gameState.gameType === 'shalam' ? 1 : 10;
-        const team1Line = t.runningTotal(running1 * totalMultiplier);
-        const team2Line = t.runningTotal(running2 * totalMultiplier);
+        const totalMultiplier = gameState.gameType === 'shelem' ? 1 : 10;
+        const total1 = running1 * totalMultiplier;
+        const total2 = running2 * totalMultiplier;
+        const suitTag = round.suit ? ` <span style="font-size:16px;vertical-align:-1px;">${round.suit}</span>` : '';
+        const roundLabel1 = currentLangUI === 'fa' ? `دست ${index + 1}: ${total1}${suitTag}` : `R${index + 1}: ${total1}${suitTag}`;
+        const roundLabel2 = currentLangUI === 'fa' ? `دست ${index + 1}: ${total2}${suitTag}` : `R${index + 1}: ${total2}${suitTag}`;
         const score1 = `<div class="delta ${getScoreClass(eff1)}">${formatScore(eff1)}</div>`;
         const score2 = `<div class="delta ${getScoreClass(eff2)}">${formatScore(eff2)}</div>`;
-        const team1Class = gameState.gameType === 'shalam' ? getShelemHistoryClass(eff1) : (round.points1 > 0 ? 'milestone' : '');
-        const team2Class = gameState.gameType === 'shalam' ? getShelemHistoryClass(eff2) : (round.points2 > 0 ? 'milestone' : '');
+        const team1Class = gameState.gameType === 'shelem' ? getShelemHistoryClass(eff1) : (round.points1 > 0 ? 'milestone' : '');
+        const team2Class = gameState.gameType === 'shelem' ? getShelemHistoryClass(eff2) : (round.points2 > 0 ? 'milestone' : '');
 
         return `<div class="row">
             <div class="mini ${team1Class}">
-              <div class="line">${escapeHtml(team1Line)}</div>
               ${score1}
-              <div class="roundtag">R${index + 1}</div>
+              <div class="line">${roundLabel1}</div>
             </div>
             <div class="mini ${team2Class}">
-              <div class="line">${escapeHtml(team2Line)}</div>
               ${score2}
+              <div class="line">${roundLabel2}</div>
             </div>
           </div>`;
       }).reverse().join('');
@@ -2070,7 +2205,7 @@
     function checkWinner() {
       const t = I18N_UI[currentLangUI];
       const targetScore = getTargetScore();
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         if (gameState.team1Total >= targetScore || gameState.team2Total >= targetScore) {
           const winner = gameState.team1Total >= targetScore && gameState.team1Total >= gameState.team2Total ? gameState.team1Name : gameState.team2Name;
           const winnerScore = Math.max(gameState.team1Total, gameState.team2Total);
@@ -2269,6 +2404,8 @@
       if (picker2) picker2.setValue(0);
       if ($.directInput1) $.directInput1.value = '';
       if ($.directInput2) $.directInput2.value = '';
+      updateMinusBtnState(1); updateMinusBtnState(2);
+      resetSuit();
 
       closeWinner();
       if ($.gameScreen) $.gameScreen.classList.add('hidden');
@@ -2307,6 +2444,8 @@
       if (picker2) picker2.setValue(0);
       if ($.directInput1) $.directInput1.value = '';
       if ($.directInput2) $.directInput2.value = '';
+      updateMinusBtnState(1); updateMinusBtnState(2);
+      resetSuit();
       enablePills(true);
 
       closeWinner();
@@ -2320,7 +2459,7 @@
     function syncSubmitEnabled() {
       if (!$.submitBtn || !$.result1 || !$.result2) return;
 
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
         const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
         const n1 = parseShelemScoreValue(raw1);
@@ -2348,9 +2487,10 @@
         if (selected) selected.classList.add('selected');
       }
       initVirtualKeyboard();
-      if (gameState.gameType === 'shalam') {
+      if (gameState.gameType === 'shelem') {
         if ($.directInput1) $.directInput1.value = '';
         if ($.directInput2) $.directInput2.value = '';
+        updateMinusBtnState(1); updateMinusBtnState(2);
         if ($.result1) $.result1.value = '';
         if ($.result2) $.result2.value = '';
       } else {
@@ -2367,8 +2507,8 @@
       }
       if ($.result1) $.result1.addEventListener('input', syncSubmitEnabled);
       if ($.result2) $.result2.addEventListener('input', syncSubmitEnabled);
-      if ($.directInput1) $.directInput1.addEventListener('input', syncSubmitEnabled);
-      if ($.directInput2) $.directInput2.addEventListener('input', syncSubmitEnabled);
+      if ($.directInput1) $.directInput1.addEventListener('input', () => { syncSubmitEnabled(); updateMinusBtnState(1); });
+      if ($.directInput2) $.directInput2.addEventListener('input', () => { syncSubmitEnabled(); updateMinusBtnState(2); });
       updateScoreInputMode();
       syncSubmitEnabled();
     });
@@ -2421,9 +2561,9 @@
         scorer: "Scorer",
         cardGameScorer: "Card Game Scorer",
         wonWord: "Won",
-        target: (v)=> gameState && gameState.gameType === 'shalam' ? `Target: ${v}` : `Target: ${v} • Need +1 point lead`,
+        target: (v)=> gameState && gameState.gameType === 'shelem' ? `Target: ${v}` : `Target: ${v} • Need +1 point lead`,
         noRounds: "No rounds played yet",
-        labels: { game7: "7 Ejbar", game9: "9 Ejbar", shalam: "Shelem" },
+        labels: { game7: "7 Ejbar", game9: "9 Ejbar", shelem: "Shelem" },
         theme: "Theme",
         language: "Language",
         alertSelectGameType: "Please select a game type",
@@ -2431,7 +2571,7 @@
         alertTotalTricks: (total)=>`Total tricks must equal ${total}!`,
         alertBidRange: (min, max)=>`Bids must be between ${min} and ${max}`,
         alertResultRange: (max)=>`Results must be between -${max} and +${max}`,
-        alertShalamTotal: "In Shelem, scores can be entered freely.",
+        alertshelemTotal: "In Shelem, scores can be entered freely.",
         confirmNewGame: "Start a new game? This will reset everything.",
         confirmClearHistory: "Clear all history? This cannot be undone.",
         promptEditBid: (name, min, max)=>`Edit ${name} Bid (${min}-${max}, or leave empty for no bid):`,
@@ -2467,9 +2607,9 @@
         scorer: "امتیازشمار",
         cardGameScorer: "امتیازشمار بازی کارت",
         wonWord: "برد",
-        target: (v)=> gameState && gameState.gameType === 'shalam' ? `هدف: ${v}` : `هدف: ${v} • اختلاف حداقل ۱ پوئن`,
+        target: (v)=> gameState && gameState.gameType === 'shelem' ? `هدف: ${v}` : `هدف: ${v} • اختلاف حداقل ۱ پوئن`,
         noRounds: "هنوز دستی ثبت نشده",
-        labels: { game7: "۷ اجبار", game9: "۹ اجبار", shalam: "شلم" },
+        labels: { game7: "۷ اجبار", game9: "۹ اجبار", shelem: "شلم" },
         theme: "تم",
         language: "زبان",
         alertSelectGameType: "لطفاً نوع بازی را انتخاب کنید",
@@ -2477,7 +2617,7 @@
         alertTotalTricks: (total)=>`مجموع دست‌ها باید برابر ${total} باشد!`,
         alertBidRange: (min, max)=>`حکم باید بین ${min} و ${max} باشد`,
         alertResultRange: (max)=>`نتیجه باید بین -${max} و +${max} باشد`,
-        alertShalamTotal: "در شلم امتیازها باید مضربی از ۵ یا صفر باشند.",
+        alertshelemTotal: "در شلم امتیازها باید مضربی از ۵ یا صفر باشند.",
         confirmNewGame: "بازی جدید شروع شود؟ همه چیز بازنشانی می‌شود.",
         confirmClearHistory: "تمام تاریخچه پاک شود؟ این عمل قابل بازگشت نیست.",
         promptEditBid: (name, min, max)=>`ویرایش حکم ${name} (${min}-${max}، یا خالی بگذارید برای بدون حکم):`,
@@ -2595,7 +2735,7 @@
         const type = btn.getAttribute("data-type");
         if(type === "7") btn.textContent = t.labels.game7;
         if(type === "9") btn.textContent = t.labels.game9;
-        if(type === "shalam") btn.textContent = t.labels.shalam;
+        if(type === "shelem") btn.textContent = t.labels.shelem;
       });
 
       // Game screen titles
@@ -2646,8 +2786,8 @@
       const langBtn = document.querySelector('button[onclick="toggleLang()"]');
       if(langBtn){ langBtn.title = t.language; langBtn.setAttribute("aria-label", t.language); }
 
-      const shalamNote = document.getElementById('shalamNote');
-      if (shalamNote) shalamNote.textContent = currentLangUI === 'fa' ? 'امتیازها باید مضربی از ۵ یا صفر باشند.' : 'Scores must be multiples of 5 or zero.';
+      const shelemNote = document.getElementById('shelemNote');
+      if (shelemNote) shelemNote.textContent = currentLangUI === 'fa' ? 'امتیازها باید مضربی از ۵ یا صفر باشند.' : 'Scores must be multiples of 5 or zero.';
 
       // Team-dependent labels (UI only)
       try{
