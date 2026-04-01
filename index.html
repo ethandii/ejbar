@@ -670,7 +670,6 @@
       gap: 10px;
       align-items: center;
       border-bottom: 1px solid rgba(60,60,67,0.08);
-      padding-top: 10px;
     }
 
     .row:last-child { border-bottom: none; }
@@ -981,6 +980,73 @@
         document.addEventListener('DOMContentLoaded', makeAppleTouchPNG);
       } else {
         makeAppleTouchPNG();
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      // Only run on iOS where corner-shape: squircle is not natively supported
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (!isIOS) return;
+      if (CSS.supports('corner-shape', 'squircle')) return;
+
+      // Mirror what @supports (corner-shape: squircle) does natively
+      document.documentElement.style.setProperty('--brm', '2');
+
+      // Squircle path: curve starts 1.35× the radius from each corner
+      // giving the characteristic smooth, gradual corner transition
+      function squirclePath(w, h, r) {
+        var s = Math.min(r * 1.35, w / 2, h / 2);
+        var c = s * 0.5523; // circle-tangent bezier factor
+        return (
+          'M ' + s + ' 0 L ' + (w - s) + ' 0 ' +
+          'C ' + (w - c) + ' 0 ' + w + ' ' + c + ' ' + w + ' ' + s + ' ' +
+          'L ' + w + ' ' + (h - s) + ' ' +
+          'C ' + w + ' ' + (h - c) + ' ' + (w - c) + ' ' + h + ' ' + (w - s) + ' ' + h + ' ' +
+          'L ' + s + ' ' + h + ' ' +
+          'C ' + c + ' ' + h + ' 0 ' + (h - c) + ' 0 ' + (h - s) + ' ' +
+          'L 0 ' + s + ' ' +
+          'C 0 ' + c + ' ' + c + ' 0 ' + s + ' 0 Z'
+        );
+      }
+
+      function applySquircle(el) {
+        var r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+        if (!r) { el.style.clipPath = ''; return; }
+        var w = el.offsetWidth, h = el.offsetHeight;
+        if (!w || !h) return;
+        el.style.clipPath = "path('" + squirclePath(w, h, r) + "')";
+      }
+
+      var seen = new WeakSet();
+      var ro = new ResizeObserver(function (entries) {
+        entries.forEach(function (e) { applySquircle(e.target); });
+      });
+
+      function scanAndApply() {
+        document.querySelectorAll('*').forEach(function (el) {
+          if (seen.has(el)) return;
+          var r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+          if (r > 0) {
+            seen.add(el);
+            ro.observe(el);
+            applySquircle(el);
+          }
+        });
+      }
+
+      function init() {
+        scanAndApply();
+        new MutationObserver(scanAndApply).observe(document.body, {
+          childList: true, subtree: true
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
       }
     })();
   </script>
