@@ -992,21 +992,48 @@
 
       document.documentElement.style.setProperty('--brm', '2');
 
+      // 2 bezier segments per corner — each corner midpoint sits close to the
+      // geometric corner vertex, giving the characteristic squircle "tight corner
+      // with smooth transition from straight edge" look (n ≈ 4 superellipse).
+      //
+      // Coefficients derived so the midpoint M is at 0.159 × s from each edge
+      // (n=4 superellipse midpoint at t=π/4), which is noticeably closer to the
+      // corner than a circle (0.293 × s), producing a visibly squircle shape.
+      //
+      //  f1 = 0.715  first control handle length along entering edge
+      //  f2 = 0.265  second control, tangential component
+      //  f3 = 0.053  second control, normal component
+      //  fm = 0.159  midpoint distance from each edge
       function squirclePath(w, h, r) {
-        // Cap s so each side always retains at least 30% straight edge.
-        // Without this cap, short elements become ovals.
-        var s = Math.min(r * 1.35, w * 0.35, h * 0.35);
-        var c = s * 0.5523;
-        return (
-          'M ' + s + ' 0 L ' + (w - s) + ' 0 ' +
-          'C ' + (w - c) + ' 0 ' + w + ' ' + c + ' ' + w + ' ' + s + ' ' +
-          'L ' + w + ' ' + (h - s) + ' ' +
-          'C ' + w + ' ' + (h - c) + ' ' + (w - c) + ' ' + h + ' ' + (w - s) + ' ' + h + ' ' +
-          'L ' + s + ' ' + h + ' ' +
-          'C ' + c + ' ' + h + ' 0 ' + (h - c) + ' 0 ' + (h - s) + ' ' +
-          'L 0 ' + s + ' ' +
-          'C 0 ' + c + ' ' + c + ' 0 ' + s + ' 0 Z'
-        );
+        // Elements close to pill-shaped: let border-radius handle them.
+        if (r * 2 >= Math.min(w, h) * 0.95) return null;
+        // Cap to leave ≥ 20% straight edge on every side.
+        var s  = Math.min(r, w * 0.4, h * 0.4);
+        var f1 = 0.715, f2 = 0.265, f3 = 0.053, fm = 0.159;
+
+        // Build two cubic bezier segments for one corner.
+        // cx,cy = corner vertex; ex1,ey1 = entering edge direction;
+        // ex2,ey2 = exiting edge direction.
+        function seg(cx, cy, ex1, ey1, ex2, ey2) {
+          var p = function(ax, ay) { return (cx+ax).toFixed(2)+' '+(cy+ay).toFixed(2); };
+          return (
+            'C ' + p(ex1*f1*s, ey1*f1*s) +
+            ' '  + p(ex1*f2*s + ex2*f3*s, ey1*f2*s + ey2*f3*s) +
+            ' '  + p(ex1*fm*s + ex2*fm*s, ey1*fm*s + ey2*fm*s) +
+            ' C '+ p(ex1*f3*s + ex2*f2*s, ey1*f3*s + ey2*f2*s) +
+            ' '  + p(ex2*f1*s, ey2*f1*s) +
+            ' '  + p(ex2*s, ey2*s)
+          );
+        }
+
+        return [
+          'M', s, 0,
+          'L', w-s, 0,        seg(w, 0,  -1, 0,  0, 1),
+          'L', w, h-s,        seg(w, h,   0,-1, -1, 0),
+          'L', s, h,          seg(0, h,   1, 0,  0,-1),
+          'L', 0, s,          seg(0, 0,   0, 1,  1, 0),
+          'Z'
+        ].join(' ');
       }
 
       function applySquircle(el) {
@@ -1014,7 +1041,8 @@
         if (!r) { el.style.clipPath = ''; return; }
         var w = el.offsetWidth, h = el.offsetHeight;
         if (!w || !h) return;
-        el.style.clipPath = "path('" + squirclePath(w, h, r) + "')";
+        var d = squirclePath(w, h, r);
+        el.style.clipPath = d ? "path('" + d + "')" : '';
       }
 
       var seen = new WeakSet();
