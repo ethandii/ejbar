@@ -985,20 +985,18 @@
   </script>
   <script>
     (function () {
-      // Only run on iOS where corner-shape: squircle is not natively supported
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
         (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       if (!isIOS) return;
       if (CSS.supports('corner-shape', 'squircle')) return;
 
-      // Mirror what @supports (corner-shape: squircle) does natively
       document.documentElement.style.setProperty('--brm', '2');
 
-      // Squircle path: curve starts 1.35× the radius from each corner
-      // giving the characteristic smooth, gradual corner transition
       function squirclePath(w, h, r) {
-        var s = Math.min(r * 1.35, w / 2, h / 2);
-        var c = s * 0.5523; // circle-tangent bezier factor
+        // Cap s so each side always retains at least 30% straight edge.
+        // Without this cap, short elements become ovals.
+        var s = Math.min(r * 1.35, w * 0.35, h * 0.35);
+        var c = s * 0.5523;
         return (
           'M ' + s + ' 0 L ' + (w - s) + ' 0 ' +
           'C ' + (w - c) + ' 0 ' + w + ' ' + c + ' ' + w + ' ' + s + ' ' +
