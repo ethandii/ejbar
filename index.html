@@ -990,7 +990,13 @@
       if (!isIOS) return;
       if (CSS.supports('corner-shape', 'squircle')) return;
 
-      document.documentElement.style.setProperty('--brm', '2');
+      var canPathClip = CSS.supports('clip-path', "path('M0 0 L1 0 L1 1 Z')");
+      var canWebkitPathClip = CSS.supports('-webkit-clip-path', "path('M0 0 L1 0 L1 1 Z')");
+      var canPolygonClip = CSS.supports('clip-path', 'polygon(0 0,100% 0,100% 100%,0 100%)') ||
+        CSS.supports('-webkit-clip-path', 'polygon(0 0,100% 0,100% 100%,0 100%)');
+      var canSquircleClip = canPathClip || canWebkitPathClip || canPolygonClip;
+      document.documentElement.style.setProperty('--brm', canSquircleClip ? '2' : '1');
+      if (!canSquircleClip) return;
 
       // 2 bezier segments per corner — each corner midpoint sits close to the
       // geometric corner vertex, giving the characteristic squircle "tight corner
@@ -1007,8 +1013,8 @@
       function squirclePath(w, h, r) {
         // Force squircle for all rounded elements (no pill fallback).
         // Cap to leave ≥ 20% straight edge on every side.
-        var s  = Math.min(r, w * 0.36, h * 0.36);
-        var f1 = 0.600, f2 = 0.180, f3 = 0.030, fm = 0.090;
+        var s  = Math.min(r, w * 0.32, h * 0.32);
+        var f1 = 0.560, f2 = 0.140, f3 = 0.020, fm = 0.070;
 
         // Build two cubic bezier segments for one corner.
         // cx,cy = corner vertex; ex1,ey1 = entering edge direction;
@@ -1035,13 +1041,69 @@
         ].join(' ');
       }
 
+      function squirclePolygon(w, h, r) {
+        var s = Math.min(r, w * 0.32, h * 0.32);
+        var n = 12;
+        var pts = [];
+        var q = 4;
+
+        function yFromX(x) {
+          return s * Math.pow(Math.max(0, 1 - Math.pow(x / s, q)), 1 / q);
+        }
+        function push(x, y) {
+          pts.push(x.toFixed(2) + 'px ' + y.toFixed(2) + 'px');
+        }
+
+        push(s, 0);
+        push(w - s, 0);
+        for (var i = 1; i <= n; i++) {
+          var u1 = i / n;
+          var x1 = s * (1 - u1);
+          var y1 = yFromX(x1);
+          push(w - x1, y1);
+        }
+
+        push(w, h - s);
+        for (var j = 1; j <= n; j++) {
+          var u2 = j / n;
+          var x2 = s * (1 - u2);
+          var y2 = yFromX(x2);
+          push(w - y2, h - x2);
+        }
+
+        push(s, h);
+        for (var k = 1; k <= n; k++) {
+          var u3 = k / n;
+          var x3 = s * (1 - u3);
+          var y3 = yFromX(x3);
+          push(x3, h - y3);
+        }
+
+        push(0, s);
+        for (var m = 1; m <= n; m++) {
+          var u4 = m / n;
+          var x4 = s * (1 - u4);
+          var y4 = yFromX(x4);
+          push(y4, x4);
+        }
+
+        return 'polygon(' + pts.join(', ') + ')';
+      }
+
       function applySquircle(el) {
         var r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-        if (!r) { el.style.clipPath = ''; return; }
+        if (!r) { el.style.clipPath = ''; el.style.webkitClipPath = ''; return; }
         var w = el.offsetWidth, h = el.offsetHeight;
         if (!w || !h) return;
-        var d = squirclePath(w, h, r);
-        el.style.clipPath = d ? "path('" + d + "')" : '';
+        var clip = '';
+        if (canPathClip || canWebkitPathClip) {
+          var d = squirclePath(w, h, r);
+          clip = d ? "path('" + d + "')" : '';
+        } else {
+          clip = squirclePolygon(w, h, r);
+        }
+        el.style.clipPath = clip;
+        el.style.webkitClipPath = clip;
       }
 
       var seen = new WeakSet();
