@@ -1005,11 +1005,10 @@
       //  f3 = 0.053  second control, normal component
       //  fm = 0.159  midpoint distance from each edge
       function squirclePath(w, h, r) {
-        // Elements close to pill-shaped: let border-radius handle them.
-        if (r * 2 >= Math.min(w, h) * 0.99) return null;
+        // Force squircle for all rounded elements (no pill fallback).
         // Cap to leave ≥ 20% straight edge on every side.
-        var s  = Math.min(r, w * 0.4, h * 0.4);
-        var f1 = 0.660, f2 = 0.220, f3 = 0.040, fm = 0.118;
+        var s  = Math.min(r, w * 0.36, h * 0.36);
+        var f1 = 0.600, f2 = 0.180, f3 = 0.030, fm = 0.090;
 
         // Build two cubic bezier segments for one corner.
         // cx,cy = corner vertex; ex1,ey1 = entering edge direction;
