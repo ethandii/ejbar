@@ -990,10 +990,26 @@
       if (!isIOS) return;
       if (CSS.supports('corner-shape', 'squircle')) return;
 
-      var canPathClip = CSS.supports('clip-path', "path('M0 0 L1 0 L1 1 Z')");
-      var canWebkitPathClip = CSS.supports('-webkit-clip-path', "path('M0 0 L1 0 L1 1 Z')");
-      var canPolygonClip = CSS.supports('clip-path', 'polygon(0 0,100% 0,100% 100%,0 100%)') ||
-        CSS.supports('-webkit-clip-path', 'polygon(0 0,100% 0,100% 100%,0 100%)');
+      function probeClipSupport(value) {
+        var probe = document.createElement('div');
+        probe.style.position = 'absolute';
+        probe.style.width = '1px';
+        probe.style.height = '1px';
+        probe.style.left = '-9999px';
+        probe.style.top = '-9999px';
+        probe.style.clipPath = value;
+        probe.style.webkitClipPath = value;
+        document.documentElement.appendChild(probe);
+        var cs = getComputedStyle(probe);
+        var ok = (cs.clipPath && cs.clipPath !== 'none') ||
+          (cs.webkitClipPath && cs.webkitClipPath !== 'none');
+        probe.remove();
+        return ok;
+      }
+
+      var canPathClip = probeClipSupport("path('M0 0 L1 0 L1 1 Z')");
+      var canPolygonClip = probeClipSupport('polygon(0 0,100% 0,100% 100%,0 100%)');
+      var canWebkitPathClip = canPathClip;
       var canSquircleClip = canPathClip || canWebkitPathClip || canPolygonClip;
       document.documentElement.style.setProperty('--brm', canSquircleClip ? '2' : '1');
       if (!canSquircleClip) return;
@@ -1013,7 +1029,7 @@
       function squirclePath(w, h, r) {
         // Force squircle for all rounded elements (no pill fallback).
         // Cap to leave ≥ 20% straight edge on every side.
-        var s  = Math.min(r, w * 0.32, h * 0.32);
+        var s  = Math.min(r, w * 0.34, h * 0.34);
         var f1 = 0.560, f2 = 0.140, f3 = 0.020, fm = 0.070;
 
         // Build two cubic bezier segments for one corner.
@@ -1042,7 +1058,7 @@
       }
 
       function squirclePolygon(w, h, r) {
-        var s = Math.min(r, w * 0.32, h * 0.32);
+        var s = Math.min(r, w * 0.34, h * 0.34);
         var n = 12;
         var pts = [];
         var q = 4;
