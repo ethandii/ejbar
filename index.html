@@ -962,6 +962,16 @@
       }
     })();
   </script>
+  <script>
+    (function () {
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      if (!isIOS) return;
+      // On iOS, corner-shape is not supported so it is silently ignored.
+      // Set --brm:2 so border-radius matches the Android squircle size (44px).
+      document.documentElement.style.setProperty('--brm', '0.75');
+    })();
+  </script>
 </head>
 
 <body>
@@ -1284,15 +1294,8 @@
 
     const STORAGE_KEY = 'ejbarGameStateV3';
     const ARCHIVE_KEY = 'ejbarGameArchiveV1';
-    // Storage Keys for browser localStorage:
-    // STORAGE_KEY: Current game session (auto-loaded when page opens)
-    // ARCHIVE_KEY: Completed games history (viewable in archive panel)
-    // Version numbers prevent conflicts if storage format changes
 
     // ========== HAPTIC FEEDBACK ==========
-    // Provides tactile feedback for user actions (on devices that support vibration)
-    // light/medium/heavy: Simple vibrations of increasing intensity
-    // success/error/warning: Pattern vibrations for specific outcomes
     const Haptic = {
       light:   () => navigator.vibrate?.(4),
       medium:  () => navigator.vibrate?.(10),
@@ -1303,9 +1306,6 @@
     };
 
     function saveGameState() {
-      // Auto-saves current game to browser storage
-      // Called after: new game, score entry, history edit, game type change
-      // Allows resuming game if page is refreshed
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
       } catch (e) {
@@ -1314,9 +1314,6 @@
     }
 
     function loadGameState() {
-      // Loads saved game from storage when page opens
-      // Restores: gameType, team names, scores, history
-      // If no saved game, does nothing (user starts fresh)
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
@@ -1344,8 +1341,6 @@
     }
 
     function getArchive() {
-      // Retrieves all completed games from archive storage
-      // Returns: Array of game objects with scores, winner, timestamp, etc.
       try {
         const raw = localStorage.getItem(ARCHIVE_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
@@ -1370,10 +1365,6 @@
     }
 
     function archiveCurrentGame() {
-      // Takes current game state and saves it to archive
-      // Creates snapshot with: Scores, winner, timestamp, game type, full history
-      // Keeps only last 50 games (oldest deleted automatically)
-      // Called when: newGame() starts (archives previous), or beforeunload event
       if (!gameState.history || !gameState.history.length) return;
       if (gameState.archivedAt) return;
 
@@ -1622,11 +1613,8 @@
     // This provides a tactile, phone-friendly alternative to typing numbers
 
     // --- Picker Configuration & Constants ---
-    // PICKER_ITEM_H: Height of each picker item in pixels (50px)
-    // PICKER_VISIBLE: Number of items visible at once (3 = top, selected, bottom)
-    // PICKER_PAD: Extra blank slots above/below for centering effect (1 each side)
-    // PICKER_MIN/MAX: Range of values for 9 Ejbar (-13 to +13)
-    // PICKER_COUNT: Total items including padding (27 items)
+
+    const PICKER_ITEM_H = 50;
     const PICKER_VISIBLE = 3; // show 3 items (top, selected, bottom)
     const PICKER_PAD = 1; // 1 blank slot top & bottom for centering
     const PICKER_MIN = -13;
@@ -1912,8 +1900,7 @@
 
     let picker1 = null;
     let picker2 = null;
-    // Global references to the two picker instances (one per team)
-    // Used to programmatically set values and enable/disable pickers
+
     // --- Picker Control Functions ---
 
     function setPickersEnabled(enabled) {
@@ -1924,9 +1911,6 @@
     }
 
     // --- Score Input Synchronization ---
-    // When game type changes, input method switches:
-    // - 7/9 Ejbar: Uses scroll picker (tactile, visual feedback)
-    // - Shelem: Uses text input (allows any multiple of 5, no minimum)
 
     function syncDirectInputsFromHidden() {
       if (gameState.gameType === 'shelem') {
@@ -1953,9 +1937,6 @@
     }
 
     function updateScoreInputMode() {
-      // Switches between picker and direct input based on game type
-      // Called when game type changes or game starts
-      // Hides/shows appropriate UI elements and syncs values between input modes
       const isshelem = gameState.gameType === 'shelem';
       const pw1 = document.getElementById('pickerWrap1');
       const pw2 = document.getElementById('pickerWrap2');
@@ -1985,9 +1966,7 @@
     // --- Virtual Keyboard & Picker Initialization ---
 
     function initVirtualKeyboard() {
-      // Initializes the scroll pickers when game starts
-      // Creates picker instances and sets up initial visual state
-      // Called once per game (checks vkInitialized flag to prevent re-init)
+      // Initialize scroll pickers instead
       if (vkInitialized) return;
       vkInitialized = true;
 
@@ -2010,7 +1989,6 @@
     // Game flow: type selection, initialization, teams, and scoring
 
     // --- Game Setup ---
-    // Setup phase: Choose game type → Enter team names → Start game
 
     function selectGameType(type) {
       Haptic.light();
@@ -2046,33 +2024,23 @@
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Ma';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Shoma';
 
+      if (gameState.gameType !== 'shelem') {
+        const defaultVal = getScoreBounds().defaultValue;
+        if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
+        if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
+        if (picker1) picker1.refresh();
+        if (picker2) picker2.refresh();
+      }
+
       updateTeamNames();
       if ($.setupScreen) $.setupScreen.classList.add('hidden');
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
-
-      // Reset picker initialization to rebuild with correct game type
-      vkInitialized = false;
-      picker1 = null;
-      picker2 = null;
-      initVirtualKeyboard();
-
-      const defaultVal = getScoreBounds().defaultValue;
-      if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
-      if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
-
-      if (picker1) picker1.refresh();
-      if (picker2) picker2.refresh();
-      updateScoreInputMode();
-      setPickersEnabled(true);
       updateUI();
       syncSubmitEnabled();
       saveGameState();
     }
 
     function updateTeamNames() {
-      // Updates all displayed team name references across the UI
-      // Called after team names are changed or game starts
-      // Updates: Display name, result labels, history column headers
       const t = I18N_UI[currentLangUI];
       const ids = ['displayTeam1Name', 'displayTeam2Name', 'resultLabel1', 'resultLabel2', 'historyColTeam1', 'historyColTeam2'];
       const els = ids.map(id => document.getElementById(id));
@@ -2085,16 +2053,6 @@
     }
 
     function addScore() {
-      // Main scoring logic - validates input and adds score to game history
-      // Process:
-      // 1. Validate scores based on game type (parseShelemScoreValue or parseScoreValue)
-      // 2. For 9 Ejbar only: Handle special rule where 10 points = 20 (bonus)
-      // 3. Add effective score to team total
-      // 4. Store in history with metadata (suit for Shelem, points for standard)
-      // 5. Clear inputs and refresh UI
-      // 6. Check if anyone has won (checkWinner)
-      // 7. Save to localStorage
-
       const t = I18N_UI[currentLangUI];
 
       if (gameState.gameType === 'shelem') {
@@ -2163,10 +2121,6 @@
       gameState.team2Total += effective2;
 
       let points1 = 0, points2 = 0;
-      // Bonus Points Rule:
-      // 7 Ejbar: Get 1 bonus point if you score exactly +7 or +9
-      // 9 Ejbar: Get 1 bonus point if you score exactly +9
-      // (Shelem mode doesn't award bonus points)
       if (gameState.gameType === 7) {
         if (score1 > 0 && (score1 === 7 || score1 === 9)) points1 = 1;
         if (score2 > 0 && (score2 === 7 || score2 === 9)) points2 = 1;
@@ -2216,12 +2170,6 @@
 
 
     function updateUI() {
-      // Re-renders the entire game state to screen
-      // Updates: Scores, points, history, winner status, turn indicator
-      // Score Display Rule:
-      // - Standard (7/9 Ejbar): Display score = Actual score × 10 (for readable totals)
-      // - Shelem: Display score = Actual score (no multiplier)
-      // This explains why Shelem has much larger targets (1200 vs 350/550)
       enforceForcedBidIfNeeded();
 
       const totalMultiplier = gameState.gameType === 'shelem' ? 1 : 10;
@@ -2387,8 +2335,6 @@
     // Round editing/deletion, game history, and reset
 
     // --- History View & Interaction ---
-    // Users can long-press (500ms) on a history row to open edit menu
-    // From there: edit scores or delete the round
 
     function openSheet(idx) {
       Haptic.heavy();
@@ -2673,10 +2619,8 @@
     }, { passive: false });
   
     // --- Localization & Multi-Language Support ---
-    // Switches all UI text between English and Farsi (Persian)
-    // Also converts displayed numbers to appropriate digit format:
-    // - English: 0-9 (standard digits)
-    // - Farsi: ۰-۹ (Persian digits)
+
+    // ================= UI-ONLY TRANSLATION (NO RULE CHANGES) =================
     const I18N_UI = {
       en: {
         title: "Ejbar",
@@ -2773,20 +2717,11 @@
     };
 
     let currentLangUI = localStorage.getItem("lang") || "en";
-    // Current language setting: "en" (English) or "fa" (Farsi/Persian)
-    // Stored in localStorage for persistence across sessions
     const DIGITS_FA_UI = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
-    // Persian digit characters (used when displaying numbers in Farsi mode)
     const toFaDigitsUI = (s) => String(s).replace(/\d/g, d => DIGITS_FA_UI[d]);
-    // Converts English digits to Persian (0-9 → ۰-۹)
     const toEnDigitsUI = (s) => String(s).replace(/[۰-۹]/g, ch => String(DIGITS_FA_UI.indexOf(ch)));
-    // Converts Persian digits back to English (۰-۹ → 0-9)
 
     function localizeDisplayedNumbersUI(){
-      // Converts all displayed numbers between English and Farsi digit formats
-      // English: 0-9 (Latin digits)
-      // Farsi: ۰-۹ (Persian digits)
-      // Preserves DOM structure (doesn't replace innerHTML, keeps event listeners)
       const makeFa = (currentLangUI === "fa");
 
       const DIGITS_FA = DIGITS_FA_UI;
@@ -2861,9 +2796,6 @@
     }
 
     function applyLangUI(lang){
-      // Switches all UI text and number formats between English and Farsi
-      // Updates: Button labels, history text, number displays, score labels
-      // Saves preference to localStorage for next session
       currentLangUI = (lang === "fa") ? "fa" : "en";
       localStorage.setItem("lang", currentLangUI);
       const t = I18N_UI[currentLangUI];
