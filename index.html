@@ -471,49 +471,6 @@
     .accent-1 { color: var(--blue); }
     .accent-2 { color: var(--green); }
 
-    /* ===== Sliding Digit Animation ===== */
-    .score-value.odo-active {
-      display: flex;
-      align-items: baseline;
-      line-height: 1;
-      overflow: hidden;
-      height: 1.2em;
-      letter-spacing: 0px;
-    }
-
-    .digit-col {
-      display: inline-block;
-      position: relative;
-      height: 1.2em;
-      overflow: hidden;
-    }
-
-    .digit-slide {
-      position: absolute;
-      width: 100%;
-      left: 0;
-      top: 0;
-    }
-
-    .digit-slide .d {
-      height: 1.2em;
-      line-height: 1.2em;
-      text-align: center;
-      display: block;
-    }
-
-    .odo-sep {
-      display: inline-block;
-      height: 1.2em;
-      line-height: 1.2em;
-    }
-
-    .odo-sep.odo-minus {
-      margin-right: 0.05em;
-      transform: translateY(-0.45em);
-    }
-
-    
 
     .result-grid {
       display: grid;
@@ -578,29 +535,6 @@
       filter: saturate(1.1);
     }
 
-    .score-value {
-      transition: transform 120ms ease;
-    }
-
-    .score-value.bump-up {
-      animation: totalBumpUp 380ms ease;
-    }
-
-    .score-value.bump-down {
-      animation: totalBumpDown 380ms ease;
-    }
-
-    @keyframes totalBumpUp {
-      0% { transform: translateY(8px); opacity: 0.55; }
-      45% { transform: translateY(-4px); opacity: 1; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes totalBumpDown {
-      0% { transform: translateY(-8px); opacity: 0.55; }
-      45% { transform: translateY(4px); opacity: 1; }
-      100% { transform: translateY(0); opacity: 1; }
-    }
 
     .picker-item {
       height: 50px;
@@ -929,23 +863,26 @@
     }
 
     @keyframes totalPulse {
-      0% { transform: scale(1); }
-      35% { transform: scale(1.015); }
+      0%   { transform: scale(1); }
+      22%  { transform: scale(1.03); }
+      55%  { transform: scale(0.997); }
+      78%  { transform: scale(1.006); }
       100% { transform: scale(1); }
     }
 
     .total-pulse {
-      animation: totalPulse 420ms ease-out;
+      animation: totalPulse 550ms cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @keyframes turnPulse {
-      0% { transform: scale(1); }
-      35% { transform: scale(1.012); }
+      0%   { transform: scale(1); }
+      22%  { transform: scale(1.022); }
+      55%  { transform: scale(0.998); }
       100% { transform: scale(1); }
     }
 
     .turn-pulse {
-      animation: turnPulse 520ms ease-out;
+      animation: turnPulse 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     @media (max-width: 480px) {
@@ -2121,277 +2058,14 @@
     }
 
 
-    let displayedTeam1Total = null;
-    let displayedTeam2Total = null;
-    let animFrame1 = null;
-    let animFrame2 = null;
-
-    function easeOutCubic(t) {
-      return 1 - Math.pow(1 - t, 3);
-    }
-
-    /* ===== Sliding Digit Counter ===== */
-
-    function formatWithCommas(n) {
-      const neg = n < 0;
-      const s = String(Math.abs(n));
-      return neg ? '\u2212' + s : s;
-    }
-
-    function digitsOnly(s) { return s.replace(/[^0-9]/g, ''); }
-
-    // Measure digit widths from actual font rendering
-    const _measuredWidths = new WeakMap();
-    function measureDigitWidth(el) {
-      if (_measuredWidths.has(el)) return _measuredWidths.get(el);
-      const probe = document.createElement('span');
-      probe.style.cssText = 'visibility:hidden;position:absolute;pointer-events:none;';
-      probe.textContent = '0';
-      el.appendChild(probe);
-      const w = probe.getBoundingClientRect().width;
-      el.removeChild(probe);
-      _measuredWidths.set(el, w);
-      return w;
-    }
-
-    function buildDigitDOM(el, formatted) {
-      el.innerHTML = '';
-      el.classList.add('odo-active');
-      _measuredWidths.delete(el);
-      const digitW = measureDigitWidth(el);
-
-      for (const ch of formatted) {
-        if (ch === ',' || ch === '\u2212') {
-          const sep = document.createElement('span');
-          sep.className = 'odo-sep' + (ch === '\u2212' ? ' odo-minus' : '');
-          sep.textContent = ch;
-          el.appendChild(sep);
-        } else {
-          const col = document.createElement('span');
-          col.className = 'digit-col';
-          col.style.width = digitW + 'px';
-          col.dataset.value = ch;
-          const slide = document.createElement('span');
-          slide.className = 'digit-slide';
-          const d = document.createElement('span');
-          d.className = 'd';
-          d.textContent = ch;
-          slide.appendChild(d);
-          col.appendChild(slide);
-          el.appendChild(col);
-        }
-      }
-    }
-
-    function animateOdometer(el, from, to, which) {
-      if (!el) return;
-
-      const toStr = formatWithCommas(to);
-
-      // First render
-      if (from === null || from === undefined) {
-        buildDigitDOM(el, toStr);
-        return;
-      }
-      if (from === to) return;
-
-      // Cancel running
-      if (which === 1 && animFrame1) { clearTimeout(animFrame1); animFrame1 = null; }
-      if (which === 2 && animFrame2) { clearTimeout(animFrame2); animFrame2 = null; }
-
-      const direction = to > from ? 1 : -1;
-      const diff = to - from;
-      const absDiff = Math.abs(diff);
-      const steps = Math.min(20, Math.max(6, Math.ceil(absDiff / 50)));
-      const totalDuration = Math.min(1000, Math.max(350, absDiff * 0.4));
-      const stepInterval = totalDuration / steps;
-
-      let step = 0;
-      let lastRenderedStr = formatWithCommas(from);
-
-      function slideDigit(col, oldChar, newChar, dir, dur, blurAmt) {
-        const newSlide = document.createElement('span');
-        newSlide.className = 'digit-slide';
-
-        if (dir >= 0) {
-          const dOld = document.createElement('span');
-          dOld.className = 'd';
-          dOld.textContent = oldChar;
-          const dNew = document.createElement('span');
-          dNew.className = 'd';
-          dNew.textContent = newChar;
-          newSlide.appendChild(dOld);
-          newSlide.appendChild(dNew);
-          newSlide.style.transform = 'translateY(0)';
-        } else {
-          const dNew = document.createElement('span');
-          dNew.className = 'd';
-          dNew.textContent = newChar;
-          const dOld = document.createElement('span');
-          dOld.className = 'd';
-          dOld.textContent = oldChar;
-          newSlide.appendChild(dNew);
-          newSlide.appendChild(dOld);
-          newSlide.style.transform = 'translateY(-1.2em)';
-        }
-
-        col.innerHTML = '';
-        col.appendChild(newSlide);
-        col.dataset.value = newChar;
-
-        void newSlide.offsetWidth;
-
-        newSlide.style.transition = `transform ${dur}ms cubic-bezier(0.16, 1, 0.3, 1)`;
-        newSlide.style.filter = `blur(${blurAmt}px)`;
-
-        if (dir >= 0) {
-          newSlide.style.transform = 'translateY(-1.2em)';
-        } else {
-          newSlide.style.transform = 'translateY(0)';
-        }
-
-        setTimeout(() => {
-          if (newSlide.parentNode) {
-            newSlide.style.filter = 'blur(0)';
-            newSlide.style.transition = `transform ${dur}ms cubic-bezier(0.16, 1, 0.3, 1), filter 150ms ease`;
-          }
-        }, dur * 0.4);
-
-        return newSlide;
-      }
-
-      function doStep() {
-        step++;
-        const p = step / steps;
-        const ep = 1 - Math.pow(1 - p, 3);
-        const val = Math.round(from + diff * ep);
-        const valStr = formatWithCommas(val);
-        const valDigs = digitsOnly(valStr);
-        const lastDigs = digitsOnly(lastRenderedStr);
-
-        const isLast = step === steps;
-        const dur = isLast ? 280 : 160;
-        const blurAmt = isLast ? 1.2 : 2.5;
-
-        // Digit count changed — rebuild DOM structure, then animate each digit in
-        if (valDigs.length !== lastDigs.length || el.querySelectorAll('.digit-col').length !== valDigs.length) {
-          // Save old digit values before rebuilding
-          const oldCols = el.querySelectorAll('.digit-col');
-          const oldValues = [];
-          oldCols.forEach(c => oldValues.push(c.dataset.value));
-
-          buildDigitDOM(el, valStr);
-
-          // Animate each new digit column
-          const newCols = el.querySelectorAll('.digit-col');
-          newCols.forEach((col, i) => {
-            const newChar = col.dataset.value;
-            // If this position existed before, slide from old value
-            // For growing: new leading digit slides in, rest slide from old positions
-            // For shrinking: remaining digits slide from shifted old positions
-            let oldChar;
-            if (direction >= 0 && valDigs.length > lastDigs.length) {
-              // Growing: first (valDigs.length - lastDigs.length) digits are new
-              const newCount = valDigs.length - lastDigs.length;
-              if (i < newCount) {
-                oldChar = '0';
-              } else {
-                oldChar = oldValues[i - newCount] || '0';
-              }
-            } else if (direction < 0 && valDigs.length < lastDigs.length) {
-              // Shrinking: last digits map to old shifted positions
-              const lostCount = lastDigs.length - valDigs.length;
-              oldChar = oldValues[i + lostCount] || '0';
-            } else {
-              oldChar = oldValues[i] || '0';
-            }
-
-            if (oldChar !== newChar) {
-              const slide = slideDigit(col, oldChar, newChar, direction, dur, blurAmt);
-              if (isLast) {
-                setTimeout(() => {
-                  if (slide.parentNode) {
-                    slide.style.transition = 'none';
-                    slide.innerHTML = '';
-                    const d = document.createElement('span');
-                    d.className = 'd';
-                    d.textContent = newChar;
-                    slide.appendChild(d);
-                    slide.style.transform = 'translateY(0)';
-                    slide.style.filter = '';
-                  }
-                }, dur + 50);
-              }
-            }
-          });
-
-          lastRenderedStr = valStr;
-        } else {
-          // Same digit count — slide individual changed digits
-          const cols = el.querySelectorAll('.digit-col');
-          let colIdx = 0;
-
-          for (const ch of valStr) {
-            if (ch === ',' || ch === '\u2212') continue;
-            if (colIdx < cols.length) {
-              const col = cols[colIdx];
-              const oldVal = col.dataset.value;
-
-              if (oldVal !== ch) {
-                const slide = slideDigit(col, oldVal, ch, direction, dur, blurAmt);
-                if (isLast) {
-                  setTimeout(() => {
-                    if (slide.parentNode) {
-                      slide.style.transition = 'none';
-                      slide.innerHTML = '';
-                      const d = document.createElement('span');
-                      d.className = 'd';
-                      d.textContent = ch;
-                      slide.appendChild(d);
-                      slide.style.transform = 'translateY(0)';
-                      slide.style.filter = '';
-                    }
-                  }, dur + 50);
-                }
-              }
-              colIdx++;
-            }
-          }
-
-          lastRenderedStr = valStr;
-        }
-
-        if (step < steps) {
-          const tid = setTimeout(doStep, stepInterval);
-          if (which === 1) animFrame1 = tid;
-          else animFrame2 = tid;
-        } else {
-          if (which === 1) animFrame1 = null;
-          else animFrame2 = null;
-        }
-      }
-
-      doStep();
-    }
-
-    function animateTotal(el, from, to, which) {
-      animateOdometer(el, from, to, which);
-    }
-
     function updateUI() {
       enforceForcedBidIfNeeded();
-      
+
       const totalMultiplier = gameState.gameType === 'shelem' ? 1 : 10;
       const newTotal1 = gameState.team1Total * totalMultiplier;
       const newTotal2 = gameState.team2Total * totalMultiplier;
-      if ($.team1Total) {
-        animateOdometer($.team1Total, displayedTeam1Total, newTotal1, 1);
-        displayedTeam1Total = newTotal1;
-      }
-      if ($.team2Total) {
-        animateOdometer($.team2Total, displayedTeam2Total, newTotal2, 2);
-        displayedTeam2Total = newTotal2;
-      }
+      if ($.team1Total) $.team1Total.textContent = newTotal1;
+      if ($.team2Total) $.team2Total.textContent = newTotal2;
       if ($.team1Points) $.team1Points.textContent = gameState.team1Points;
       if ($.team2Points) $.team2Points.textContent = gameState.team2Points;
 
@@ -2714,8 +2388,6 @@
       if ($.targetHint) $.targetHint.textContent = 'Target: —';
       updateScoreInputMode();
 
-      displayedTeam1Total = 0;
-      displayedTeam2Total = 0;
       updateUI();
       try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     }
@@ -2746,8 +2418,6 @@
       enablePills(true);
 
       closeWinner();
-      displayedTeam1Total = 0;
-      displayedTeam2Total = 0;
       updateUI();
       saveGameState();
     }
