@@ -1033,86 +1033,68 @@
       if (!isIOS) return;
       if (CSS.supports('corner-shape', 'squircle')) return;
 
-      // ── SVG clipPath squircle ─────────────────────────────────────────────
-      // Instead of CSS path() strings we inject real SVG <clipPath> elements
-      // into the document and reference them via clip-path: url(#id).
+      // Exact parametric superellipse via CSS clip-path: path('…').
+      // path() coordinates are always relative to the element's own top-left,
+      // so there is no positioning/offset issue.
       //
-      // The corner curve is an *exact* parametric superellipse (n = 5):
-      //   x(t) = s · cos(t)^(2/n),  y(t) = s · sin(t)^(2/n),  t ∈ [0, π/2]
-      //
-      // n = 5 sits between "circle" (n=2) and "square" (n→∞).
-      // It is perceptibly squarer than iOS's own n=4 rendering, matching
-      // the tighter corner Android produces natively.
-      // ─────────────────────────────────────────────────────────────────────
+      // Corner curve: x(t) = s·cos(t)^(2/N), y(t) = s·sin(t)^(2/N), t∈[0,π/2]
+      // N=5 produces a visibly tighter corner than iOS native (N≈4).
 
-      var N   = 5;   // superellipse exponent  — raise for a squarer corner
-      var PTS = 48;  // sample points per corner quarter — 48 is visually lossless
+      var N   = 5;   // superellipse exponent — increase for squarer corners
+      var PTS = 32;  // samples per corner quarter
 
-      // Hidden SVG that holds all <clipPath> definitions.
-      var svgNS = 'http://www.w3.org/2000/svg';
-      var svgEl = document.createElementNS(svgNS, 'svg');
-      svgEl.setAttribute('aria-hidden', 'true');
-      svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;opacity:0';
-      var defsEl = document.createElementNS(svgNS, 'defs');
-      svgEl.appendChild(defsEl);
+      var cache = {}; // "W_H_R" → path string
 
-      // Cache: "W_H_S" → clipPath id string
-      var cache = {};
-
-      // Build the exact superellipse path for a W×H rect with corner size s.
-      // Traced clockwise so SVG fill-rule:"nonzero" works correctly.
-      function buildPath(w, h, s) {
-        var e = 2 / N;
-        var pts = [];
-
-        function pt(x, y) { pts.push(x.toFixed(2) + ',' + y.toFixed(2)); }
-
-        // Each corner: sample t from 0→π/2, mapping superellipse to that quadrant.
-        // Top-right corner  (vertex W, 0)  — from (W-s, 0) → (W, s)
-        for (var i = 0; i <= PTS; i++) {
-          var t = (i / PTS) * (Math.PI / 2);
-          pt(w - s * Math.pow(Math.cos(t), e),
-                 s * Math.pow(Math.sin(t), e));
-        }
-        // Bottom-right corner  (vertex W, H)  — from (W, H-s) → (W-s, H)
-        for (var j = 0; j <= PTS; j++) {
-          var t2 = (j / PTS) * (Math.PI / 2);
-          pt(w - s * Math.pow(Math.sin(t2), e),
-             h - s * Math.pow(Math.cos(t2), e));
-        }
-        // Bottom-left corner  (vertex 0, H)  — from (s, H) → (0, H-s)
-        for (var k = 0; k <= PTS; k++) {
-          var t3 = (k / PTS) * (Math.PI / 2);
-          pt(    s * Math.pow(Math.cos(t3), e),
-             h - s * Math.pow(Math.sin(t3), e));
-        }
-        // Top-left corner  (vertex 0, 0)  — from (0, s) → (s, 0)
-        for (var m = 0; m <= PTS; m++) {
-          var t4 = (m / PTS) * (Math.PI / 2);
-          pt(s * Math.pow(Math.sin(t4), e),
-             s * Math.pow(Math.cos(t4), e));
-        }
-
-        return 'M ' + pts.join(' L ') + ' Z';
-      }
-
-      function getClipId(w, h, r) {
-        // s = corner size, capped so straight edges remain visible
-        var s   = Math.min(r, w * 0.46, h * 0.46);
+      function buildPathStr(w, h, r) {
+        var s = Math.min(r, w * 0.46, h * 0.46);
         var key = w + '_' + h + '_' + s.toFixed(1);
         if (cache[key]) return cache[key];
 
-        var id = 'sqcl-' + key.replace(/\./g, 'd');
-        var cp = document.createElementNS(svgNS, 'clipPath');
-        cp.setAttribute('id', id);
-        cp.setAttribute('clipPathUnits', 'userSpaceOnUse');
-        var path = document.createElementNS(svgNS, 'path');
-        path.setAttribute('d', buildPath(w, h, s));
-        cp.appendChild(path);
-        defsEl.appendChild(cp);
+        var e = 2 / N;
+        var cmds = [];
 
-        cache[key] = id;
-        return id;
+        function L(x, y) { cmds.push('L' + x.toFixed(2) + ' ' + y.toFixed(2)); }
+        function M(x, y) { cmds.push('M' + x.toFixed(2) + ' ' + y.toFixed(2)); }
+
+        // Start top-left corner exit point
+        M(s, 0);
+
+        // Top edge → top-right corner  (vertex: w, 0)
+        L(w - s, 0);
+        for (var i = 1; i <= PTS; i++) {
+          var t = (i / PTS) * (Math.PI / 2);
+          L(w - s * Math.pow(Math.cos(t), e),
+                s * Math.pow(Math.sin(t), e));
+        }
+
+        // Right edge → bottom-right corner  (vertex: w, h)
+        L(w, h - s);
+        for (var j = 1; j <= PTS; j++) {
+          var t2 = (j / PTS) * (Math.PI / 2);
+          L(w - s * Math.pow(Math.sin(t2), e),
+            h - s * Math.pow(Math.cos(t2), e));
+        }
+
+        // Bottom edge → bottom-left corner  (vertex: 0, h)
+        L(s, h);
+        for (var k = 1; k <= PTS; k++) {
+          var t3 = (k / PTS) * (Math.PI / 2);
+          L(    s * Math.pow(Math.cos(t3), e),
+            h - s * Math.pow(Math.sin(t3), e));
+        }
+
+        // Left edge → top-left corner  (vertex: 0, 0)
+        L(0, s);
+        for (var m = 1; m <= PTS; m++) {
+          var t4 = (m / PTS) * (Math.PI / 2);
+          L(s * Math.pow(Math.sin(t4), e),
+            s * Math.pow(Math.cos(t4), e));
+        }
+
+        cmds.push('Z');
+        var d = cmds.join(' ');
+        cache[key] = d;
+        return d;
       }
 
       function applySquircle(el) {
@@ -1120,9 +1102,9 @@
         if (!r) { el.style.clipPath = ''; el.style.webkitClipPath = ''; return; }
         var w = el.offsetWidth, h = el.offsetHeight;
         if (!w || !h) return;
-        var ref = 'url(#' + getClipId(w, h, r) + ')';
-        el.style.clipPath = ref;
-        el.style.webkitClipPath = ref;
+        var clip = "path('" + buildPathStr(w, h, r) + "')";
+        el.style.clipPath = clip;
+        el.style.webkitClipPath = clip;
       }
 
       var seen = new WeakSet();
@@ -1143,7 +1125,6 @@
       }
 
       function init() {
-        document.body.appendChild(svgEl);
         document.documentElement.style.setProperty('--brm', '2');
         scanAndApply();
         new MutationObserver(scanAndApply).observe(document.body, {
