@@ -238,6 +238,53 @@
       grid-template-columns: repeat(3, 1fr);
     }
 
+
+    .ejbar-btn-wrap {
+      position: relative;
+    }
+
+    .ejbar-btn-wrap > .seg-btn {
+      width: 100%;
+      height: 100%;
+    }
+
+    .ejbar-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
+      backdrop-filter: var(--blur);
+      box-shadow: var(--shadow-2);
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .ejbar-opt {
+      display: block;
+      width: 100%;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--stroke);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      text-align: center;
+      cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .ejbar-opt:last-child { border-bottom: none; }
+    .ejbar-opt:active { transform: scale(0.985); background: #0A84FF; color: #fff; }
+    .ejbar-opt.selected { background: #0A84FF; color: #fff; }
+
+
     .direct-score-input {
       width: 100%;
       padding: 14px 12px;
@@ -997,11 +1044,18 @@
       <div class="section">
         <div class="section-title">
           <h2>Select Game Type</h2>
-          <span class="hint">Choose 7, 9, or Shelem</span>
+          <span class="hint">Choose Ejbar or Shelem</span>
         </div>
-        <div class="segmented segmented-3">
-          <button class="seg-btn" data-type="7" onclick="selectGameType(7)">7 Ejbar</button>
-          <button class="seg-btn" data-type="9" onclick="selectGameType(9)">9 Ejbar</button>
+        <div class="segmented">
+          <div class="ejbar-btn-wrap">
+            <button class="seg-btn" id="ejbarMainBtn" data-type="ejbar-group" onclick="toggleEjbarDropdown(event)">Ejbar</button>
+            <div id="ejbarDropdown" class="ejbar-dropdown hidden">
+              <button class="ejbar-opt" data-subtype="6" onclick="selectGameType(6)">6 Ejbar</button>
+              <button class="ejbar-opt" data-subtype="7" onclick="selectGameType(7)">7 Ejbar</button>
+              <button class="ejbar-opt" data-subtype="8" onclick="selectGameType(8)">8 Ejbar</button>
+              <button class="ejbar-opt" data-subtype="9" onclick="selectGameType(9)">9 Ejbar</button>
+            </div>
+          </div>
           <button class="seg-btn" data-type="shelem" onclick="selectGameType('shelem')">Shelem</button>
         </div>
         <div class="form-grid">
@@ -1283,7 +1337,9 @@
     // 7 Ejbar: 350 points (traditional Ejbar game with lower target)
     // 9 Ejbar: 550 points (extended Ejbar with higher target and score range)
     // Shelem: 1200 points (special game mode with different scoring rules, no minimum bid)
+    const TARGET_6Ejbar = 350;
     const TARGET_7Ejbar = 350;
+    const TARGET_8Ejbar = 550;
     const TARGET_9Ejbar = 550;
     const TARGET_shelem = 1200;
     let sheetIndex = null;
@@ -1360,8 +1416,11 @@
 
     function getGameTypeLabel(type) {
       if (type === 'shelem') return 'Shelem';
+      if (type === 6 || type === '6') return '6 Ejbar';
+      if (type === 7 || type === '7') return '7 Ejbar';
+      if (type === 8 || type === '8') return '8 Ejbar';
       if (type === 9 || type === '9') return '9 Ejbar';
-      return '7 Ejbar';
+      return 'Ejbar';
     }
 
     function archiveCurrentGame() {
@@ -1591,7 +1650,8 @@
     // Core game logic: target scores, bounds, and score validation
     function getTargetScore() {
       if (gameState.gameType === 'shelem') return TARGET_shelem;
-      return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
+      if (gameState.gameType === 8 || gameState.gameType === 9) return TARGET_9Ejbar;
+      return TARGET_7Ejbar;
     }
 
     // ========== GAME RULES & SCORING FUNDAMENTALS (continued) ==========
@@ -1623,7 +1683,7 @@
 
     function getScoreBounds() {
       if (gameState.gameType === 'shelem') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
-      if (gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 0 };
+      if (gameState.gameType === 8 || gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 0 };
       return { min: -9, max: 9, absMin: 3, defaultValue: 0 };
     }
 
@@ -1990,12 +2050,48 @@
 
     // --- Game Setup ---
 
+    function toggleEjbarDropdown(event) {
+      event.stopPropagation();
+      Haptic.light();
+      const dropdown = document.getElementById('ejbarDropdown');
+      if (!dropdown) return;
+      const isOpen = !dropdown.classList.contains('hidden');
+      if (isOpen) {
+        dropdown.classList.add('hidden');
+      } else {
+        dropdown.classList.remove('hidden');
+        document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+        const ejbarBtn = document.querySelector('[data-type="ejbar-group"]');
+        if (ejbarBtn) ejbarBtn.classList.add('selected');
+        setTimeout(() => document.addEventListener('click', closeEjbarDropdown, { once: true }), 0);
+      }
+    }
+
+    function closeEjbarDropdown() {
+      const dropdown = document.getElementById('ejbarDropdown');
+      if (dropdown) dropdown.classList.add('hidden');
+    }
+
     function selectGameType(type) {
       Haptic.light();
       gameState.gameType = type;
+      closeEjbarDropdown();
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
-      const sel = document.querySelector(`[data-type="${type}"]`);
-      if (sel) sel.classList.add('selected');
+      document.querySelectorAll('.ejbar-opt').forEach(btn => btn.classList.remove('selected'));
+      if (type === 'shelem') {
+        const sel = document.querySelector('[data-type="shelem"]');
+        if (sel) sel.classList.add('selected');
+        const ejbarMainBtn = document.getElementById('ejbarMainBtn');
+        const t0 = I18N_UI[currentLangUI];
+        if (ejbarMainBtn) ejbarMainBtn.textContent = t0.labels.ejbar;
+      } else {
+        const ejbarBtn = document.querySelector('[data-type="ejbar-group"]');
+        if (ejbarBtn) ejbarBtn.classList.add('selected');
+        const opt = document.querySelector(`.ejbar-opt[data-subtype="${type}"]`);
+        if (opt) opt.classList.add('selected');
+        const ejbarMainBtn = document.getElementById('ejbarMainBtn');
+        if (ejbarMainBtn) ejbarMainBtn.textContent = getGameTypeLabel(type);
+      }
       const t = I18N_UI[currentLangUI];
       if ($.targetHint) $.targetHint.textContent = t.target(getTargetScore());
       updateScoreInputMode();
@@ -2102,15 +2198,17 @@
 
       if (parseScoreValue(String(score1)) === null || parseScoreValue(String(score2)) === null) {
         Haptic.error();
-        alert(gameState.gameType === 9
-          ? (currentLangUI === 'fa' ? 'در ۹ اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : 'In 9 Ejbar, only 4 to 13 and -4 to -13 are allowed.')
-          : (currentLangUI === 'fa' ? 'در ۷ اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : 'In 7 Ejbar, only 3 to 9 and -3 to -9 are allowed.'));
+        if (gameState.gameType === 8 || gameState.gameType === 9) {
+          alert(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : `In ${gameState.gameType} Ejbar, only 4 to 13 and -4 to -13 are allowed.`);
+        } else {
+          alert(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : `In ${gameState.gameType} Ejbar, only 3 to 9 and -3 to -9 are allowed.`);
+        }
         return;
       }
 
       let effective1 = score1;
       let effective2 = score2;
-      if (gameState.gameType === 9) {
+      if (gameState.gameType === 8 || gameState.gameType === 9) {
         if (score1 === 10) effective1 = 20;
         if (score2 === 10) effective2 = 20;
         if (score1 === -10) effective1 = -10;
@@ -2121,9 +2219,15 @@
       gameState.team2Total += effective2;
 
       let points1 = 0, points2 = 0;
-      if (gameState.gameType === 7) {
+      if (gameState.gameType === 6) {
+        if (score1 > 0 && (score1 === 6 || score1 === 8)) points1 = 1;
+        if (score2 > 0 && (score2 === 6 || score2 === 8)) points2 = 1;
+      } else if (gameState.gameType === 7) {
         if (score1 > 0 && (score1 === 7 || score1 === 9)) points1 = 1;
         if (score2 > 0 && (score2 === 7 || score2 === 9)) points2 = 1;
+      } else if (gameState.gameType === 8) {
+        if (score1 > 0 && score1 === 8) points1 = 1;
+        if (score2 > 0 && score2 === 8) points2 = 1;
       } else if (gameState.gameType === 9) {
         if (score1 > 0 && score1 === 9) points1 = 1;
         if (score2 > 0 && score2 === 9) points2 = 1;
@@ -2421,18 +2525,24 @@
       gameState.team2Points -= round.points2 || 0;
 
       let newPoints1 = 0, newPoints2 = 0;
-      if (gameState.gameType === 7) {
+      if (gameState.gameType === 6) {
+        if (newScore1 > 0 && (newScore1 === 6 || newScore1 === 8)) newPoints1 = 1;
+        if (newScore2 > 0 && (newScore2 === 6 || newScore2 === 8)) newPoints2 = 1;
+      } else if (gameState.gameType === 7) {
         if (newScore1 > 0 && (newScore1 === 7 || newScore1 === 9)) newPoints1 = 1;
         if (newScore2 > 0 && (newScore2 === 7 || newScore2 === 9)) newPoints2 = 1;
+      } else if (gameState.gameType === 8) {
+        if (newScore1 > 0 && newScore1 === 8) newPoints1 = 1;
+        if (newScore2 > 0 && newScore2 === 8) newPoints2 = 1;
       } else if (gameState.gameType === 9) {
         if (newScore1 > 0 && newScore1 === 9) newPoints1 = 1;
         if (newScore2 > 0 && newScore2 === 9) newPoints2 = 1;
       }
 
-      // Apply 9 Ejbar special rule for edited scores too
+      // Apply 8/9 Ejbar special rule for edited scores too
       let newEffective1 = newScore1;
       let newEffective2 = newScore2;
-      if (gameState.gameType === 9) {
+      if (gameState.gameType === 8 || gameState.gameType === 9) {
         if (newScore1 === 10) newEffective1 = 20;
         if (newScore2 === 10) newEffective2 = 20;
         if (newScore1 === -10) newEffective1 = -10;
@@ -2494,6 +2604,10 @@
       if ($.gameScreen) $.gameScreen.classList.add('hidden');
       if ($.setupScreen) $.setupScreen.classList.remove('hidden');
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
+      document.querySelectorAll('.ejbar-opt').forEach(btn => btn.classList.remove('selected'));
+      closeEjbarDropdown();
+      const ejbarMainBtnReset = document.getElementById('ejbarMainBtn');
+      if (ejbarMainBtnReset) ejbarMainBtnReset.textContent = I18N_UI[currentLangUI].labels.ejbar;
 
       if ($.team1Name) $.team1Name.value = 'Ma';
       if ($.team2Name) $.team2Name.value = 'Shoma';
@@ -2565,8 +2679,18 @@
       renderArchive();
       if (gameState.gameType !== null) {
         document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
-        const selected = document.querySelector(`[data-type="${gameState.gameType}"]`);
-        if (selected) selected.classList.add('selected');
+        document.querySelectorAll('.ejbar-opt').forEach(btn => btn.classList.remove('selected'));
+        if (gameState.gameType === 'shelem') {
+          const sel = document.querySelector('[data-type="shelem"]');
+          if (sel) sel.classList.add('selected');
+        } else {
+          const ejbarBtn = document.querySelector('[data-type="ejbar-group"]');
+          if (ejbarBtn) ejbarBtn.classList.add('selected');
+          const opt = document.querySelector(`.ejbar-opt[data-subtype="${gameState.gameType}"]`);
+          if (opt) opt.classList.add('selected');
+          const ejbarMainBtn = document.getElementById('ejbarMainBtn');
+          if (ejbarMainBtn) ejbarMainBtn.textContent = getGameTypeLabel(gameState.gameType);
+        }
       }
       initVirtualKeyboard();
       if (gameState.gameType === 'shelem') {
@@ -2625,7 +2749,7 @@
       en: {
         title: "Ejbar",
         selectGame: "Select Game Type",
-        choose: "Choose 7, 9, or Shelem",
+        choose: "Choose Ejbar or Shelem",
         team1NameLabel: "Ma Name",
         team2NameLabel: "Shoma Name",
         team1Placeholder: "Ma",
@@ -2646,7 +2770,7 @@
         wonWord: "Won",
         target: (v)=> gameState && gameState.gameType === 'shelem' ? `Target: ${v}` : `Target: ${v} • Need +1 point lead`,
         noRounds: "No rounds played yet",
-        labels: { game7: "7 Ejbar", game9: "9 Ejbar", shelem: "Shelem" },
+        labels: { ejbar: "Ejbar", game6: "6", game7: "7", game8: "8", game9: "9", shelem: "Shelem" },
         theme: "Theme",
         language: "Language",
         alertSelectGameType: "Please select a game type",
@@ -2671,7 +2795,7 @@
       fa: {
         title: "اجبار",
         selectGame: "انتخاب نوع بازی",
-        choose: "۷، ۹ یا شلم را انتخاب کنید",
+        choose: "اجبار یا شلم را انتخاب کنید",
         team1NameLabel: "نام تیم ۱",
         team2NameLabel: "نام تیم ۲",
         team1Placeholder: "تیم ۱",
@@ -2692,7 +2816,7 @@
         wonWord: "برد",
         target: (v)=> gameState && gameState.gameType === 'shelem' ? `هدف: ${v}` : `هدف: ${v} • اختلاف حداقل ۱ پوئن`,
         noRounds: "هنوز دستی ثبت نشده",
-        labels: { game7: "۷ اجبار", game9: "۹ اجبار", shelem: "شلم" },
+        labels: { ejbar: "اجبار", game6: "۶", game7: "۷", game8: "۸", game9: "۹", shelem: "شلم" },
         theme: "تم",
         language: "زبان",
         alertSelectGameType: "لطفاً نوع بازی را انتخاب کنید",
@@ -2827,12 +2951,18 @@
       const startBtn = document.querySelector("#setupScreen .btn.btn-primary");
       if(startBtn) startBtn.textContent = t.start;
 
-      // Segmented labels (7/9)
+      // Segmented labels
       document.querySelectorAll(".seg-btn").forEach(btn=>{
         const type = btn.getAttribute("data-type");
-        if(type === "7") btn.textContent = t.labels.game7;
-        if(type === "9") btn.textContent = t.labels.game9;
+        if(type === "ejbar-group") btn.textContent = t.labels.ejbar;
         if(type === "shelem") btn.textContent = t.labels.shelem;
+      });
+      document.querySelectorAll(".ejbar-opt").forEach(btn=>{
+        const sub = btn.getAttribute("data-subtype");
+        if(sub === "6") btn.textContent = t.labels.game6 + " " + t.labels.ejbar;
+        if(sub === "7") btn.textContent = t.labels.game7 + " " + t.labels.ejbar;
+        if(sub === "8") btn.textContent = t.labels.game8 + " " + t.labels.ejbar;
+        if(sub === "9") btn.textContent = t.labels.game9 + " " + t.labels.ejbar;
       });
 
       // Game screen titles
