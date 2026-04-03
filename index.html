@@ -1006,11 +1006,11 @@
         </div>
         <div class="form-grid">
           <div class="field">
-            <label>Team 1 Name</label>
+            <label>Ma Name</label>
             <input class="text" id="team1Name" type="text" placeholder="Ma" value="Ma" />
           </div>
           <div class="field">
-            <label>Team 2 Name</label>
+            <label>Shoma Name</label>
             <input class="text" id="team2Name" type="text" placeholder="Shoma" value="Shoma" />
           </div>
         </div>
@@ -1030,14 +1030,14 @@
         <div class="score-grid">
           <div class="score-card" id="team1Card">
             <div class="score-top">
-              <div class="team-label" id="displayTeam1Name">TEAM 1</div>
+              <div class="team-label" id="displayTeam1Name">Ma</div>
               <div class="badge" id="team1Points">0</div>
             </div>
             <div class="score-value accent-1" id="team1Total">0</div>
           </div>
           <div class="score-card" id="team2Card">
             <div class="score-top">
-              <div class="team-label" id="displayTeam2Name">TEAM 2</div>
+              <div class="team-label" id="displayTeam2Name">Shoma</div>
               <div class="badge" id="team2Points">0</div>
             </div>
             <div class="score-value accent-2" id="team2Total">0</div>
@@ -1051,7 +1051,7 @@
         </div>
         <div class="result-grid">
           <div class="field">
-            <span class="rlabel" id="resultLabel1">Team 1 Won</span>
+            <span class="rlabel" id="resultLabel1">Ma Won</span>
             <div class="picker-wrap" id="pickerWrap1">
               <div class="picker-fade picker-fade-top"></div>
               <div class="picker-highlight"></div>
@@ -1067,7 +1067,7 @@
             <input type="hidden" id="result1" value="0" />
           </div>
           <div class="field">
-            <span class="rlabel" id="resultLabel2">Team 2 Won</span>
+            <span class="rlabel" id="resultLabel2">Shoma Won</span>
             <div class="picker-wrap" id="pickerWrap2">
               <div class="picker-fade picker-fade-top"></div>
               <div class="picker-highlight"></div>
@@ -1093,8 +1093,8 @@
           <h2>History</h2>
         </div>
         <div class="history-header">
-          <div id="historyColTeam1">Team 1</div>
-          <div id="historyColTeam2">Team 2</div>
+          <div id="historyColTeam1">Ma</div>
+          <div id="historyColTeam2">Shoma</div>
         </div>
         <div id="emptyHistory" style="padding: 12px 6px; color: var(--text-secondary); font-weight: 800; font-size: 13px;"></div>
         <div class="list hidden" id="historyList"></div>
@@ -1133,6 +1133,80 @@
   <!-- scroll picker JS replaces virtual keyboard -->
 
   <script>
+    /*
+    ========== EJBAR GAME - JAVASCRIPT INDEX =========
+
+    1. DOM INITIALIZATION & CORE CONSTANTS (1136-1220)
+       - initDOMElements(): Cache all DOM elements in $ object
+       - GAME STATE: Central game state object
+       - CONSTANTS: Score targets, storage keys, haptic feedback
+
+    2. GAME STATE PERSISTENCE (1222-1273)
+       - saveGameState(): Save to localStorage
+       - loadGameState(): Load from localStorage
+       - saveArchive(), getArchive(): Archive management
+
+    3. ARCHIVE & GAME HISTORY (1275-1472)
+       - renderArchive(): Display completed games
+       - archiveCurrentGame(): Save current game to archive
+       - formatArchiveDate(), formatSignedScore(): Display helpers
+       - openArchiveDetails(), closeArchiveDetails(): Archive detail view
+
+    4. GAME RULES & SCORING FUNDAMENTALS (1474-1620)
+       - getTargetScore(): Get winning target by game type
+       - getScoreBounds(): Score limits for current game type
+       - parseScoreValue(): Validate score input (7/9 Ejbar)
+       - parseShelemScoreValue(): Validate Shelem score input
+       - enforceForcedBidIfNeeded(), enablePills(): Game utilities
+       - Shelem mode: selectSuit(), resetSuit(), toggleMinus(), updateMinusBtnState()
+
+    5. SCORE PICKER COMPONENT (1622-1895)
+       - Picker constants (PICKER_ITEM_H, PICKER_VISIBLE, etc.)
+       - pickerValueToOffset(), pickerOffsetToValue(): Value conversion
+       - getAllowedPickerValues(), buildPickerItems(): Picker data
+       - updatePickerHighlight(): Visual selection
+       - initPicker(): Main picker initialization with nested event handlers
+       - picker1, picker2: Global picker instances
+       - setPickersEnabled(): Enable/disable pickers
+       - Input sync: syncDirectInputsFromHidden(), syncHiddenInputsFromDirect()
+       - updateScoreInputMode(): Switch picker/direct input based on game type
+       - clearDirectInputs(), initVirtualKeyboard(): Input control
+
+    6. CORE GAMEPLAY (1897-2060)
+       - selectGameType(): Choose 7/9 Ejbar or Shelem
+       - startGame(): Initialize game session
+       - updateTeamNames(): Update displayed team names
+       - addScore(): Main score submission logic
+       - adjustScore(): Increment/decrement score buttons
+
+    7. UI RENDERING & DISPLAY (2062-2230)
+       - updateUI(): Main rendering function - displays scores, history, highlights
+       - escapeHtml(): HTML escape utility
+       - checkWinner(): Determine if game is won
+       - showWinner(), closeWinner(): Winner overlay display
+
+    8. HISTORY & ROUND MANAGEMENT (2232-2425)
+       - openSheet(), closeSheet(): History edit sheet UI
+       - sheetEdit(), sheetDelete(): Sheet action handlers
+       - bindLongPress(): Enable long-press to edit rounds
+       - deleteRound(): Remove round from history
+       - editRound(): Modify round scores
+       - newGame(): Reset for new game
+       - clearHistory(): Clear all history
+
+    9. THEME, LOCALIZATION & EVENT LISTENERS (2427-2870)
+       - applyTheme(), toggleTheme(): Dark/light mode
+       - syncSubmitEnabled(): Enable/disable submit button
+       - Event listeners: DOMContentLoaded, beforeunload, touchstart/touchmove
+       - I18N_UI: Translation strings (English & Farsi)
+       - Digit conversion: toFaDigitsUI(), toEnDigitsUI()
+       - localizeDisplayedNumbersUI(): Update displayed numbers
+       - applyLangUI(): Apply language-specific text/number formats
+       - toggleLang(): Switch between English/Farsi
+
+    ============================================================
+    */
+
     // ========== DOM ELEMENT CACHE ==========
     let $ = {};
     
@@ -1186,8 +1260,8 @@
     let gameState = {
       lastTurn: 1,
       gameType: null,
-      team1Name: 'Team 1',
-      team2Name: 'Team 2',
+      team1Name: 'Ma',
+      team2Name: 'Shoma',
       team1Total: 0,
       team2Total: 0,
       team1Points: 0,
@@ -1223,7 +1297,7 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
       } catch (e) {
-        console.warn('Could not save game state', e);
+        // Storage unavailable
       }
     }
 
@@ -1239,8 +1313,8 @@
         return;
       }
 
-      if ($.team1Name) $.team1Name.value = gameState.team1Name || 'Team 1';
-      if ($.team2Name) $.team2Name.value = gameState.team2Name || 'Team 2';
+      if ($.team1Name) $.team1Name.value = gameState.team1Name || 'Ma';
+      if ($.team2Name) $.team2Name.value = gameState.team2Name || 'Shoma';
 
       updateTeamNames();
 
@@ -1268,7 +1342,7 @@
       try {
         localStorage.setItem(ARCHIVE_KEY, JSON.stringify(items));
       } catch (e) {
-        console.warn('Could not save archive', e);
+        // Storage unavailable
       }
     }
 
@@ -1472,8 +1546,9 @@
       if ($.archiveOverlay) $.archiveOverlay.classList.remove('show');
     }
 
-    // ========== HELPER FUNCTIONS ==========
-    // ========== THEME MANAGEMENT ==========
+    // ========== HELPER FUNCTIONS & THEME MANAGEMENT ==========
+    // Theme toggle and initialization on load
+
     function applyTheme(theme) {
       const html = document.documentElement;
       const icon = document.getElementById('themeIcon');
@@ -1500,13 +1575,15 @@
       applyTheme(prefersDark ? 'dark' : 'light');
     })();
 
-    // ========== GAME LOGIC ==========
+    // ========== GAME RULES & SCORING FUNDAMENTALS ==========
+    // Core game logic: target scores, bounds, and score validation
     function getTargetScore() {
       if (gameState.gameType === 'shelem') return TARGET_shelem;
       return gameState.gameType === 9 ? TARGET_9Ejbar : TARGET_7Ejbar;
     }
 
-    // ========== MISSING STUB FUNCTIONS ==========
+    // ========== GAME RULES & SCORING FUNDAMENTALS (continued) ==========
+    // --- Stub Functions & Utilities ---
     function enforceForcedBidIfNeeded() {
       // no-op in this game mode
     }
@@ -1517,7 +1594,11 @@
       });
     }
 
-    // ========== SCROLL WHEEL PICKER ==========
+    // ========== SCORE PICKER COMPONENT ==========
+    // Scroll wheel picker: constants, utilities, and initialization
+
+    // --- Picker Configuration & Constants ---
+
     const PICKER_ITEM_H = 50;
     const PICKER_VISIBLE = 3; // show 3 items (top, selected, bottom)
     const PICKER_PAD = 1; // 1 blank slot top & bottom for centering
@@ -1545,6 +1626,18 @@
       }
       return n;
     }
+
+    function parseShelemScoreValue(raw) {
+      const s = toEnDigitsUI((raw ?? '').toString()).trim();
+      if (s === '') return null;
+      if (!/^-?\d+$/.test(s)) return null;
+      const n = parseInt(s, 10);
+      if (isNaN(n)) return null;
+      if (n !== 0 && n % 5 !== 0) return null;
+      return n;
+    }
+
+    // --- Shelem Game Mode ---
 
     let selectedSuit = null;
 
@@ -1580,16 +1673,6 @@
       }
       updateMinusBtnState(n);
       syncSubmitEnabled();
-    }
-
-    function parseShelemScoreValue(raw) {
-      const s = toEnDigitsUI((raw ?? '').toString()).trim();
-      if (s === '') return null;
-      if (!/^-?\d+$/.test(s)) return null;
-      const n = parseInt(s, 10);
-      if (isNaN(n)) return null;
-      if (n !== 0 && n % 5 !== 0) return null;
-      return n;
     }
 
     function pickerValueToOffset(val) {
@@ -1797,12 +1880,16 @@
     let picker1 = null;
     let picker2 = null;
 
+    // --- Picker Control Functions ---
+
     function setPickersEnabled(enabled) {
       const pw1 = document.getElementById('pickerWrap1');
       const pw2 = document.getElementById('pickerWrap2');
       if (pw1) { pw1.style.pointerEvents = enabled ? '' : 'none'; pw1.style.opacity = enabled ? '' : '0.4'; }
       if (pw2) { pw2.style.pointerEvents = enabled ? '' : 'none'; pw2.style.opacity = enabled ? '' : '0.4'; }
     }
+
+    // --- Score Input Synchronization ---
 
     function syncDirectInputsFromHidden() {
       if (gameState.gameType === 'shelem') {
@@ -1849,10 +1936,13 @@
       }
     }
 
-    function showVirtualKeyboard() { /* no-op, pickers are inline */ }
-    function hideVirtualKeyboard() { /* no-op */ }
-    function setActiveScoreInput() { /* no-op */ }
-    function updateVkDisplay() { /* no-op */ }
+
+    function clearDirectInputs() {
+      if ($.directInput1) $.directInput1.value = '';
+      if ($.directInput2) $.directInput2.value = '';
+    }
+
+    // --- Virtual Keyboard & Picker Initialization ---
 
     function initVirtualKeyboard() {
       // Initialize scroll pickers instead
@@ -1874,7 +1964,11 @@
       syncSubmitEnabled();
     }
 
-    // ========== UI UPDATES ==========
+    // ========== CORE GAMEPLAY ==========
+    // Game flow: type selection, initialization, teams, and scoring
+
+    // --- Game Setup ---
+
     function selectGameType(type) {
       Haptic.light();
       gameState.gameType = type;
@@ -1906,8 +2000,8 @@
       }
       Haptic.medium();
 
-      gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Team 1';
-      gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Team 2';
+      gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Ma';
+      gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Shoma';
 
       if (gameState.gameType !== 'shelem') {
         const defaultVal = getScoreBounds().defaultValue;
@@ -1967,8 +2061,7 @@
         Haptic.medium();
         gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0, suit: selectedSuit });
 
-        if ($.directInput1) $.directInput1.value = '';
-        if ($.directInput2) $.directInput2.value = '';
+        clearDirectInputs();
         updateMinusBtnState(1); updateMinusBtnState(2);
         resetSuit();
         if ($.result1) $.result1.value = '';
@@ -2029,12 +2122,9 @@
 
       if ($.result1) $.result1.value = '0';
       if ($.result2) $.result2.value = '0';
-      if ($.directInput1) $.directInput1.value = '';
-      if ($.directInput2) $.directInput2.value = '';
+      clearDirectInputs();
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
-      if ($.directInput1) $.directInput1.value = '';
-      if ($.directInput2) $.directInput2.value = '';
       updateMinusBtnState(1); updateMinusBtnState(2);
       resetSuit();
 
@@ -2212,7 +2302,6 @@
       if ($.result2) $.result2.disabled = true;
       setPickersEnabled(false);
       enablePills(false);
-      hideVirtualKeyboard();
       archiveCurrentGame();
     }
 
@@ -2221,12 +2310,15 @@
       if ($.winnerOverlay) $.winnerOverlay.classList.remove('show');
     }
 
-    // ========== HISTORY MANAGEMENT ==========
+    // ========== HISTORY & ROUND MANAGEMENT ==========
+    // Round editing/deletion, game history, and reset
+
+    // --- History View & Interaction ---
+
     function openSheet(idx) {
       Haptic.heavy();
       sheetIndex = idx;
       if ($.sheetOverlay) $.sheetOverlay.classList.add('show');
-      hideVirtualKeyboard();
     }
 
     function closeSheet() {
@@ -2358,8 +2450,8 @@
       gameState = {
         lastTurn: 1,
         gameType: null,
-        team1Name: 'Team 1',
-        team2Name: 'Team 2',
+        team1Name: 'Ma',
+        team2Name: 'Shoma',
         team1Total: 0,
         team2Total: 0,
         team1Points: 0,
@@ -2373,8 +2465,7 @@
       setPickersEnabled(true);
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
-      if ($.directInput1) $.directInput1.value = '';
-      if ($.directInput2) $.directInput2.value = '';
+      clearDirectInputs();
       updateMinusBtnState(1); updateMinusBtnState(2);
       resetSuit();
 
@@ -2383,8 +2474,8 @@
       if ($.setupScreen) $.setupScreen.classList.remove('hidden');
       document.querySelectorAll('.seg-btn').forEach(btn => btn.classList.remove('selected'));
 
-      if ($.team1Name) $.team1Name.value = 'Team 1';
-      if ($.team2Name) $.team2Name.value = 'Team 2';
+      if ($.team1Name) $.team1Name.value = 'Ma';
+      if ($.team2Name) $.team2Name.value = 'Shoma';
       if ($.targetHint) $.targetHint.textContent = 'Target: —';
       updateScoreInputMode();
 
@@ -2411,8 +2502,7 @@
       setPickersEnabled(true);
       if (picker1) picker1.setValue(0);
       if (picker2) picker2.setValue(0);
-      if ($.directInput1) $.directInput1.value = '';
-      if ($.directInput2) $.directInput2.value = '';
+      clearDirectInputs();
       updateMinusBtnState(1); updateMinusBtnState(2);
       resetSuit();
       enablePills(true);
@@ -2422,7 +2512,11 @@
       saveGameState();
     }
 
-    // ========== EVENT LISTENERS ==========
+    // ========== THEME, LOCALIZATION & EVENT LISTENERS ==========
+    // Theming, multi-language UI support, and event hooks
+
+    // --- Theme Management ---
+
     function syncSubmitEnabled() {
       if (!$.submitBtn || !$.result1 || !$.result2) return;
 
@@ -2455,8 +2549,7 @@
       }
       initVirtualKeyboard();
       if (gameState.gameType === 'shelem') {
-        if ($.directInput1) $.directInput1.value = '';
-        if ($.directInput2) $.directInput2.value = '';
+        clearDirectInputs();
         updateMinusBtnState(1); updateMinusBtnState(2);
         if ($.result1) $.result1.value = '';
         if ($.result2) $.result2.value = '';
@@ -2504,16 +2597,18 @@
       }
     }, { passive: false });
   
+    // --- Localization & Multi-Language Support ---
+
     // ================= UI-ONLY TRANSLATION (NO RULE CHANGES) =================
     const I18N_UI = {
       en: {
         title: "Ejbar",
         selectGame: "Select Game Type",
         choose: "Choose 7, 9, or Shelem",
-        team1NameLabel: "Team 1 Name",
-        team2NameLabel: "Team 2 Name",
-        team1Placeholder: "Team 1",
-        team2Placeholder: "Team 2",
+        team1NameLabel: "Ma Name",
+        team2NameLabel: "Shoma Name",
+        team1Placeholder: "Ma",
+        team2Placeholder: "Shoma",
         start: "Start Game",
         scoreboard: "Scoreboard",
         history: "History",
@@ -2834,7 +2929,7 @@ if('serviceWorker' in navigator){
       <div class="archive-modal-head">
         <div>
           <div class="archive-modal-kicker" id="archiveOverlayGameType">Saved Game</div>
-          <h3 id="archiveOverlayTitle">Team 1 vs Team 2</h3>
+          <h3 id="archiveOverlayTitle">Ma vs Shoma</h3>
           <p id="archiveOverlayMeta"></p>
         </div>
         <button class="icon-btn" type="button" onclick="closeArchiveDetails()" aria-label="Close">✕</button>
@@ -2843,14 +2938,14 @@ if('serviceWorker' in navigator){
       <div class="archive-summary">
         <div class="score-card">
           <div class="score-top">
-            <div class="team-label" id="archiveSummaryTeam1">TEAM 1</div>
+            <div class="team-label" id="archiveSummaryTeam1">Ma</div>
             <div class="badge hidden" id="archiveSummaryPoints1">0</div>
           </div>
           <div class="score-value accent-1" id="archiveSummaryScore1">0</div>
         </div>
         <div class="score-card">
           <div class="score-top">
-            <div class="team-label" id="archiveSummaryTeam2">TEAM 2</div>
+            <div class="team-label" id="archiveSummaryTeam2">Shoma</div>
             <div class="badge hidden" id="archiveSummaryPoints2">0</div>
           </div>
           <div class="score-value accent-2" id="archiveSummaryScore2">0</div>
@@ -2859,8 +2954,8 @@ if('serviceWorker' in navigator){
 
       <div class="archive-rounds-wrap">
         <div class="history-header archive-history-header">
-          <div id="archiveHistoryCol1">Team 1</div>
-          <div id="archiveHistoryCol2">Team 2</div>
+          <div id="archiveHistoryCol1">Ma</div>
+          <div id="archiveHistoryCol2">Shoma</div>
         </div>
         <div id="archiveOverlayBody" class="list"></div>
       </div>
