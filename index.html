@@ -1072,8 +1072,8 @@
       function squirclePath(w, h, r) {
         // Force squircle for all rounded elements (no pill fallback).
         // Cap to leave ≥ 20% straight edge on every side.
-        var s  = Math.min(r, w * 0.40, h * 0.40);
-        var f1 = 0.920, f2 = 0.420, f3 = 0.095, fm = 0.085;
+        var s  = Math.min(r, w * 0.46, h * 0.46);
+        var f1 = 0.980, f2 = 0.650, f3 = 0.180, fm = 0.030;
 
         // Build two cubic bezier segments for one corner.
         // cx,cy = corner vertex; ex1,ey1 = entering edge direction;
