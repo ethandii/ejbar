@@ -2056,17 +2056,24 @@
       gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Ma';
       gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Shoma';
 
-      if (gameState.gameType !== 'shelem') {
-        const defaultVal = getScoreBounds().defaultValue;
-        if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
-        if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
-        if (picker1) picker1.refresh();
-        if (picker2) picker2.refresh();
-      }
-
       updateTeamNames();
       if ($.setupScreen) $.setupScreen.classList.add('hidden');
       if ($.gameScreen) $.gameScreen.classList.remove('hidden');
+
+      // Reset picker initialization to rebuild with correct game type
+      vkInitialized = false;
+      picker1 = null;
+      picker2 = null;
+      initVirtualKeyboard();
+
+      const defaultVal = getScoreBounds().defaultValue;
+      if ($.result1 && (!$.result1.value || $.result1.value === '0')) $.result1.value = String(defaultVal);
+      if ($.result2 && (!$.result2.value || $.result2.value === '0')) $.result2.value = String(defaultVal);
+
+      if (picker1) picker1.refresh();
+      if (picker2) picker2.refresh();
+      updateScoreInputMode();
+      setPickersEnabled(true);
       updateUI();
       syncSubmitEnabled();
       saveGameState();
