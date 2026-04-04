@@ -1095,11 +1095,11 @@
         </div>
         <div class="form-grid">
           <div class="field">
-            <label>Ma Name</label>
+           <label>Team 1 Name</label>
             <input class="text" id="team1Name" type="text" placeholder="Ma" value="Ma" />
           </div>
           <div class="field">
-            <label>Shoma Name</label>
+            <label>Team 2 Name</label>
             <input class="text" id="team2Name" type="text" placeholder="Shoma" value="Shoma" />
           </div>
         </div>
@@ -2786,8 +2786,8 @@
           window.moonLottieAnim = lottie.loadAnimation({ container: moonEl, renderer: 'svg', loop: false, autoplay: false, animationData: MOON_LOTTIE_DATA });
           window.sunLottieAnim  = lottie.loadAnimation({ container: sunEl,  renderer: 'svg', loop: false, autoplay: false, animationData: SUN_LOTTIE_DATA  });
           const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          moonEl.style.opacity = isDark ? '1' : '0';
-          sunEl.style.opacity  = isDark ? '0' : '1';
+          moonEl.style.opacity = isDark ? '0' : '1';
+          sunEl.style.opacity  = isDark ? '1' : '0';
           window.moonLottieAnim.goToAndStop(89, true);
           window.sunLottieAnim.goToAndStop(89, true);
         }
