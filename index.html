@@ -21,6 +21,12 @@
   <link rel="manifest" href="manifest.webmanifest">
 
   <style>
+
+    /* ── Reset & Base ──────────────────────────────────────────────────────
+       Global box-model reset and body defaults. Vazirmatn is the primary
+       font (supports both Latin and Persian). Overscroll is contained so
+       the app doesn't bounce on iOS when at the top/bottom of a scroll.
+    ─────────────────────────────────────────────────────────────────────── */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; }
     body {
@@ -33,6 +39,11 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* ── Theme Variables ───────────────────────────────────────────────────
+       All design tokens live here. Light-mode values are in :root; dark-mode
+       overrides are in [data-theme="dark"]. --radius and --corner-shape
+       produce native squircle corners on supporting browsers (Safari 18+).
+    ─────────────────────────────────────────────────────────────────────── */
     :root {
       --bg: #F2F2F7;
       --card: rgba(255,255,255,0.72);
@@ -70,6 +81,10 @@
       --shadow-2: 0 12px 34px rgba(0,0,0,0.55);
     }
 
+    /* ── Layout ────────────────────────────────────────────────────────────
+       Centres the app content up to 680 px and respects safe-area insets
+       (iPhone notch / home indicator).
+    ─────────────────────────────────────────────────────────────────────── */
     .app {
       max-width: 680px;
       margin: 0 auto;
@@ -77,6 +92,12 @@
       min-height: 100%;
     }
 
+    /* ── Nav Bar ───────────────────────────────────────────────────────────
+       Sticky frosted-glass header. Bleeds edge-to-edge via negative margins
+       and uses a gradient fade at the bottom so content scrolls beneath it
+       naturally. .brand holds the app title + subtitle chip; .nav-actions
+       holds the lang and theme toggle buttons.
+    ─────────────────────────────────────────────────────────────────────── */
     .nav {
       position: sticky;
       top: 0;
@@ -152,6 +173,12 @@
 
     .nav-actions { display: flex; align-items: center; gap: 10px; }
 
+    /* ── Icon Buttons ──────────────────────────────────────────────────────
+       Squircle icon buttons used in the nav bar for lang and theme toggles.
+       .lang-btn reverses its bg/text colors relative to the theme so the
+       language icon always reads clearly. .theme-lottie-wrap holds the two
+       stacked Lottie containers (moon + sun) that crossfade on toggle.
+    ─────────────────────────────────────────────────────────────────────── */
     .icon-btn {
       width: 40px;
       height: 40px;
@@ -180,6 +207,10 @@
     .theme-lottie g { opacity: 1 !important; }
     [data-theme="dark"] .theme-lottie { filter: brightness(0) invert(1); }
 
+    /* ── Section Cards ─────────────────────────────────────────────────────
+       Frosted-glass card containers used for each major block of UI
+       (game type selector, scoreboard, score input, history).
+    ─────────────────────────────────────────────────────────────────────── */
     .section {
       margin: 10px 0 14px;
       padding: 14px;
@@ -209,6 +240,11 @@
       color: var(--text-tertiary);
     }
 
+    /* ── Segmented Control ─────────────────────────────────────────────────
+       iOS-style pill selector for choosing game type (Ejbar / Shelem).
+       .ejbar-btn-wrap is a relative container so the Ejbar sub-type
+       dropdown can position itself absolutely below the button.
+    ─────────────────────────────────────────────────────────────────────── */
     .segmented {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -258,6 +294,15 @@
       height: 100%;
     }
 
+    /* ── Animations & Transitions ──────────────────────────────────────────
+       squircle-in: CSS View Transitions keyframe — new content is clipped to
+         a circle that expands outward from the triggering button's position.
+       dropdown-in/out: Spring-in open, fade-out close for the Ejbar sub-menu.
+       btn-pop: Subtle press feedback on interactive buttons.
+       totalPulse/turnPulse: Score card micro-animations on new round.
+       pop: Entry animation for the victory overlay card.
+       sheetUp: Action sheet slides up from the bottom.
+    ─────────────────────────────────────────────────────────────────────── */
     @keyframes squircle-in {
       from { clip-path: circle(0px at var(--squircle-x, 50%) var(--squircle-y, 50%)); }
       to   { clip-path: circle(150vmax at var(--squircle-x, 50%) var(--squircle-y, 50%)); }
@@ -329,6 +374,11 @@
     }
 
 
+    /* ── Direct Score Input (Shelem) ───────────────────────────────────────
+       Full-width numeric text inputs used in Shelem mode (replaces the scroll
+       picker). .minus-btn is an absolute-positioned toggle inside the input
+       row that prefixes a minus sign to allow negative Shelem scores.
+    ─────────────────────────────────────────────────────────────────────── */
     .direct-score-input {
       width: 100%;
       padding: 14px 12px;
@@ -397,8 +447,14 @@
 
     .minus-btn:active { transform: translateY(-50%) scale(0.93); }
 
+    /* ── Utilities ─────────────────────────────────────────────────────────
+       .hidden: Used throughout to show/hide screens and elements via JS.
+    ─────────────────────────────────────────────────────────────────────── */
     .hidden { display: none !important; }
 
+    /* ── Form Fields ────────────────────────────────────────────────────────
+       Team name text inputs on the setup screen.
+    ─────────────────────────────────────────────────────────────────────── */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -434,6 +490,13 @@
       border-color: rgba(0,122,255,0.55);
     }
 
+    /* ── Buttons ────────────────────────────────────────────────────────────
+       .btn-primary: Blue CTA (Start Game, Submit).
+       .btn-secondary: Muted action (New Game).
+       .btn-danger: Destructive action (Clear history) — red tint.
+       .is-disabled / :disabled: Greyed-out state with !important overrides
+         to prevent color bleed from primary/danger backgrounds.
+    ─────────────────────────────────────────────────────────────────────── */
     .btn {
       width: 100%;
       border: none;
@@ -475,6 +538,13 @@
       cursor: not-allowed;
     }
 
+    /* ── Score Display ──────────────────────────────────────────────────────
+       Two-column grid of score cards shown on the game screen. Each card
+       shows the team name, a points badge (game-point tally), and the large
+       running total. .total-highlight adds a red border when a team is close
+       to or has passed the target. .accent-1/.accent-2 color the totals blue
+       and green respectively. .badge.points-leading highlights the leader.
+    ─────────────────────────────────────────────────────────────────────── */
     .score-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -563,6 +633,11 @@
     .accent-2 { color: var(--green); }
 
 
+    /* ── Result Grid ────────────────────────────────────────────────────────
+       Two-column grid that holds the scroll pickers (Ejbar) or direct text
+       inputs (Shelem) side-by-side. .num hides the backing <input type=hidden>
+       that stores the numeric value for the picker.
+    ─────────────────────────────────────────────────────────────────────── */
     .result-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -575,7 +650,14 @@
       display: none;
     }
 
-    /* ===== iOS-style scroll wheel picker ===== */
+    /* ── Scroll Picker ──────────────────────────────────────────────────────
+       iOS-style drum-roll scroll picker used in Ejbar mode. The visible
+       window is 150 px tall (3 items at 50 px each). .picker-scroll moves
+       via transform:translateY driven by JS touch/mouse events. .snapping
+       adds a CSS transition so the scroll settles with spring momentum.
+       .picker-highlight is the blue selection band in the centre.
+       .picker-fade top/bottom gradients mask items outside the window.
+    ─────────────────────────────────────────────────────────────────────── */
     .picker-wrap {
       position: relative;
       height: 150px;
@@ -682,6 +764,12 @@
       background: linear-gradient(to top, rgba(28,28,30,0.90) 0%, rgba(28,28,30,0) 100%);
     }
 
+    /* ── Score Adjust Buttons ───────────────────────────────────────────────
+       +/− increment buttons shown below the pickers in Ejbar mode, allowing
+       quick taps instead of scrolling. .rlabel is the team name label above
+       each picker column. .submit-in-card wraps the Submit button inside the
+       score input card.
+    ─────────────────────────────────────────────────────────────────────── */
       .score-btn {
         border-radius: var(--radius);
         corner-shape: var(--corner-shape);
@@ -714,6 +802,13 @@
       margin-top: 12px;
     }
 
+    /* ── History List ───────────────────────────────────────────────────────
+       Scrollable list of completed rounds. Each .row is a two-column grid
+       with a .mini card per team. .mini variants (milestone, shelem-green,
+       shelem-gold, shelem-red) colour-code Shelem result types. .delta shows
+       the per-round score change; .roundtag shows the round number. Long-press
+       on a row opens the action sheet to edit or delete that round.
+    ─────────────────────────────────────────────────────────────────────── */
     .list {
       margin-top: 8px;
       overflow: hidden;
@@ -806,6 +901,11 @@
       pointer-events: none;
     }
 
+    /* ── Victory Overlay ────────────────────────────────────────────────────
+       Full-screen frosted backdrop with a centred card that announces the
+       winner. Appears when either team reaches the target score. Dismissed
+       by the New Game button or tapping outside.
+    ─────────────────────────────────────────────────────────────────────── */
     .overlay {
       position: fixed;
       inset: 0;
@@ -865,6 +965,11 @@
       gap: 10px;
     }
 
+    /* ── Action Sheet ───────────────────────────────────────────────────────
+       Bottom-sheet that slides up when the user long-presses a history row.
+       Offers Edit and Delete actions for that round. .sheet-card groups the
+       action buttons with iOS-style separators. Cancel lives in its own card.
+    ─────────────────────────────────────────────────────────────────────── */
     .sheet-overlay {
       position: fixed;
       inset: 0;
@@ -925,6 +1030,7 @@
       background: rgba(118,118,128,0.24);
     }
 
+    /* ── History Column Headers ─────────────────────────────────────────── */
     .history-header {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -964,6 +1070,11 @@
       animation: turnPulse 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
+    /* ── Responsive & Accessibility ─────────────────────────────────────────
+       Slightly smaller title and score value on narrow phones.
+       Ensures all controls inherit the app font (Safari/iOS resets these).
+       RTL layout: in Farsi mode the round tag flips to the left edge.
+    ─────────────────────────────────────────────────────────────────────── */
     @media (max-width: 480px) {
       .title { font-size: 30px; }
       .score-value { font-size: 44px; }
@@ -975,6 +1086,10 @@
     /* UI-only: RTL history tag ("دست ۱") sits on the left */
     [dir="rtl"] .roundtag { right: auto; left: 10px; text-align: left; }
 
+    /* ── Suit Picker (Shelem) ───────────────────────────────────────────────
+       Row of four suit buttons (♠ ♥ ♦ ♣) shown only in Shelem mode.
+       The selected suit gets a gold background; used when recording trump.
+    ─────────────────────────────────────────────────────────────────────── */
     .suit-row {
       display: flex;
       gap: 8px;
@@ -1055,6 +1170,11 @@
 
 <body>
   <div class="app">
+
+    <!-- ── Nav Bar ────────────────────────────────────────────────────────
+         Sticky frosted header: app brand on the left, lang + theme toggles
+         on the right. Theme toggle holds the stacked moon/sun Lottie divs.
+    ──────────────────────────────────────────────────────────────────── -->
     <div class="nav">
       <div class="nav-row">
         <div class="brand">
@@ -1075,6 +1195,13 @@
       </div>
     </div>
 
+    <!-- ── Setup Screen ───────────────────────────────────────────────────
+         Shown on first launch and after "New Game". Contains:
+           • Game type segmented control (Ejbar variants + Shelem)
+           • Team name inputs
+           • Start Game button
+         Hidden once the game starts; revealed again by newGame().
+    ──────────────────────────────────────────────────────────────────── -->
     <div id="setupScreen">
       <div class="section">
         <div class="section-title">
@@ -1110,6 +1237,15 @@
 
           </div>
 
+    <!-- ── Game Screen ────────────────────────────────────────────────────
+         Main gameplay view. Contains three sections:
+           1. Scoreboard — live totals and game-point badges per team
+           2. Score Input — scroll pickers (Ejbar) or direct inputs (Shelem),
+              plus suit selector and Submit button
+           3. History — scrollable list of all completed rounds with
+              long-press → edit/delete via action sheet
+         New Game and Clear History action buttons sit at the bottom.
+    ──────────────────────────────────────────────────────────────────── -->
     <div id="gameScreen" class="hidden">
       <div class="section">
         <div class="section-title">
@@ -1199,6 +1335,10 @@
     </div>
   </div>
 
+  <!-- ── Victory Overlay ──────────────────────────────────────────────────
+       Modal shown when a team reaches the target score. Triggered by
+       checkWinner() after each round submission.
+  ──────────────────────────────────────────────────────────────────── -->
   <div class="overlay" id="winnerOverlay" role="dialog" aria-modal="true" aria-label="Winner">
     <div class="victory">
       <div class="trophy">🏆</div>
@@ -1208,6 +1348,10 @@
     </div>
   </div>
 
+  <!-- ── Action Sheet ──────────────────────────────────────────────────────
+       Bottom sheet that appears on long-press of a history row. Provides
+       Edit Round (opens inline edit) and Delete Round (removes from history).
+  ──────────────────────────────────────────────────────────────────── -->
   <div class="sheet-overlay" id="sheetOverlay">
     <div class="action-sheet">
       <div class="sheet-card">
@@ -1222,80 +1366,100 @@
 
   <script>
     /*
-    ========== EJBAR GAME - JAVASCRIPT INDEX =========
+    ════════════════════════════════════════════════════════════════
+    EJBAR — JavaScript Module Index
+    Single-file PWA for scoring the Iranian card games Ejbar & Shelem.
+    All JS lives here in one <script> tag after the main HTML.
+    ════════════════════════════════════════════════════════════════
 
-    1. DOM INITIALIZATION & CORE CONSTANTS (1136-1220)
-       - initDOMElements(): Cache all DOM elements in $ object
-       - GAME STATE: Central game state object
-       - CONSTANTS: Score targets, storage keys, haptic feedback
+    1. DOM INITIALIZATION & STATE
+       - initDOMElements()   — cache every used element into the $ object
+       - gameState           — single source of truth for current game data
+       - TARGET_* constants  — winning score thresholds per game type
+       - Haptic              — navigator.vibrate() patterns for feedback
+       - STORAGE_KEY / ARCHIVE_KEY — localStorage namespaces
 
-    2. GAME STATE PERSISTENCE (1222-1273)
-       - saveGameState(): Save to localStorage
-       - loadGameState(): Load from localStorage
-       - saveArchive(), getArchive(): Archive management
+    2. PERSISTENCE
+       - saveGameState()     — write gameState to localStorage
+       - loadGameState()     — restore gameState on app launch
+       - saveArchive()       — append finished game to archive
+       - getArchive()        — read archive array from localStorage
 
-    3. ARCHIVE & GAME HISTORY (1275-1472)
-       - renderArchive(): Display completed games
-       - archiveCurrentGame(): Save current game to archive
-       - formatArchiveDate(), formatSignedScore(): Display helpers
-       - openArchiveDetails(), closeArchiveDetails(): Archive detail view
+    3. ARCHIVE
+       - renderArchive()         — render all saved games in the archive list
+       - archiveCurrentGame()    — move current game into archive on new game
+       - formatArchiveDate()     — human-readable date for archive entries
+       - formatSignedScore()     — "+12" / "−5" display format
+       - openArchiveDetails()    — show detail overlay for a saved game
+       - closeArchiveDetails()   — close the detail overlay
 
-    4. GAME RULES & SCORING FUNDAMENTALS (1474-1620)
-       - getTargetScore(): Get winning target by game type
-       - getScoreBounds(): Score limits for current game type
-       - parseScoreValue(): Validate score input (7/9 Ejbar)
-       - parseShelemScoreValue(): Validate Shelem score input
-       - enforceForcedBidIfNeeded(), enablePills(): Game utilities
-       - Shelem mode: selectSuit(), resetSuit(), toggleMinus(), updateMinusBtnState()
+    4. GAME RULES & SCORING
+       - getTargetScore()           — winning target for the current game type
+       - getScoreBounds()           — valid score range (min/max/default)
+       - parseScoreValue()          — validate Ejbar score input
+       - parseShelemScoreValue()    — validate Shelem score input
+       - enforceForcedBidIfNeeded() — applies forced-bid rule for 8/9 Ejbar
+       - selectSuit() / resetSuit() — Shelem trump suit selection
+       - toggleMinus() / updateMinusBtnState() — negative-score toggle
 
-    5. SCORE PICKER COMPONENT (1622-1895)
-       - Picker constants (PICKER_ITEM_H, PICKER_VISIBLE, etc.)
-       - pickerValueToOffset(), pickerOffsetToValue(): Value conversion
-       - getAllowedPickerValues(), buildPickerItems(): Picker data
-       - updatePickerHighlight(): Visual selection
-       - initPicker(): Main picker initialization with nested event handlers
-       - picker1, picker2: Global picker instances
-       - setPickersEnabled(): Enable/disable pickers
-       - Input sync: syncDirectInputsFromHidden(), syncHiddenInputsFromDirect()
-       - updateScoreInputMode(): Switch picker/direct input based on game type
-       - clearDirectInputs(), initPickers(): Input control
+    5. SCROLL PICKER COMPONENT
+       - PICKER_ITEM_H / PICKER_VISIBLE / PICKER_PAD — layout constants
+       - pickerValueToOffset() / pickerOffsetToValue() — coordinate math
+       - getAllowedPickerValues() / buildPickerItems() — data generation
+       - updatePickerHighlight() — move the blue selection band
+       - initPicker()           — full picker init: touch + mouse + keyboard
+       - picker1 / picker2      — global picker instances
+       - setPickersEnabled()    — lock/unlock pickers after game ends
+       - syncDirectInputsFromHidden() / syncHiddenInputsFromDirect()
+       - updateScoreInputMode() — swap picker ↔ direct-input for Shelem
+       - clearDirectInputs() / initPickers()
 
-    6. CORE GAMEPLAY (1897-2060)
-       - selectGameType(): Choose 7/9 Ejbar or Shelem
-       - startGame(): Initialize game session
-       - updateTeamNames(): Update displayed team names
-       - addScore(): Main score submission logic
-       - adjustScore(): Increment/decrement score buttons
+    6. CORE GAMEPLAY
+       - selectGameType()    — set game type and update UI label
+       - getGameTitle()      — derive all-caps game name for scoreboard header
+       - startGame()         — validate setup and transition to game screen
+       - updateTeamNames()   — push team names to all display elements
+       - addScore()          — validate and record a round (main submit handler)
+       - adjustScore()       — +/− buttons increment picker values
 
-    7. UI RENDERING & DISPLAY (2062-2230)
-       - updateUI(): Main rendering function - displays scores, history, highlights
-       - escapeHtml(): HTML escape utility
-       - checkWinner(): Determine if game is won
-       - showWinner(), closeWinner(): Winner overlay display
+    7. UI RENDERING
+       - updateUI()          — re-render scoreboard, history list, highlights
+       - escapeHtml()        — sanitise user text before injecting into innerHTML
+       - checkWinner()       — check if target reached; call showWinner()
+       - showWinner()        — display victory overlay with winner info
+       - closeWinner()       — dismiss the victory overlay
 
-    8. HISTORY & ROUND MANAGEMENT (2232-2425)
-       - openSheet(), closeSheet(): History edit sheet UI
-       - sheetEdit(), sheetDelete(): Sheet action handlers
-       - setupLongPress(): Delegated long-press handler (initialized once)
-       - deleteRound(): Remove round from history
-       - editRound(): Modify round scores
-       - newGame(): Reset for new game
-       - clearHistory(): Clear all history
+    8. HISTORY & ROUND MANAGEMENT
+       - openSheet() / closeSheet()   — show/hide the long-press action sheet
+       - sheetEdit() / sheetDelete()  — action sheet button handlers
+       - setupLongPress()             — attach delegated touch listeners once
+       - deleteRound()                — remove a round and recalculate totals
+       - editRound()                  — overwrite a round's scores
+       - newGame()                    — archive current game, reset state
+       - clearHistory()               — wipe round history without archiving
 
-    9. THEME, LOCALIZATION & EVENT LISTENERS (2427-2870)
-       - applyTheme(), toggleTheme(): Dark/light mode
-       - syncSubmitEnabled(): Enable/disable submit button
-       - Event listeners: DOMContentLoaded, beforeunload, touchstart/touchmove
-       - I18N_UI: Translation strings (English & Farsi)
-       - Digit conversion: toFaDigitsUI(), toEnDigitsUI()
-       - localizeDisplayedNumbersUI(): Update displayed numbers
-       - applyLangUI(): Apply language-specific text/number formats
-       - toggleLang(): Switch between English/Farsi
+    9. THEME, LOCALISATION & INITIALISATION
+       - squircleReveal()    — CSS View Transition helper: circle-reveal from button
+       - applyTheme()        — apply data-theme attribute + Lottie icon crossfade
+       - toggleTheme()       — toggle between light and dark with squircle reveal
+       - syncSubmitEnabled() — enable/disable Submit based on current input state
+       - I18N_UI             — translation strings for English ("en") and Farsi ("fa")
+       - DIGITS_FA_UI        — Persian digit characters for number localisation
+       - toFaDigitsUI()      — convert ASCII digits → Persian digits
+       - toEnDigitsUI()      — convert Persian digits → ASCII digits
+       - localizeDisplayedNumbersUI() — walk the DOM and convert all numbers
+       - applyLangUI()       — set all text strings and re-localize numbers
+       - toggleLang()        — switch language with squircle reveal
+       - DOMContentLoaded    — boot sequence: init DOM, load state, set up events
+       - Lottie init         — load moon/sun animations and set initial opacity
 
-    ============================================================
+    ════════════════════════════════════════════════════════════════
     */
 
-    // ========== DOM ELEMENT CACHE ==========
+    // ── DOM Element Cache ────────────────────────────────────────────────────
+    // All element lookups happen once in initDOMElements() and are stored here.
+    // Access via $.elementName throughout the app instead of getElementById().
+    // ─────────────────────────────────────────────────────────────────────────
     let $ = {};
     
     function initDOMElements() {
@@ -1344,7 +1508,7 @@
       };
     }
 
-    // ========== GAME STATE ==========
+    // ── Game State ───────────────────────────────────────────────────────────
     // Central game state object that tracks everything about the current game:
     // - gameType: 7, 9, or 'shelem' (determines score rules and targets)
     // - team1/team2 Names: User-entered team names
@@ -1366,7 +1530,7 @@
       winner: null
     };
 
-    // ========== CONSTANTS ==========
+    // ── Constants ────────────────────────────────────────────────────────────
     // Game winning targets - must reach this score to win
     // 7 Ejbar: 350 points (traditional Ejbar game with lower target)
     // 9 Ejbar: 550 points (extended Ejbar with higher target and score range)
@@ -1383,7 +1547,7 @@
     const STORAGE_KEY = 'ejbarGameStateV3';
     const ARCHIVE_KEY = 'ejbarGameArchiveV1';
 
-    // ========== HAPTIC FEEDBACK ==========
+    // ── Haptic Feedback ──────────────────────────────────────────────────────
     const Haptic = {
       light:   () => navigator.vibrate?.(4),
       medium:  () => navigator.vibrate?.(10),
@@ -1649,8 +1813,8 @@
       if ($.archiveOverlay) $.archiveOverlay.classList.remove('show');
     }
 
-    // ========== HELPER FUNCTIONS & THEME MANAGEMENT ==========
-    // Theme toggle and initialization on load
+    // ── Theme Management ─────────────────────────────────────────────────────
+    // squircleReveal, applyTheme, toggleTheme — see index §9
 
     function squircleReveal(originEl, callback) {
       const rect = originEl
@@ -1707,7 +1871,7 @@
       applyTheme(prefersDark ? 'dark' : 'light');
     })();
 
-    // ========== GAME RULES & SCORING FUNDAMENTALS ==========
+    // ── Game Rules & Scoring ─────────────────────────────────────────────────
     // Core game logic: target scores, bounds, and score validation
     function getTargetScore() {
       if (gameState.gameType === 'shelem') return TARGET_shelem;
@@ -1715,7 +1879,7 @@
       return TARGET_7Ejbar;
     }
 
-    // ========== GAME RULES & SCORING FUNDAMENTALS (continued) ==========
+    // ── Game Rules — Shelem Mode ─────────────────────────────────────────────
     // --- Stub Functions & Utilities ---
     function enforceForcedBidIfNeeded() {
       // no-op in this game mode
@@ -1727,7 +1891,7 @@
       });
     }
 
-    // ========== SCORE PICKER COMPONENT ==========
+    // ── Scroll Picker Component ──────────────────────────────────────────────
     // Scroll wheel picker: constants, utilities, and initialization
     // The picker is a custom scroll-based input that displays values as a vertical list
     // User scrolls to select a value (-9 to +9 for 7/9 Ejbar, -13 to +13 for 9 Ejbar)
@@ -2097,7 +2261,7 @@
       syncSubmitEnabled();
     }
 
-    // ========== CORE GAMEPLAY ==========
+    // ── Core Gameplay ────────────────────────────────────────────────────────
     // Game flow: type selection, initialization, teams, and scoring
 
     // --- Game Setup ---
@@ -2511,7 +2675,7 @@
       if ($.winnerOverlay) $.winnerOverlay.classList.remove('show');
     }
 
-    // ========== HISTORY & ROUND MANAGEMENT ==========
+    // ── History & Round Management ───────────────────────────────────────────
     // Round editing/deletion, game history, and reset
 
     // --- History View & Interaction ---
@@ -2724,7 +2888,7 @@
       saveGameState();
     }
 
-    // ========== THEME, LOCALIZATION & EVENT LISTENERS ==========
+    // ── Localisation & Initialisation ────────────────────────────────────────
     // Theming, multi-language UI support, and event hooks
 
     // --- Theme Management ---
@@ -2838,9 +3002,9 @@
       }
     }, { passive: false });
   
-    // --- Localization & Multi-Language Support ---
-
-    // ================= UI-ONLY TRANSLATION (NO RULE CHANGES) =================
+    // ── i18n Strings ─────────────────────────────────────────────────────────
+    // All user-visible text in English ("en") and Farsi ("fa"). Game rules and
+    // scoring logic are never changed here — only display strings and labels.
     const I18N_UI = {
       en: {
         title: "Ejbar",
