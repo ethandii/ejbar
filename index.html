@@ -171,12 +171,13 @@
     [data-theme="dark"] .icon-btn { background: rgba(28,28,30,0.55); }
     .icon-btn:active { transform: scale(0.96); }
 
-    .icon-btn.lang-btn { background: #FFFFFF; border-color: transparent; color: #1C1C1E; }
+    .icon-btn.lang-btn { border: 1px solid var(--stroke); color: #1C1C1E; }
     [data-theme="dark"] .icon-btn.lang-btn { background: rgba(28,28,30,0.55); border-color: var(--stroke); color: #FFFFFF; }
     .icon-btn.lang-btn:active { opacity: 0.8; }
 
     .theme-lottie-wrap { position: relative; width: 24px; height: 24px; }
     .theme-lottie { position: absolute; inset: 0; transition: opacity 380ms ease; pointer-events: none; }
+    .theme-lottie g { opacity: 1 !important; }
     [data-theme="dark"] .theme-lottie { filter: brightness(0) invert(1); }
 
     .section {
@@ -1665,13 +1666,13 @@
       const sunEl  = document.getElementById('themeLottieSun');
       if (moonEl && sunEl) {
         if (theme === 'dark') {
-          moonEl.style.opacity = '1';
-          sunEl.style.opacity  = '0';
-          if (window.moonLottieAnim) window.moonLottieAnim.goToAndPlay(0, true);
-        } else {
           sunEl.style.opacity  = '1';
           moonEl.style.opacity = '0';
           if (window.sunLottieAnim) window.sunLottieAnim.goToAndPlay(0, true);
+        } else {
+          moonEl.style.opacity = '1';
+          sunEl.style.opacity  = '0';
+          if (window.moonLottieAnim) window.moonLottieAnim.goToAndPlay(0, true);
         }
       }
     }
@@ -2786,8 +2787,8 @@
           window.moonLottieAnim = lottie.loadAnimation({ container: moonEl, renderer: 'svg', loop: false, autoplay: false, animationData: MOON_LOTTIE_DATA });
           window.sunLottieAnim  = lottie.loadAnimation({ container: sunEl,  renderer: 'svg', loop: false, autoplay: false, animationData: SUN_LOTTIE_DATA  });
           const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          moonEl.style.opacity = isDark ? '1' : '0';
-          sunEl.style.opacity  = isDark ? '0' : '1';
+          moonEl.style.opacity = isDark ? '0' : '1';
+          sunEl.style.opacity  = isDark ? '1' : '0';
           window.moonLottieAnim.goToAndStop(89, true);
           window.sunLottieAnim.goToAndStop(89, true);
         }
