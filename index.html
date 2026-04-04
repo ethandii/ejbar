@@ -2786,8 +2786,8 @@
           window.moonLottieAnim = lottie.loadAnimation({ container: moonEl, renderer: 'svg', loop: false, autoplay: false, animationData: MOON_LOTTIE_DATA });
           window.sunLottieAnim  = lottie.loadAnimation({ container: sunEl,  renderer: 'svg', loop: false, autoplay: false, animationData: SUN_LOTTIE_DATA  });
           const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          moonEl.style.opacity = isDark ? '0' : '1';
-          sunEl.style.opacity  = isDark ? '1' : '0';
+          moonEl.style.opacity = isDark ? '1' : '0';
+          sunEl.style.opacity  = isDark ? '0' : '1';
           window.moonLottieAnim.goToAndStop(89, true);
           window.sunLottieAnim.goToAndStop(89, true);
         }
