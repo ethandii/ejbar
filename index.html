@@ -619,15 +619,6 @@
     }
 
     .picker-item {
-      transition: color 120ms ease, transform 120ms ease, opacity 120ms ease, filter 120ms ease;
-    }
-
-    .picker-item.selected {
-      filter: saturate(1.1);
-    }
-
-
-    .picker-item {
       height: 50px;
       display: flex;
       align-items: center;
@@ -635,13 +626,14 @@
       font-size: 24px;
       font-weight: 900;
       color: var(--text-tertiary);
-      transition: color 80ms ease, transform 80ms ease, opacity 80ms ease;
+      transition: color 120ms ease, transform 120ms ease, opacity 120ms ease, filter 120ms ease;
       pointer-events: none;
     }
 
     .picker-item.selected {
       color: var(--text);
       font-size: 28px;
+      filter: saturate(1.1);
     }
 
     .picker-highlight {
@@ -872,10 +864,6 @@
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
-
-    .hidden { display: none !important; }
-
-    /* (virtual keyboard removed — using scroll picker instead) */
 
     .sheet-overlay {
       position: fixed;
@@ -1183,6 +1171,7 @@
             </div>
             <input type="hidden" id="result2" value="0" />
           </div>
+          <p id="shelemNote" class="hidden" style="margin:6px 0 0;font-size:12px;color:var(--text-secondary);text-align:center;"></p>
         </div>
         <div class="submit-in-card">
           <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
@@ -1231,8 +1220,6 @@
     </div>
   </div>
 
-  <!-- scroll picker JS replaces virtual keyboard -->
-
   <script>
     /*
     ========== EJBAR GAME - JAVASCRIPT INDEX =========
@@ -1271,7 +1258,7 @@
        - setPickersEnabled(): Enable/disable pickers
        - Input sync: syncDirectInputsFromHidden(), syncHiddenInputsFromDirect()
        - updateScoreInputMode(): Switch picker/direct input based on game type
-       - clearDirectInputs(), initVirtualKeyboard(): Input control
+       - clearDirectInputs(), initPickers(): Input control
 
     6. CORE GAMEPLAY (1897-2060)
        - selectGameType(): Choose 7/9 Ejbar or Shelem
@@ -1289,7 +1276,7 @@
     8. HISTORY & ROUND MANAGEMENT (2232-2425)
        - openSheet(), closeSheet(): History edit sheet UI
        - sheetEdit(), sheetDelete(): Sheet action handlers
-       - bindLongPress(): Enable long-press to edit rounds
+       - setupLongPress(): Delegated long-press handler (initialized once)
        - deleteRound(): Remove round from history
        - editRound(): Modify round scores
        - newGame(): Reset for new game
@@ -1392,8 +1379,6 @@
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
-    let activeScoreInput = null;
-    let vkInitialized = false;
 
     const STORAGE_KEY = 'ejbarGameStateV3';
     const ARCHIVE_KEY = 'ejbarGameArchiveV1';
@@ -1755,8 +1740,6 @@
     const PICKER_PAD = 1; // 1 blank slot top & bottom for centering
     const PICKER_MIN = -13;
     const PICKER_MAX = 13;
-    const PICKER_COUNT = PICKER_MAX - PICKER_MIN + 1; // 27 items
-
     function getScoreBounds() {
       if (gameState.gameType === 'shelem') return { min: -9999, max: 9999, absMin: 0, defaultValue: 0 };
       if (gameState.gameType === 8 || gameState.gameType === 9) return { min: -13, max: 13, absMin: 4, defaultValue: 0 };
@@ -2101,19 +2084,12 @@
 
     // --- Virtual Keyboard & Picker Initialization ---
 
-    function initVirtualKeyboard() {
-      // Initialize scroll pickers instead
-      if (vkInitialized) return;
-      vkInitialized = true;
-
+    function initPickers() {
       const scroll1 = document.getElementById('pickerScroll1');
       const scroll2 = document.getElementById('pickerScroll2');
       if (!scroll1 || !scroll2 || !$.result1 || !$.result2) return;
-
       picker1 = initPicker(scroll1, $.result1);
       picker2 = initPicker(scroll2, $.result2);
-
-      // Set initial value to 0
       $.result1.value = '0';
       $.result2.value = '0';
       syncDirectInputsFromHidden();
@@ -2481,7 +2457,6 @@
       }).reverse().join('');
 
       $.historyList.innerHTML = rows;
-      bindLongPress();
     }
 
     const escapeHtmlMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
@@ -2562,18 +2537,17 @@
       closeSheet();
     }
 
-    function bindLongPress() {
-      const rows = $.historyList?.querySelectorAll('.row');
-      if (!rows) return;
-      rows.forEach((row, idx) => {
-        let moved = false;
-        const startTimer = () => { moved = false; pressTimer = setTimeout(() => openSheet(idx), 420); };
-        const cancelTimer = () => { moved = true; clearTimeout(pressTimer); };
-        const endTimer = () => clearTimeout(pressTimer);
-        row.addEventListener('touchstart', startTimer, { passive: true });
-        row.addEventListener('touchmove', cancelTimer, { passive: true });
-        row.addEventListener('touchend', endTimer, { passive: true });
-      });
+    function setupLongPress() {
+      if (!$.historyList) return;
+      $.historyList.addEventListener('touchstart', (e) => {
+        const row = e.target.closest('.row');
+        if (!row) return;
+        const idx = Array.from($.historyList.querySelectorAll('.row')).indexOf(row);
+        if (idx === -1) return;
+        pressTimer = setTimeout(() => openSheet(idx), 420);
+      }, { passive: true });
+      $.historyList.addEventListener('touchmove', () => clearTimeout(pressTimer), { passive: true });
+      $.historyList.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
     }
 
     function deleteRound(index) {
@@ -2798,7 +2772,8 @@
           if (ejbarMainBtn) ejbarMainBtn.textContent = getGameTypeLabel(gameState.gameType);
         }
       }
-      initVirtualKeyboard();
+      initPickers();
+      setupLongPress();
       if (gameState.gameType === 'shelem') {
         clearDirectInputs();
         updateMinusBtnState(1); updateMinusBtnState(2);
@@ -2969,7 +2944,6 @@
     function localizeDisplayedNumbersUI(){
       const makeFa = (currentLangUI === "fa");
 
-      const DIGITS_FA = DIGITS_FA_UI;
       const toFa = (s)=>toFaDigitsUI(toEnDigitsUI(s));
       const toEn = (s)=>toEnDigitsUI(s);
 
