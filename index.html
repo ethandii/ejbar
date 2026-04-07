@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
@@ -573,11 +573,13 @@
     }
 
     .score-top {
+      direction: ltr;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 6px;
+      align-items: center;
     }
 
     .team-label {
@@ -1175,7 +1177,7 @@
          Sticky frosted header: app brand on the left, lang + theme toggles
          on the right. Theme toggle holds the stacked moon/sun Lottie divs.
     ──────────────────────────────────────────────────────────────────── -->
-    <div class="nav">
+    <div class="nav" dir="ltr">
       <div class="nav-row">
         <div class="brand">
           <div class="title">Ejbar</div>
@@ -1307,7 +1309,6 @@
             </div>
             <input type="hidden" id="result2" value="0" />
           </div>
-          <p id="shelemNote" class="hidden" style="margin:6px 0 0;font-size:12px;color:var(--text-secondary);text-align:center;"></p>
         </div>
         <div class="submit-in-card">
           <button class="btn btn-primary is-disabled" id="submitBtn" type="button" disabled>Submit</button>
@@ -1480,7 +1481,6 @@
         directInput2: document.getElementById('directInput2'),
         directInputWrap1: document.getElementById('directInputWrap1'),
         directInputWrap2: document.getElementById('directInputWrap2'),
-        shelemNote: document.getElementById('shelemNote'),
         submitBtn: document.getElementById('submitBtn'),
         historyList: document.getElementById('historyList'),
         emptyHistory: document.getElementById('emptyHistory'),
@@ -1577,8 +1577,8 @@
         return;
       }
 
-      if ($.team1Name) $.team1Name.value = gameState.team1Name || 'Ma';
-      if ($.team2Name) $.team2Name.value = gameState.team2Name || 'Shoma';
+      if ($.team1Name) $.team1Name.value = getDisplayTeamName(gameState.team1Name || 'Ma');
+      if ($.team2Name) $.team2Name.value = getDisplayTeamName(gameState.team2Name || 'Shoma');
 
       updateTeamNames();
 
@@ -1619,16 +1619,27 @@
       return 'Ejbar';
     }
 
+    function getDrawLabelByLang(lang = currentLangUI) {
+      return lang === 'fa' ? 'مساوی' : 'Draw';
+    }
+
+    function getDisplayTeamName(value, options = {}) {
+      const raw = String(value || '').trim();
+      if (options.uppercase) return raw.toUpperCase();
+      return raw;
+    }
+
     function archiveCurrentGame() {
       if (!gameState.history || !gameState.history.length) return;
       if (gameState.archivedAt) return;
 
       const archive = getArchive();
-      const winnerName = gameState.winner || (
-        gameState.team1Total === gameState.team2Total
-          ? (currentLangUI === 'fa' ? 'مساوی' : 'Draw')
-          : (gameState.team1Total > gameState.team2Total ? gameState.team1Name : gameState.team2Name)
-      );
+      const winnerKey = gameState.team1Total === gameState.team2Total
+        ? 'draw'
+        : (gameState.team1Total > gameState.team2Total ? 'team1' : 'team2');
+      const winnerName = winnerKey === 'draw'
+        ? getDrawLabelByLang('en')
+        : (winnerKey === 'team1' ? gameState.team1Name : gameState.team2Name);
 
       const item = {
         id: 'g_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
@@ -1639,6 +1650,7 @@
         team2Total: gameState.team2Total,
         team1Points: gameState.team1Points,
         team2Points: gameState.team2Points,
+        winnerKey,
         winner: winnerName,
         rounds: gameState.history.length,
         finishedAt: new Date().toISOString(),
@@ -1681,6 +1693,15 @@
         el.className = 'archive-item';
         const isShelem = item.gameType === 'shelem';
         const gameLabel = getGameTypeLabel(item.gameType);
+        const team1Display = getDisplayTeamName(item.team1Name);
+        const team2Display = getDisplayTeamName(item.team2Name);
+        const winnerDisplay = item.winnerKey === 'draw' || item.winner === 'Draw' || item.winner === 'مساوی'
+          ? getDrawLabelByLang()
+          : (item.winnerKey === 'team1'
+              ? team1Display
+              : item.winnerKey === 'team2'
+                ? team2Display
+                : getDisplayTeamName(item.winner || ''));
         const pointsLine = isShelem
           ? ''
           : `<div>${currentLangUI === 'fa' ? 'پوینت:' : 'Points:'} ${item.team1Points} - ${item.team2Points}</div>`;
@@ -1690,10 +1711,10 @@
             <div class="archive-game">${gameLabel}</div>
             <div class="archive-date">${formatArchiveDate(item.finishedAt)}</div>
           </div>
-          <div class="archive-winner">${item.winner}</div>
+          <div class="archive-winner">${winnerDisplay}</div>
           <div class="archive-meta">
-            <div>${item.team1Name}: ${item.team1Total}</div>
-            <div>${item.team2Name}: ${item.team2Total}</div>
+            <div>${team1Display}: ${item.team1Total}</div>
+            <div>${team2Display}: ${item.team2Total}</div>
             <div>${currentLangUI === 'fa' ? 'دست‌ها:' : 'Rounds:'} ${item.rounds}</div>
             ${pointsLine || '<div></div>'}
           </div>
@@ -1722,22 +1743,31 @@
 
       const isShelem = item.gameType === 'shelem';
       const gameLabel = getGameTypeLabel(item.gameType);
+      const team1Display = getDisplayTeamName(item.team1Name);
+      const team2Display = getDisplayTeamName(item.team2Name);
+      const winnerDisplay = item.winnerKey === 'draw' || item.winner === 'Draw' || item.winner === 'مساوی'
+        ? getDrawLabelByLang()
+        : (item.winnerKey === 'team1'
+            ? team1Display
+            : item.winnerKey === 'team2'
+              ? team2Display
+              : getDisplayTeamName(item.winner || ''));
 
       if ($.archiveOverlayGameType) $.archiveOverlayGameType.textContent = gameLabel;
       if ($.archiveOverlayTitle) $.archiveOverlayTitle.textContent = currentLangUI === 'fa' ? 'تاریخچه' : 'History';
       if ($.archiveOverlayMeta) {
         $.archiveOverlayMeta.textContent =
-          `${item.team1Name} vs ${item.team2Name} • ` +
-          `${currentLangUI === 'fa' ? 'برنده' : 'Winner'}: ${item.winner} • ` +
+          `${team1Display} vs ${team2Display} • ` +
+          `${currentLangUI === 'fa' ? 'برنده' : 'Winner'}: ${winnerDisplay} • ` +
           `${formatArchiveDate(item.finishedAt)}`;
       }
 
-      if ($.archiveSummaryTeam1) $.archiveSummaryTeam1.textContent = item.team1Name;
-      if ($.archiveSummaryTeam2) $.archiveSummaryTeam2.textContent = item.team2Name;
+      if ($.archiveSummaryTeam1) $.archiveSummaryTeam1.textContent = team1Display;
+      if ($.archiveSummaryTeam2) $.archiveSummaryTeam2.textContent = team2Display;
       if ($.archiveSummaryScore1) $.archiveSummaryScore1.textContent = item.team1Total;
       if ($.archiveSummaryScore2) $.archiveSummaryScore2.textContent = item.team2Total;
-      if ($.archiveHistoryCol1) $.archiveHistoryCol1.textContent = item.team1Name;
-      if ($.archiveHistoryCol2) $.archiveHistoryCol2.textContent = item.team2Name;
+      if ($.archiveHistoryCol1) $.archiveHistoryCol1.textContent = team1Display;
+      if ($.archiveHistoryCol2) $.archiveHistoryCol2.textContent = team2Display;
       const roundsHint = document.getElementById('archiveRoundsHint');
       if (roundsHint) roundsHint.textContent = currentLangUI === 'fa' ? 'آخرین دست‌ها در بالا' : 'Most recent first';
 
@@ -2227,7 +2257,6 @@
       if (pw2) pw2.classList.toggle('hidden', isshelem);
       if ($.directInputWrap1) $.directInputWrap1.classList.toggle('hidden', !isshelem);
       if ($.directInputWrap2) $.directInputWrap2.classList.toggle('hidden', !isshelem);
-      if ($.shelemNote) $.shelemNote.classList.toggle('hidden', !isshelem);
       const suitRowEl = document.querySelector('.suit-row');
       if (suitRowEl) suitRowEl.classList.toggle('hidden', !isshelem);
       if (!isshelem) resetSuit();
@@ -2345,8 +2374,8 @@
       }
       Haptic.medium();
 
-      gameState.team1Name = ($.team1Name && $.team1Name.value) || 'Ma';
-      gameState.team2Name = ($.team2Name && $.team2Name.value) || 'Shoma';
+      gameState.team1Name = ($.team1Name && $.team1Name.value) || getDisplayTeamName('Ma');
+      gameState.team2Name = ($.team2Name && $.team2Name.value) || getDisplayTeamName('Shoma');
 
       if (gameState.gameType !== 'shelem') {
         const defaultVal = getScoreBounds().defaultValue;
@@ -2379,12 +2408,14 @@
       const t = I18N_UI[currentLangUI];
       const ids = ['displayTeam1Name', 'displayTeam2Name', 'resultLabel1', 'resultLabel2', 'historyColTeam1', 'historyColTeam2'];
       const els = ids.map(id => document.getElementById(id));
-      if (els[0]) els[0].textContent = gameState.team1Name.toUpperCase();
-      if (els[1]) els[1].textContent = gameState.team2Name.toUpperCase();
-      if (els[2]) els[2].textContent = `${gameState.team1Name} ${t.wonWord}`;
-      if (els[3]) els[3].textContent = `${gameState.team2Name} ${t.wonWord}`;
-      if (els[4]) els[4].textContent = gameState.team1Name;
-      if (els[5]) els[5].textContent = gameState.team2Name;
+      const team1Display = getDisplayTeamName(gameState.team1Name);
+      const team2Display = getDisplayTeamName(gameState.team2Name);
+      if (els[0]) els[0].textContent = getDisplayTeamName(gameState.team1Name, { uppercase: true });
+      if (els[1]) els[1].textContent = getDisplayTeamName(gameState.team2Name, { uppercase: true });
+      if (els[2]) els[2].textContent = `${team1Display} ${t.wonWord}`;
+      if (els[3]) els[3].textContent = `${team2Display} ${t.wonWord}`;
+      if (els[4]) els[4].textContent = team1Display;
+      if (els[5]) els[5].textContent = team2Display;
       const sbH2 = document.querySelector('#gameScreen .section:nth-of-type(1) .section-title h2');
       if (sbH2) sbH2.textContent = getGameTitle(t);
     }
@@ -2655,7 +2686,7 @@
       gameState.winner = name;
       const winnerNameEl = document.getElementById('winnerName');
       const winnerMessageEl = document.getElementById('winnerMessage');
-      if (winnerNameEl) winnerNameEl.textContent = name;
+      if (winnerNameEl) winnerNameEl.textContent = getDisplayTeamName(name);
       if (winnerMessageEl) {
         winnerMessageEl.textContent = message;
         if (currentLangUI === "fa") {
@@ -2744,9 +2775,9 @@
       const round = gameState.history[actualIndex];
       if (!round) return;
 
-      const team1ScoreInput = prompt(t.promptEditScore(gameState.team1Name), round.score1);
+      const team1ScoreInput = prompt(t.promptEditScore(getDisplayTeamName(gameState.team1Name)), round.score1);
       if (team1ScoreInput === null) return;
-      const team2ScoreInput = prompt(t.promptEditScore(gameState.team2Name), round.score2);
+      const team2ScoreInput = prompt(t.promptEditScore(getDisplayTeamName(gameState.team2Name)), round.score2);
       if (team2ScoreInput === null) return;
 
       const newScore1 = parseInt(team1ScoreInput, 10);
@@ -2850,8 +2881,8 @@
         const ejbarMainBtnReset = document.getElementById('ejbarMainBtn');
         if (ejbarMainBtnReset) ejbarMainBtnReset.textContent = I18N_UI[currentLangUI].labels.ejbar;
 
-        if ($.team1Name) $.team1Name.value = 'Ma';
-        if ($.team2Name) $.team2Name.value = 'Shoma';
+        if ($.team1Name) $.team1Name.value = getDisplayTeamName('Ma');
+        if ($.team2Name) $.team2Name.value = getDisplayTeamName('Shoma');
         if ($.targetHint) $.targetHint.textContent = 'Target: —';
         updateScoreInputMode();
         updateUI();
@@ -3010,10 +3041,10 @@
         title: "Ejbar",
         selectGame: "Select Game Type",
         choose: "Choose Ejbar or Shelem",
-        team1NameLabel: "Ma Name",
-        team2NameLabel: "Shoma Name",
-        team1Placeholder: "Ma",
-        team2Placeholder: "Shoma",
+        team1NameLabel: "Team 1 Name",
+        team2NameLabel: "Team 2 Name",
+        team1Placeholder: "Input Team 1 Name",
+        team2Placeholder: "Input Team 2 Name",
         start: "Start Game",
         scoreboard: "Scoreboard",
         history: "History",
@@ -3058,8 +3089,8 @@
         choose: "اجبار یا شلم را انتخاب کنید",
         team1NameLabel: "نام تیم ۱",
         team2NameLabel: "نام تیم ۲",
-        team1Placeholder: "تیم ۱",
-        team2Placeholder: "تیم ۲",
+        team1Placeholder: "نام تیم ۱ را وارد کنید",
+        team2Placeholder: "نام تیم ۲ را وارد کنید",
         start: "شروع بازی",
         scoreboard: "امتیازها",
         history: "تاریخچه",
@@ -3204,8 +3235,8 @@
       }
       const tn1 = document.getElementById("team1Name");
       const tn2 = document.getElementById("team2Name");
-      if(tn1) tn1.placeholder = t.team1Placeholder;
-      if(tn2) tn2.placeholder = t.team2Placeholder;
+      if(tn1) { tn1.placeholder = t.team1Placeholder; if (tn1.value) tn1.value = getDisplayTeamName(tn1.value); }
+      if(tn2) { tn2.placeholder = t.team2Placeholder; if (tn2.value) tn2.value = getDisplayTeamName(tn2.value); }
 
       const startBtn = document.querySelector("#setupScreen .btn.btn-primary");
       if(startBtn) startBtn.textContent = t.start;
@@ -3272,16 +3303,13 @@
       const langBtn = document.querySelector('button[onclick="toggleLang()"]');
       if(langBtn){ langBtn.title = t.language; langBtn.setAttribute("aria-label", t.language); }
 
-      const shelemNote = document.getElementById('shelemNote');
-      if (shelemNote) shelemNote.textContent = currentLangUI === 'fa' ? 'امتیازها باید مضربی از ۵ یا صفر باشند.' : 'Scores must be multiples of 5 or zero.';
-
       // Team-dependent labels (UI only)
       try{
         if(window.gameState){
           const r1 = document.getElementById("resultLabel1");
           const r2 = document.getElementById("resultLabel2");
-          if(r1) r1.textContent = `${gameState.team1Name} ${t.wonWord}`;
-          if(r2) r2.textContent = `${gameState.team2Name} ${t.wonWord}`;
+          if(r1) r1.textContent = `${getDisplayTeamName(gameState.team1Name)} ${t.wonWord}`;
+          if(r2) r2.textContent = `${getDisplayTeamName(gameState.team2Name)} ${t.wonWord}`;
         }
       }catch(_){}
 
@@ -3291,6 +3319,12 @@
         $.targetHint.textContent = (currentLangUI === "fa") ? toFaDigitsUI(msg) : msg;
       }
 
+      updateTeamNames();
+      const winnerNameEl = document.getElementById('winnerName');
+      if (winnerNameEl && gameState && gameState.winner) {
+        winnerNameEl.textContent = getDisplayTeamName(gameState.winner);
+      }
+      renderArchive();
       localizeDisplayedNumbersUI();
     }
 
@@ -3305,6 +3339,7 @@
         const __updateUI_UI = updateUI;
         updateUI = function(){
           __updateUI_UI();
+          updateTeamNames();
           localizeDisplayedNumbersUI();
         };
       }
