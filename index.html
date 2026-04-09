@@ -1883,6 +1883,62 @@
       }
     }
 
+    const MATRIX_POOL_EN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const MATRIX_POOL_FA = "ابتثجچحخدذرزژسشصضطظعغفقکگلمنوهی۰۱۲۳۴۵۶۷۸۹";
+
+    function isMatrixStaticChar(ch) {
+      return /\s/.test(ch) || /[.,!?;:(){}\[\]'"`~\-_/\\|@#$%^&*+=<>،؛؟]/.test(ch);
+    }
+
+    function randomMatrixChar(targetChar, lang) {
+      if (isMatrixStaticChar(targetChar)) return targetChar;
+      const pool = lang === "fa" ? MATRIX_POOL_FA : MATRIX_POOL_EN;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function matrixTextReveal(el, finalText, lang = currentLangUI) {
+      if (!el || finalText == null) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = finalText;
+        return;
+      }
+
+      const chars = Array.from(String(finalText));
+      const total = chars.length || 1;
+      const duration = Math.min(680, 320 + total * 14);
+      const runId = (Number(el.dataset.matrixRunId || "0") + 1).toString();
+      el.dataset.matrixRunId = runId;
+      const start = performance.now();
+
+      function frame(now) {
+        if (el.dataset.matrixRunId !== runId) return;
+        const progress = Math.min(1, (now - start) / duration);
+        const out = chars.map((ch, i) => {
+          if (isMatrixStaticChar(ch)) return ch;
+          const edge = progress * 1.25 - (i / Math.max(1, total - 1)) * 0.9;
+          return edge > 0.08 ? ch : randomMatrixChar(ch, lang);
+        }).join("");
+        el.textContent = out;
+        if (progress < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          el.textContent = finalText;
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    function runMatrixTranslationAnimation(targets, lang = currentLangUI) {
+      if (!Array.isArray(targets) || targets.length === 0) return;
+      const unique = Array.from(new Set(targets)).filter(el => el && el.isConnected);
+      unique.forEach((el, idx) => {
+        const finalText = el.textContent;
+        if (!finalText || !String(finalText).trim()) return;
+        setTimeout(() => matrixTextReveal(el, finalText, lang), Math.min(220, idx * 18));
+      });
+    }
+
     function toggleTheme() {
       Haptic.light();
       const current = document.documentElement.getAttribute('data-theme') || 'light';
@@ -3209,7 +3265,15 @@
       });
     }
 
-    function applyLangUI(lang){
+    function applyLangUI(lang, opts = {}){
+      const animateMatrix = !!opts.animateMatrix;
+      const matrixTargets = animateMatrix ? [] : null;
+      const setTranslatedText = (el, text) => {
+        if (!el) return;
+        el.textContent = text;
+        if (matrixTargets && text && String(text).trim()) matrixTargets.push(el);
+      };
+
       currentLangUI = (lang === "fa") ? "fa" : "en";
       localStorage.setItem("lang", currentLangUI);
       const t = I18N_UI[currentLangUI];
@@ -3219,19 +3283,19 @@
 
       // Header
       const titleEl = document.querySelector(".title");
-      if(titleEl) titleEl.textContent = t.title;
+      setTranslatedText(titleEl, t.title);
 
       // Setup screen titles
       const setupTitle = document.querySelector("#setupScreen .section-title h2");
       const setupHint = document.querySelector("#setupScreen .section-title .hint");
-      if(setupTitle) setupTitle.textContent = t.selectGame;
-      if(setupHint) setupHint.textContent = t.choose;
+      setTranslatedText(setupTitle, t.selectGame);
+      setTranslatedText(setupHint, t.choose);
 
       // Setup labels and placeholders
       const setupLabels = document.querySelectorAll("#setupScreen .field label");
       if(setupLabels && setupLabels.length >= 2){
-        setupLabels[0].textContent = t.team1NameLabel;
-        setupLabels[1].textContent = t.team2NameLabel;
+        setTranslatedText(setupLabels[0], t.team1NameLabel);
+        setTranslatedText(setupLabels[1], t.team2NameLabel);
       }
       const tn1 = document.getElementById("team1Name");
       const tn2 = document.getElementById("team2Name");
@@ -3239,60 +3303,60 @@
       if(tn2) { tn2.placeholder = t.team2Placeholder; if (tn2.value) tn2.value = getDisplayTeamName(tn2.value); }
 
       const startBtn = document.querySelector("#setupScreen .btn.btn-primary");
-      if(startBtn) startBtn.textContent = t.start;
+      setTranslatedText(startBtn, t.start);
 
       // Segmented labels
       document.querySelectorAll(".seg-btn").forEach(btn=>{
         const type = btn.getAttribute("data-type");
-        if(type === "ejbar-group") btn.textContent = t.labels.ejbar;
-        if(type === "shelem") btn.textContent = t.labels.shelem;
+        if(type === "ejbar-group") setTranslatedText(btn, t.labels.ejbar);
+        if(type === "shelem") setTranslatedText(btn, t.labels.shelem);
       });
       document.querySelectorAll(".ejbar-opt").forEach(btn=>{
         const sub = btn.getAttribute("data-subtype");
-        if(sub === "6") btn.textContent = t.labels.game6 + " " + t.labels.ejbar;
-        if(sub === "7") btn.textContent = t.labels.game7 + " " + t.labels.ejbar;
-        if(sub === "8") btn.textContent = t.labels.game8 + " " + t.labels.ejbar;
-        if(sub === "9") btn.textContent = t.labels.game9 + " " + t.labels.ejbar;
+        if(sub === "6") setTranslatedText(btn, t.labels.game6 + " " + t.labels.ejbar);
+        if(sub === "7") setTranslatedText(btn, t.labels.game7 + " " + t.labels.ejbar);
+        if(sub === "8") setTranslatedText(btn, t.labels.game8 + " " + t.labels.ejbar);
+        if(sub === "9") setTranslatedText(btn, t.labels.game9 + " " + t.labels.ejbar);
       });
 
       // Game screen titles
       const sbH2 = document.querySelector("#gameScreen .section:nth-of-type(1) .section-title h2");
-      if(sbH2) sbH2.textContent = getGameTitle(t);
+      setTranslatedText(sbH2, getGameTitle(t));
       const histH2 = document.querySelector("#gameScreen .section:nth-of-type(2) .section-title h2");
-      if(histH2) histH2.textContent = t.history;
+      setTranslatedText(histH2, t.history);
       const histHint = document.querySelector("#gameScreen .section:nth-of-type(2) .section-title .hint");
-      if(histHint) histHint.textContent = t.mostRecent;
+      setTranslatedText(histHint, t.mostRecent);
 
       // Action buttons (New Game / Clear)
       const actionBtns = document.querySelectorAll(".actions .btn");
       if(actionBtns && actionBtns.length >= 2){
-        actionBtns[0].textContent = t.newGame;
-        actionBtns[1].textContent = t.clear;
+        setTranslatedText(actionBtns[0], t.newGame);
+        setTranslatedText(actionBtns[1], t.clear);
       }
 
       // Submit button
       const submitBtn = document.getElementById("submitBtn");
-      if(submitBtn) submitBtn.textContent = t.submit;
+      setTranslatedText(submitBtn, t.submit);
 
       // Empty history message
       const emptyHistory = document.getElementById("emptyHistory");
-      if(emptyHistory) emptyHistory.textContent = t.noRounds;
+      setTranslatedText(emptyHistory, t.noRounds);
 
       // Sheet buttons
       const sheetBtns = document.querySelectorAll(".sheet-btn");
       if(sheetBtns && sheetBtns.length >= 3){
-        sheetBtns[0].textContent = t.editRound;
-        sheetBtns[1].textContent = t.deleteRound;
-        sheetBtns[2].textContent = t.cancel;
+        setTranslatedText(sheetBtns[0], t.editRound);
+        setTranslatedText(sheetBtns[1], t.deleteRound);
+        setTranslatedText(sheetBtns[2], t.cancel);
       }
 
       // Winner close
       const closeBtn = document.querySelector("#winnerOverlay .btn");
-      if(closeBtn) closeBtn.textContent = t.close;
+      setTranslatedText(closeBtn, t.close);
 
       // Chip label
       const chipSmall = document.querySelector(".icon-chip .small");
-      if(chipSmall) chipSmall.textContent = t.scorer;
+      setTranslatedText(chipSmall, t.scorer);
 
       const chip = document.querySelector(".icon-chip");
       if(chip) chip.title = t.cardGameScorer;
@@ -3308,15 +3372,15 @@
         if(window.gameState){
           const r1 = document.getElementById("resultLabel1");
           const r2 = document.getElementById("resultLabel2");
-          if(r1) r1.textContent = `${getDisplayTeamName(gameState.team1Name)} ${t.wonWord}`;
-          if(r2) r2.textContent = `${getDisplayTeamName(gameState.team2Name)} ${t.wonWord}`;
+          setTranslatedText(r1, `${getDisplayTeamName(gameState.team1Name)} ${t.wonWord}`);
+          setTranslatedText(r2, `${getDisplayTeamName(gameState.team2Name)} ${t.wonWord}`);
         }
       }catch(_){}
 
       // Target hint (UI only)
       if($.targetHint && typeof getTargetScore === "function"){
         const msg = t.target(getTargetScore());
-        $.targetHint.textContent = (currentLangUI === "fa") ? toFaDigitsUI(msg) : msg;
+        setTranslatedText($.targetHint, (currentLangUI === "fa") ? toFaDigitsUI(msg) : msg);
       }
 
       updateTeamNames();
@@ -3326,11 +3390,14 @@
       }
       renderArchive();
       localizeDisplayedNumbersUI();
+      runMatrixTranslationAnimation(matrixTargets, currentLangUI);
     }
 
     function toggleLang(){
       Haptic.light();
-      applyLangUI(currentLangUI === "en" ? "fa" : "en");
+      const next = currentLangUI === "en" ? "fa" : "en";
+      const btn = document.querySelector('button[onclick="toggleLang()"]');
+      squircleReveal(btn, () => applyLangUI(next, { animateMatrix: true }));
     }
 
     // UI-only: Wrap updateUI to localize digits after each render. Does not change game logic.
