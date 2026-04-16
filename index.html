@@ -205,7 +205,8 @@
     .theme-lottie-wrap { position: relative; width: 24px; height: 24px; }
     .theme-lottie { position: absolute; inset: 0; transition: opacity 380ms ease; pointer-events: none; }
     .install-lottie { width: 22px; height: 22px; pointer-events: none; flex-shrink: 0; filter: brightness(0) invert(1); }
-    .install-cta-btn { display: inline-flex !important; align-items: center; gap: 6px; width: auto !important; height: 40px; padding: 0 16px; font-size: 14px; font-weight: normal; border-radius: var(--radius); white-space: nowrap; justify-content: center; }
+    .install-cta-btn { display: inline-flex !important; align-items: center; gap: 6px; width: auto !important; height: 40px; padding: 0 16px; font-size: 14px; font-weight: normal !important; border-radius: var(--radius); white-space: nowrap; justify-content: center; line-height: 1; }
+    .install-cta-btn span { line-height: 1; margin-top: 4px; }
     .theme-lottie g { opacity: 1 !important; }
     [data-theme="dark"] .theme-lottie { filter: brightness(0) invert(1); }
 
