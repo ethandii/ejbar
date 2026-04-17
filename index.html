@@ -3589,9 +3589,15 @@ function showIOSInstall(){
   if(overlay){ overlay.classList.add('show'); applyIOSInstallLang(); }
 }
 function closeIOSInstall(e){
-  if(e && e.target!==document.getElementById('iosInstallOverlay') && !e.target.closest('#iosInstallClose')) return;
+  const fromGotIt = !e || e.target===document.getElementById('iosInstallClose') || e.target.closest('#iosInstallClose');
+  const fromOverlay = e && e.target===document.getElementById('iosInstallOverlay');
+  if(!fromGotIt && !fromOverlay) return;
   const overlay=document.getElementById('iosInstallOverlay');
   if(overlay) overlay.classList.remove('show');
+  if(fromGotIt){
+    localStorage.setItem('appInstalled','true');
+    switchToShareMode();
+  }
 }
 function applyIOSInstallLang(){
   const lang=localStorage.getItem('lang')||'en';
