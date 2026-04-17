@@ -1035,6 +1035,75 @@
       background: rgba(118,118,128,0.24);
     }
 
+    .ios-install-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: flex-end;
+      z-index: 300;
+    }
+    .ios-install-overlay.show { display: flex; }
+    .ios-install-sheet {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+      animation: sheetUp 240ms ease-out;
+    }
+    .ios-install-card {
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
+      border: 1px solid var(--stroke);
+      overflow: hidden;
+      margin-bottom: 10px;
+      padding: 20px 18px 16px;
+    }
+    .ios-install-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: var(--text);
+    }
+    .ios-install-steps { display: flex; flex-direction: column; gap: 14px; }
+    .ios-install-step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ios-install-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ios-install-step-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--blue);
+    }
+    .ios-install-step-text {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    [dir="rtl"] .ios-install-step { flex-direction: row-reverse; }
+
     /* ── History Column Headers ─────────────────────────────────────────── */
     .history-header {
       display: grid;
@@ -1357,6 +1426,37 @@
        Bottom sheet that appears on long-press of a history row. Provides
        Edit Round (opens inline edit) and Delete Round (removes from history).
   ──────────────────────────────────────────────────────────────────── -->
+  <div class="ios-install-overlay" id="iosInstallOverlay" onclick="closeIOSInstall(event)">
+    <div class="ios-install-sheet">
+      <div class="ios-install-card">
+        <div class="ios-install-title" id="iosInstallTitle">Add to Home Screen</div>
+        <div class="ios-install-steps">
+          <div class="ios-install-step">
+            <div class="ios-install-step-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </div>
+            <div class="ios-install-step-text" id="iosInstallStep1">Tap the Share button at the bottom of Safari</div>
+          </div>
+          <div class="ios-install-step">
+            <div class="ios-install-step-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <div class="ios-install-step-text" id="iosInstallStep2">Scroll down and tap "Add to Home Screen"</div>
+          </div>
+          <div class="ios-install-step">
+            <div class="ios-install-step-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="ios-install-step-text" id="iosInstallStep3">Tap "Add" in the top-right corner</div>
+          </div>
+        </div>
+      </div>
+      <div class="sheet-card">
+        <button class="sheet-btn" id="iosInstallClose" onclick="closeIOSInstall()">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <div class="sheet-overlay" id="sheetOverlay">
     <div class="action-sheet">
       <div class="sheet-card">
@@ -3154,6 +3254,11 @@
         language: "Language",
         installApp: "Install the App",
         shareApp: "Share the App",
+        iosInstallTitle: "Add to Home Screen",
+        iosInstallStep1: "Tap the Share button at the bottom of Safari",
+        iosInstallStep2: 'Scroll down and tap "Add to Home Screen"',
+        iosInstallStep3: "Tap \"Add\" in the top-right corner",
+        iosInstallClose: "Got it",
         alertSelectGameType: "Please select a game type",
         alertNeedBid: "At least one team must make a bid",
         alertTotalTricks: (total)=>`Total tricks must equal ${total}!`,
@@ -3202,6 +3307,11 @@
         language: "زبان",
         installApp: "نصب برنامه",
         shareApp: "اشتراک‌گذاری برنامه",
+        iosInstallTitle: "افزودن به صفحه اصلی",
+        iosInstallStep1: "دکمه اشتراک‌گذاری را در پایین Safari بزنید",
+        iosInstallStep2: 'به پایین بروید و «Add to Home Screen» را بزنید',
+        iosInstallStep3: '«Add» را در گوشه بالا-راست بزنید',
+        iosInstallClose: "متوجه شدم",
         alertSelectGameType: "لطفاً نوع بازی را انتخاب کنید",
         alertNeedBid: "حداقل یک تیم باید حکم بزند",
         alertTotalTricks: (total)=>`مجموع دست‌ها باید برابر ${total} باشد!`,
@@ -3432,6 +3542,7 @@
       renderArchive();
       localizeDisplayedNumbersUI();
       runMatrixTranslationAnimation(matrixTargets, currentLangUI);
+      if(typeof applyIOSInstallLang==='function') applyIOSInstallLang();
     }
 
     function toggleLang(){
@@ -3461,9 +3572,6 @@
 <script>
 let deferredPrompt=null;
 const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-if (_isIOS && navigator.share) {
-  document.addEventListener('DOMContentLoaded', () => switchToShareMode());
-}
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt=e;
@@ -3471,11 +3579,29 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   if(btn) btn.classList.remove('hidden');
 });
 function installApp(){
+  if(_isIOS){ showIOSInstall(); return; }
   if(!deferredPrompt) return;
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.finally(()=>{
-    deferredPrompt=null;
-  });
+  deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; });
+}
+function showIOSInstall(){
+  const overlay=document.getElementById('iosInstallOverlay');
+  if(overlay){ overlay.classList.add('show'); applyIOSInstallLang(); }
+}
+function closeIOSInstall(e){
+  if(e && e.target!==document.getElementById('iosInstallOverlay') && !e.target.closest('#iosInstallClose')) return;
+  const overlay=document.getElementById('iosInstallOverlay');
+  if(overlay) overlay.classList.remove('show');
+}
+function applyIOSInstallLang(){
+  const lang=localStorage.getItem('lang')||'en';
+  if(typeof I18N_UI==='undefined') return;
+  const t=I18N_UI[lang];
+  if(!t) return;
+  const map={iosInstallTitle:'iosInstallTitle',iosInstallStep1:'iosInstallStep1',iosInstallStep2:'iosInstallStep2',iosInstallStep3:'iosInstallStep3',iosInstallClose:'iosInstallClose'};
+  Object.entries(map).forEach(([key,id])=>{ const el=document.getElementById(id); if(el&&t[key]) el.textContent=t[key]; });
+  const sheet=document.querySelector('.ios-install-sheet');
+  if(sheet) sheet.dir=lang==='fa'?'rtl':'ltr';
 }
 function switchToShareMode(){
   const btn=document.getElementById('installBtn');
