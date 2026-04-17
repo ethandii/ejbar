@@ -3460,6 +3460,10 @@
 
 <script>
 let deferredPrompt=null;
+const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+if (_isIOS && navigator.share) {
+  document.addEventListener('DOMContentLoaded', () => switchToShareMode());
+}
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt=e;
@@ -3491,6 +3495,7 @@ function switchToShareMode(){
   btn.classList.remove('hidden');
 }
 function shareApp(){
+  if(window.shareLottieAnim) window.shareLottieAnim.goToAndPlay(0,true);
   const url=location.href;
   const title=document.title;
   if(navigator.share){
@@ -3498,7 +3503,6 @@ function shareApp(){
   } else {
     navigator.clipboard&&navigator.clipboard.writeText(url).catch(()=>{});
   }
-  if(window.shareLottieAnim) window.shareLottieAnim.goToAndPlay(0,true);
 }
 window.addEventListener('appinstalled', ()=>{
   deferredPrompt=null;
