@@ -637,6 +637,109 @@
     .accent-1 { color: var(--blue); }
     .accent-2 { color: var(--green); }
 
+    .score-fly-delta {
+      position: fixed;
+      left: 0;
+      top: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 430;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-1);
+      text-shadow: 0 1px 0 rgba(0,0,0,0.06);
+      will-change: transform, opacity;
+    }
+
+    .score-fly-delta.positive {
+      color: var(--green);
+      border-color: rgba(52,199,89,0.55);
+      background: rgba(52,199,89,0.12);
+    }
+
+    .score-fly-delta.negative {
+      color: var(--red);
+      border-color: rgba(255,59,48,0.55);
+      background: rgba(255,59,48,0.12);
+    }
+
+    .score-fly-delta.neutral {
+      color: var(--text-secondary);
+      border-color: var(--stroke);
+      background: rgba(118,118,128,0.14);
+    }
+
+    .score-landing-ping {
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.95);
+      pointer-events: none;
+      z-index: 431;
+      box-shadow: 0 0 0 0 rgba(255,255,255,0.45);
+      transform: translate(-50%, -50%) scale(0.4);
+      animation: landingPing 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .score-landing-ping.positive {
+      border-color: rgba(52,199,89,0.95);
+      box-shadow: 0 0 0 0 rgba(52,199,89,0.45);
+    }
+
+    .score-landing-ping.negative {
+      border-color: rgba(255,59,48,0.95);
+      box-shadow: 0 0 0 0 rgba(255,59,48,0.45);
+    }
+
+    .score-landing-ping.neutral {
+      border-color: rgba(142,142,147,0.95);
+      box-shadow: 0 0 0 0 rgba(142,142,147,0.40);
+    }
+
+    @keyframes landingPing {
+      0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2.3); opacity: 0; }
+    }
+
+    .score-value.impact-positive {
+      animation: totalImpactPositive 380ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform-origin: center;
+    }
+
+    .score-value.impact-negative {
+      animation: totalImpactNegative 380ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform-origin: center;
+    }
+
+    .score-value.impact-neutral {
+      animation: totalImpactNeutral 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform-origin: center;
+    }
+
+    @keyframes totalImpactPositive {
+      0% { transform: scale(1); filter: none; }
+      38% { transform: scale(1.12); filter: drop-shadow(0 0 12px rgba(52,199,89,0.45)); }
+      100% { transform: scale(1); filter: none; }
+    }
+
+    @keyframes totalImpactNegative {
+      0% { transform: scale(1); filter: none; }
+      38% { transform: scale(1.12); filter: drop-shadow(0 0 12px rgba(255,59,48,0.45)); }
+      100% { transform: scale(1); filter: none; }
+    }
+
+    @keyframes totalImpactNeutral {
+      0% { transform: scale(1); filter: none; }
+      40% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(142,142,147,0.36)); }
+      100% { transform: scale(1); filter: none; }
+    }
+
 
     /* ── Result Grid ────────────────────────────────────────────────────────
        Two-column grid that holds the scroll pickers (Ejbar) or direct text
@@ -829,9 +932,30 @@
       gap: 10px;
       padding-bottom: 10px; 
       align-items: center;
+      transform-origin: top center;
+      overflow: hidden;
     }
 
     .row:last-child { border-bottom: none; }
+
+    .row.row-enter {
+      animation: rowIn 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .row.row-exit {
+      pointer-events: none;
+      animation: rowOut 240ms cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+
+    @keyframes rowIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes rowOut {
+      0% { opacity: 1; transform: translateX(0) scale(1); max-height: 88px; padding-bottom: 10px; }
+      100% { opacity: 0; transform: translateX(10px) scale(0.98); max-height: 0; padding-bottom: 0; }
+    }
 
     .mini {
       position: relative;
@@ -1033,6 +1157,170 @@
 
     [data-theme="dark"] .sheet-btn:active {
       background: rgba(118,118,128,0.24);
+    }
+
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 260;
+    }
+
+    .dialog-overlay.show { display: flex; }
+
+    .dialog-card {
+      width: 100%;
+      max-width: 420px;
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      padding: 16px;
+      animation: pop 200ms ease-out;
+    }
+
+    .dialog-title {
+      font-size: 19px;
+      font-weight: 900;
+      letter-spacing: -0.2px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .dialog-message {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.45;
+      margin-bottom: 14px;
+      white-space: pre-line;
+    }
+
+    .dialog-form {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .dialog-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .dialog-field label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .dialog-input {
+      width: 100%;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,0.52);
+      padding: 0 12px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      outline: none;
+    }
+
+    [data-theme="dark"] .dialog-input { background: rgba(28,28,30,0.58); }
+
+    .dialog-input:focus {
+      border-color: rgba(0,122,255,0.65);
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.15);
+    }
+
+    .dialog-error {
+      min-height: 18px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--red);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .dialog-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .dialog-btn {
+      height: 42px;
+      border: 1px solid var(--stroke);
+      border-radius: 12px;
+      background: transparent;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .dialog-btn.primary {
+      border-color: transparent;
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .dialog-btn.destructive {
+      border-color: transparent;
+      background: var(--red);
+      color: #fff;
+    }
+
+    .dialog-btn:active { transform: scale(0.98); }
+
+    .undo-toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      transform: translate(-50%, 120%);
+      width: min(92vw, 460px);
+      border-radius: var(--radius);
+      corner-shape: var(--corner-shape);
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      box-shadow: var(--shadow-2);
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 420;
+      transition: transform 220ms ease;
+      pointer-events: none;
+    }
+
+    .undo-toast.show {
+      transform: translate(-50%, 0);
+      pointer-events: auto;
+    }
+
+    .undo-text {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .undo-btn {
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      padding: 6px 4px;
     }
 
     .ios-install-overlay {
@@ -1469,6 +1757,33 @@
     </div>
   </div>
 
+  <div class="dialog-overlay" id="dialogOverlay" role="dialog" aria-modal="true" aria-label="Dialog">
+    <div class="dialog-card">
+      <div class="dialog-title" id="dialogTitle"></div>
+      <div class="dialog-message" id="dialogMessage"></div>
+      <div class="dialog-form hidden" id="dialogForm">
+        <div class="dialog-field">
+          <label id="dialogField1Label" for="dialogField1Input"></label>
+          <input class="dialog-input" id="dialogField1Input" type="text" inputmode="numeric" autocomplete="off" />
+        </div>
+        <div class="dialog-field">
+          <label id="dialogField2Label" for="dialogField2Input"></label>
+          <input class="dialog-input" id="dialogField2Input" type="text" inputmode="numeric" autocomplete="off" />
+        </div>
+      </div>
+      <div class="dialog-error" id="dialogError"></div>
+      <div class="dialog-actions">
+        <button class="dialog-btn" id="dialogCancelBtn" type="button"></button>
+        <button class="dialog-btn primary" id="dialogConfirmBtn" type="button"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="undo-toast" id="undoToast" role="status" aria-live="polite">
+    <div class="undo-text" id="undoToastText"></div>
+    <button class="undo-btn" id="undoToastBtn" type="button"></button>
+  </div>
+
   <script>
     /*
     ════════════════════════════════════════════════════════════════
@@ -1608,7 +1923,21 @@
         archiveSummaryPoints1: document.getElementById('archiveSummaryPoints1'),
         archiveSummaryPoints2: document.getElementById('archiveSummaryPoints2'),
         archiveHistoryCol1: document.getElementById('archiveHistoryCol1'),
-        archiveHistoryCol2: document.getElementById('archiveHistoryCol2')
+        archiveHistoryCol2: document.getElementById('archiveHistoryCol2'),
+        dialogOverlay: document.getElementById('dialogOverlay'),
+        dialogTitle: document.getElementById('dialogTitle'),
+        dialogMessage: document.getElementById('dialogMessage'),
+        dialogForm: document.getElementById('dialogForm'),
+        dialogField1Label: document.getElementById('dialogField1Label'),
+        dialogField2Label: document.getElementById('dialogField2Label'),
+        dialogField1Input: document.getElementById('dialogField1Input'),
+        dialogField2Input: document.getElementById('dialogField2Input'),
+        dialogError: document.getElementById('dialogError'),
+        dialogCancelBtn: document.getElementById('dialogCancelBtn'),
+        dialogConfirmBtn: document.getElementById('dialogConfirmBtn'),
+        undoToast: document.getElementById('undoToast'),
+        undoToastText: document.getElementById('undoToastText'),
+        undoToastBtn: document.getElementById('undoToastBtn')
       };
     }
 
@@ -1647,6 +1976,7 @@
     let sheetIndex = null;
     let prevTurnOutlined = null;
     let pressTimer = null;
+    let pendingHistoryEnter = 0;
 
     const STORAGE_KEY = 'ejbarGameStateV3';
     const ARCHIVE_KEY = 'ejbarGameArchiveV1';
@@ -1660,6 +1990,189 @@
       error:   () => navigator.vibrate?.([30, 40, 30]),
       warning: () => navigator.vibrate?.(20),
     };
+    let undoTimer = null;
+    let undoHandler = null;
+    let activeDialogResolver = null;
+    let isScoreSubmitInFlight = false;
+    let isLangSwitching = false;
+
+    function cloneDeep(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function captureUndoSnapshot() {
+      return {
+        gameState: cloneDeep(gameState),
+        archive: cloneDeep(getArchive()),
+        prevTurnOutlined
+      };
+    }
+
+    function applyWinnerLockState() {
+      const locked = !!gameState.winner;
+      if ($.result1) $.result1.disabled = locked;
+      if ($.result2) $.result2.disabled = locked;
+      setPickersEnabled(!locked);
+      enablePills(!locked);
+      if (!locked) closeWinner();
+    }
+
+    function restoreUndoSnapshot(snapshot) {
+      if (!snapshot) return;
+      gameState = cloneDeep(snapshot.gameState);
+      prevTurnOutlined = snapshot.prevTurnOutlined ?? null;
+      saveArchive(snapshot.archive || []);
+      applyWinnerLockState();
+      updateScoreInputMode();
+      updateTeamNames();
+      updateUI();
+      syncSubmitEnabled();
+      saveGameState();
+      renderArchive();
+    }
+
+    function clearUndoToast() {
+      if (undoTimer) {
+        clearTimeout(undoTimer);
+        undoTimer = null;
+      }
+      undoHandler = null;
+      if ($.undoToast) $.undoToast.classList.remove('show');
+    }
+
+    function showUndoToast(message, onUndo) {
+      if (!$.undoToast || !$.undoToastText || !$.undoToastBtn) return;
+      clearUndoToast();
+      const t = I18N_UI[currentLangUI];
+      $.undoToastText.textContent = message;
+      $.undoToastBtn.textContent = t.undo;
+      undoHandler = onUndo;
+      $.undoToast.classList.add('show');
+      undoTimer = setTimeout(() => clearUndoToast(), 5000);
+    }
+
+    function closeDialog(result = null) {
+      if (!$.dialogOverlay) return;
+      $.dialogOverlay.classList.remove('show');
+      if ($.dialogConfirmBtn) $.dialogConfirmBtn.classList.remove('destructive');
+      const resolver = activeDialogResolver;
+      activeDialogResolver = null;
+      if (resolver) resolver(result);
+    }
+
+    function openDialog(config) {
+      return new Promise((resolve) => {
+        if (!$.dialogOverlay) {
+          resolve(null);
+          return;
+        }
+        if (activeDialogResolver) closeDialog(null);
+
+        activeDialogResolver = resolve;
+        const {
+          title = '',
+          message = '',
+          mode = 'message',
+          confirmText = 'OK',
+          cancelText = 'Cancel',
+          destructive = false,
+          field1Label = '',
+          field2Label = '',
+          field1Value = '',
+          field2Value = '',
+          validator = null
+        } = config || {};
+
+        if ($.dialogTitle) $.dialogTitle.textContent = title;
+        if ($.dialogMessage) $.dialogMessage.textContent = message;
+        if ($.dialogForm) $.dialogForm.classList.toggle('hidden', mode !== 'form');
+        if ($.dialogError) $.dialogError.textContent = '';
+        if ($.dialogCancelBtn) $.dialogCancelBtn.textContent = mode === 'message' ? '' : cancelText;
+        if ($.dialogConfirmBtn) {
+          $.dialogConfirmBtn.textContent = confirmText;
+          $.dialogConfirmBtn.classList.toggle('destructive', !!destructive);
+        }
+        if ($.dialogCancelBtn) $.dialogCancelBtn.style.display = mode === 'message' ? 'none' : '';
+        if ($.dialogConfirmBtn) $.dialogConfirmBtn.style.gridColumn = mode === 'message' ? '1 / -1' : '';
+
+        if ($.dialogField1Label) $.dialogField1Label.textContent = field1Label;
+        if ($.dialogField2Label) $.dialogField2Label.textContent = field2Label;
+        if ($.dialogField1Input) $.dialogField1Input.value = field1Value;
+        if ($.dialogField2Input) $.dialogField2Input.value = field2Value;
+        if ($.dialogField1Input) $.dialogField1Input.onkeydown = null;
+        if ($.dialogField2Input) $.dialogField2Input.onkeydown = null;
+
+        if ($.dialogCancelBtn) $.dialogCancelBtn.onclick = () => closeDialog(null);
+        if ($.dialogOverlay) {
+          $.dialogOverlay.onclick = (e) => {
+            if (e.target === $.dialogOverlay && mode !== 'message') closeDialog(null);
+          };
+        }
+        if ($.dialogConfirmBtn) {
+          $.dialogConfirmBtn.onclick = () => {
+            if (mode === 'message') {
+              closeDialog(true);
+              return;
+            }
+            if (mode === 'confirm') {
+              closeDialog(true);
+              return;
+            }
+            if (mode === 'form') {
+              const v1 = toEnDigitsUI($.dialogField1Input?.value || '').trim();
+              const v2 = toEnDigitsUI($.dialogField2Input?.value || '').trim();
+              const checked = typeof validator === 'function' ? validator(v1, v2) : { ok: true };
+              if (!checked || !checked.ok) {
+                if ($.dialogError) $.dialogError.textContent = checked?.error || '';
+                Haptic.error();
+                return;
+              }
+              closeDialog({ v1, v2 });
+            }
+          };
+        }
+
+        if (mode === 'form') {
+          const submitOnEnter = (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              $.dialogConfirmBtn?.click();
+            }
+          };
+          if ($.dialogField1Input) $.dialogField1Input.onkeydown = submitOnEnter;
+          if ($.dialogField2Input) $.dialogField2Input.onkeydown = submitOnEnter;
+        }
+
+        $.dialogOverlay.classList.add('show');
+        if (mode === 'form' && $.dialogField1Input) {
+          setTimeout(() => $.dialogField1Input.focus(), 30);
+        } else if ($.dialogConfirmBtn) {
+          setTimeout(() => $.dialogConfirmBtn.focus(), 30);
+        }
+      });
+    }
+
+    function openMessageDialog(message, title) {
+      const t = I18N_UI[currentLangUI];
+      return openDialog({
+        mode: 'message',
+        title: title || t.dialogNotice,
+        message,
+        confirmText: t.ok
+      });
+    }
+
+    function openConfirmDialog(message, options = {}) {
+      const t = I18N_UI[currentLangUI];
+      return openDialog({
+        mode: 'confirm',
+        title: options.title || t.dialogConfirm,
+        message,
+        confirmText: options.confirmText || t.yes,
+        cancelText: options.cancelText || t.cancel,
+        destructive: !!options.destructive
+      });
+    }
 
     function saveGameState() {
       try {
@@ -1826,19 +2339,134 @@
         el.addEventListener('click', () => openArchiveDetails(item.id));
         $.archiveList.appendChild(el);
       });
-
       if (currentLangUI === 'fa') localizeDisplayedNumbersUI();
     }
 
-    function clearArchive() {
+    async function clearArchive() {
       const msg = currentLangUI === 'fa' ? 'همه بازی‌های ذخیره‌شده پاک شوند؟' : 'Clear all saved games?';
-      if (!confirm(msg)) return;
+      const confirmed = await openConfirmDialog(msg, { destructive: true });
+      if (!confirmed) return;
+      const snapshot = captureUndoSnapshot();
       saveArchive([]);
       renderArchive();
+      showUndoToast(I18N_UI[currentLangUI].undoArchiveCleared, () => restoreUndoSnapshot(snapshot));
     }
 
     function formatSignedScore(score) {
       return score > 0 ? `+${score}` : String(score);
+    }
+
+    function getScoreDeltaSource(team) {
+      if (gameState.gameType === 'shelem') {
+        return document.getElementById(`directInputWrap${team}`) || document.getElementById(`resultLabel${team}`);
+      }
+      return document.getElementById(`pickerWrap${team}`) || document.getElementById(`resultLabel${team}`);
+    }
+
+    function triggerTotalImpact(targetEl, delta) {
+      if (!targetEl) return;
+      targetEl.classList.remove('impact-positive', 'impact-negative', 'impact-neutral');
+      void targetEl.offsetWidth;
+      targetEl.classList.add(delta > 0 ? 'impact-positive' : (delta < 0 ? 'impact-negative' : 'impact-neutral'));
+      setTimeout(() => targetEl.classList.remove('impact-positive', 'impact-negative', 'impact-neutral'), 420);
+    }
+
+    function showLandingPing(x, y, delta) {
+      const ping = document.createElement('div');
+      ping.className = `score-landing-ping ${delta > 0 ? 'positive' : (delta < 0 ? 'negative' : 'neutral')}`;
+      ping.style.left = `${x}px`;
+      ping.style.top = `${y}px`;
+      document.body.appendChild(ping);
+      setTimeout(() => ping.remove(), 320);
+    }
+
+    function animateDeltaChip(delta, sourceEl, targetEl, options = {}) {
+      return new Promise((resolve) => {
+        if (!sourceEl || !targetEl) {
+          resolve();
+          return;
+        }
+        const sourceRect = sourceEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const startX = sourceRect.left + (sourceRect.width / 2);
+        const startY = sourceRect.top + (sourceRect.height / 2);
+        const endX = targetRect.left + (targetRect.width / 2);
+        const endY = targetRect.top + 4;
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const distance = Math.hypot(dx, dy);
+        const duration = Math.max(500, Math.min(860, 460 + distance * 0.48));
+        const arcLift = Math.max(52, Math.min(152, 56 + distance * 0.18));
+        const sideOffset = options.sideOffset ?? 0;
+        const controlX = startX + dx * 0.5 + sideOffset * 0.45;
+        const controlY = Math.min(startY, endY) - arcLift;
+        const delay = Math.max(0, options.delay ?? 0);
+
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+        const easeInOutSine = (t) => -(Math.cos(Math.PI * t) - 1) / 2;
+        const bezier2 = (t, p0, p1, p2) => {
+          const mt = 1 - t;
+          return (mt * mt * p0) + (2 * mt * t * p1) + (t * t * p2);
+        };
+
+        const chip = document.createElement('div');
+        chip.className = `score-fly-delta ${delta > 0 ? 'positive' : (delta < 0 ? 'negative' : 'neutral')}`;
+        chip.textContent = formatSignedScore(delta);
+        chip.style.opacity = '0';
+        chip.style.transform = `translate3d(${startX}px, ${startY}px, 0) translate(-50%, -50%) scale(0.82)`;
+        document.body.appendChild(chip);
+        const startedAt = performance.now() + delay;
+
+        function frame(now) {
+          if (now < startedAt) {
+            requestAnimationFrame(frame);
+            return;
+          }
+          const raw = Math.min(1, (now - startedAt) / duration);
+          const t = easeOutCubic(raw);
+          const x = bezier2(t, startX, controlX, endX);
+          const y = bezier2(t, startY, controlY, endY);
+
+          let opacity = 1;
+          if (raw < 0.12) opacity = raw / 0.12;
+          else if (raw > 0.84) opacity = 1 - ((raw - 0.84) / 0.16);
+
+          let scale = 1;
+          if (raw < 0.22) {
+            scale = lerp(0.82, 1.06, easeInOutSine(raw / 0.22));
+          } else if (raw > 0.8) {
+            scale = lerp(1.02, 0.78, easeInOutSine((raw - 0.8) / 0.2));
+          } else {
+            scale = 1.02;
+          }
+
+          chip.style.opacity = String(Math.max(0, Math.min(1, opacity)));
+          chip.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${scale})`;
+
+          if (raw < 1) {
+            requestAnimationFrame(frame);
+            return;
+          }
+
+          triggerTotalImpact(targetEl, delta);
+          showLandingPing(endX, endY, delta);
+          chip.remove();
+          resolve();
+        }
+
+        requestAnimationFrame(frame);
+      });
+    }
+
+    async function animateScoreDeltasToTotals(delta1, delta2) {
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) return;
+      const jobs = [];
+      if (delta1 !== 0) jobs.push(animateDeltaChip(delta1, getScoreDeltaSource(1), $.team1Total, { delay: 0, sideOffset: -10 }));
+      if (delta2 !== 0) jobs.push(animateDeltaChip(delta2, getScoreDeltaSource(2), $.team2Total, { delay: 42, sideOffset: 10 }));
+      if (!jobs.length) return;
+      await Promise.all(jobs);
     }
 
     function openArchiveDetails(id) {
@@ -1987,60 +2615,61 @@
       }
     }
 
-    const MATRIX_POOL_EN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const MATRIX_POOL_FA = "ابتثجچحخدذرزژسشصضطظعغفقکگلمنوهی۰۱۲۳۴۵۶۷۸۹";
+    function makeLangTransitionLayer(nextLang) {
+      const css = getComputedStyle(document.documentElement);
+      const bg = css.getPropertyValue('--bg').trim() || '#F2F2F7';
+      const isDark = (document.documentElement.getAttribute('data-theme') || 'light') === 'dark';
+      const flash = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
 
-    function isMatrixStaticChar(ch) {
-      return /\s/.test(ch) || /[.,!?;:(){}\[\]'"`~\-_/\\|@#$%^&*+=<>،؛؟]/.test(ch);
+      const layer = document.createElement('div');
+      layer.style.position = 'fixed';
+      layer.style.inset = '0';
+      layer.style.pointerEvents = 'none';
+      layer.style.zIndex = '9999';
+      layer.style.overflow = 'hidden';
+      layer.style.background = bg;
+      layer.style.opacity = '0';
+
+      const veil = document.createElement('div');
+      veil.style.position = 'absolute';
+      veil.style.inset = '0';
+      veil.style.background = flash;
+      veil.style.opacity = '0';
+
+      layer.appendChild(veil);
+      document.body.appendChild(layer);
+      return { layer, veil };
     }
 
-    function randomMatrixChar(targetChar, lang) {
-      if (isMatrixStaticChar(targetChar)) return targetChar;
-      const pool = lang === "fa" ? MATRIX_POOL_FA : MATRIX_POOL_EN;
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
+    async function runLanguageCurtainTransition(nextLang, onSwap) {
+      const { layer, veil } = makeLangTransitionLayer(nextLang);
+      try {
+        await Promise.all([
+          layer.animate([
+            { opacity: 0 },
+            { opacity: 1 }
+          ], { duration: 80, easing: 'ease-out', fill: 'forwards' }).finished,
+          veil.animate([
+            { opacity: 0 },
+            { opacity: 1 }
+          ], { duration: 80, easing: 'ease-out', fill: 'forwards' }).finished
+        ]);
 
-    function matrixTextReveal(el, finalText, lang = currentLangUI) {
-      if (!el || finalText == null) return;
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        el.textContent = finalText;
-        return;
+        onSwap();
+
+        await Promise.all([
+          layer.animate([
+            { opacity: 1 },
+            { opacity: 0 }
+          ], { duration: 100, easing: 'ease-in', fill: 'forwards' }).finished,
+          veil.animate([
+            { opacity: 1 },
+            { opacity: 0 }
+          ], { duration: 100, easing: 'ease-in', fill: 'forwards' }).finished
+        ]);
+      } finally {
+        layer.remove();
       }
-
-      const chars = Array.from(String(finalText));
-      const total = chars.length || 1;
-      const duration = Math.min(680, 320 + total * 14);
-      const runId = (Number(el.dataset.matrixRunId || "0") + 1).toString();
-      el.dataset.matrixRunId = runId;
-      const start = performance.now();
-
-      function frame(now) {
-        if (el.dataset.matrixRunId !== runId) return;
-        const progress = Math.min(1, (now - start) / duration);
-        const out = chars.map((ch, i) => {
-          if (isMatrixStaticChar(ch)) return ch;
-          const edge = progress * 1.25 - (i / Math.max(1, total - 1)) * 0.9;
-          return edge > 0.08 ? ch : randomMatrixChar(ch, lang);
-        }).join("");
-        el.textContent = out;
-        if (progress < 1) {
-          requestAnimationFrame(frame);
-        } else {
-          el.textContent = finalText;
-        }
-      }
-
-      requestAnimationFrame(frame);
-    }
-
-    function runMatrixTranslationAnimation(targets, lang = currentLangUI) {
-      if (!Array.isArray(targets) || targets.length === 0) return;
-      const unique = Array.from(new Set(targets)).filter(el => el && el.isConnected);
-      unique.forEach((el, idx) => {
-        const finalText = el.textContent;
-        if (!finalText || !String(finalText).trim()) return;
-        setTimeout(() => matrixTextReveal(el, finalText, lang), Math.min(220, idx * 18));
-      });
     }
 
     function toggleTheme() {
@@ -2525,11 +3154,11 @@
       saveGameState();
     }
 
-    function startGame() {
+    async function startGame() {
       if (!gameState.gameType) {
         Haptic.error();
         const t = I18N_UI[currentLangUI];
-        alert(t.alertSelectGameType);
+        await openMessageDialog(t.alertSelectGameType);
         return;
       }
       Haptic.medium();
@@ -2580,26 +3209,105 @@
       if (sbH2) sbH2.textContent = getGameTitle(t);
     }
 
-    function addScore() {
+    async function addScore() {
+      if (isScoreSubmitInFlight) return;
+      isScoreSubmitInFlight = true;
+      if ($.submitBtn) {
+        $.submitBtn.disabled = true;
+        $.submitBtn.classList.add('is-disabled');
+      }
       const t = I18N_UI[currentLangUI];
+      try {
+        if (gameState.gameType === 'shelem') {
+          const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
+          const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
 
-      if (gameState.gameType === 'shelem') {
-        const raw1 = toEnDigitsUI(($.directInput1?.value ?? '').trim());
-        const raw2 = toEnDigitsUI(($.directInput2?.value ?? '').trim());
+          const score1 = parseShelemScoreValue(raw1);
+          const score2 = parseShelemScoreValue(raw2);
 
-        const score1 = parseShelemScoreValue(raw1);
-        const score2 = parseShelemScoreValue(raw2);
+          if (score1 === null || score2 === null) {
+            Haptic.error();
+            await openMessageDialog(currentLangUI === 'fa'
+              ? 'در شلم امتیازها باید مضربی از ۵ یا صفر باشند.'
+              : 'In Shelem, scores must be multiples of 5 or zero.');
+            return;
+          }
 
-        if (score1 === null || score2 === null) {
-          Haptic.error();
-          alert(currentLangUI === 'fa'
-            ? 'در شلم امتیازها باید مضربی از ۵ یا صفر باشند.'
-            : 'In Shelem, scores must be multiples of 5 or zero.');
+          const snapshot = captureUndoSnapshot();
+          await animateScoreDeltasToTotals(score1, score2);
+          gameState.team1Total += score1;
+          gameState.team2Total += score2;
+
+          if (gameState.team1Total < gameState.team2Total) {
+            gameState.lastTurn = 1;
+          } else if (gameState.team2Total < gameState.team1Total) {
+            gameState.lastTurn = 2;
+          }
+
+          Haptic.medium();
+          gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0, suit: selectedSuit });
+          pendingHistoryEnter = 1;
+
+          clearDirectInputs();
+          updateMinusBtnState(1); updateMinusBtnState(2);
+          resetSuit();
+          if ($.result1) $.result1.value = '';
+          if ($.result2) $.result2.value = '';
+
+          updateUI();
+          checkWinner();
+          saveGameState();
+          showUndoToast(t.undoRoundAdded, () => restoreUndoSnapshot(snapshot));
           return;
         }
 
-        gameState.team1Total += score1;
-        gameState.team2Total += score2;
+        const raw1 = ($.result1 && $.result1.value) || '';
+        const raw2 = ($.result2 && $.result2.value) || '';
+        const score1 = raw1.trim() === '' ? 0 : parseInt(raw1, 10);
+        const score2 = raw2.trim() === '' ? 0 : parseInt(raw2, 10);
+        const bounds = getScoreBounds();
+
+        if (parseScoreValue(String(score1)) === null || parseScoreValue(String(score2)) === null) {
+          Haptic.error();
+          if (gameState.gameType === 8 || gameState.gameType === 9) {
+            await openMessageDialog(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : `In ${gameState.gameType} Ejbar, only 4 to 13 and -4 to -13 are allowed.`);
+          } else {
+            await openMessageDialog(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : `In ${gameState.gameType} Ejbar, only 3 to 9 and -3 to -9 are allowed.`);
+          }
+          return;
+        }
+
+        let effective1 = score1;
+        let effective2 = score2;
+        if (gameState.gameType === 8 || gameState.gameType === 9) {
+          if (score1 === 10) effective1 = 20;
+          if (score2 === 10) effective2 = 20;
+          if (score1 === -10) effective1 = -10;
+          if (score2 === -10) effective2 = -10;
+        }
+
+        const snapshot = captureUndoSnapshot();
+        await animateScoreDeltasToTotals(effective1, effective2);
+        gameState.team1Total += effective1;
+        gameState.team2Total += effective2;
+
+        let points1 = 0, points2 = 0;
+        if (gameState.gameType === 6) {
+          if (score1 > 0 && (score1 === 6 || score1 === 8)) points1 = 1;
+          if (score2 > 0 && (score2 === 6 || score2 === 8)) points2 = 1;
+        } else if (gameState.gameType === 7) {
+          if (score1 > 0 && (score1 === 7 || score1 === 9)) points1 = 1;
+          if (score2 > 0 && (score2 === 7 || score2 === 9)) points2 = 1;
+        } else if (gameState.gameType === 8) {
+          if (score1 > 0 && score1 === 8) points1 = 1;
+          if (score2 > 0 && score2 === 8) points2 = 1;
+        } else if (gameState.gameType === 9) {
+          if (score1 > 0 && score1 === 9) points1 = 1;
+          if (score2 > 0 && score2 === 9) points2 = 1;
+        }
+
+        gameState.team1Points += points1;
+        gameState.team2Points += points2;
 
         if (gameState.team1Total < gameState.team2Total) {
           gameState.lastTurn = 1;
@@ -2608,86 +3316,25 @@
         }
 
         Haptic.medium();
-        gameState.history.push({ score1, score2, effective1: score1, effective2: score2, points1: 0, points2: 0, suit: selectedSuit });
+        gameState.history.push({ score1, score2, effective1, effective2, points1, points2, suit: selectedSuit });
+        pendingHistoryEnter = 1;
 
+        if ($.result1) $.result1.value = '0';
+        if ($.result2) $.result2.value = '0';
         clearDirectInputs();
+        if (picker1) picker1.setValue(0);
+        if (picker2) picker2.setValue(0);
         updateMinusBtnState(1); updateMinusBtnState(2);
         resetSuit();
-        if ($.result1) $.result1.value = '';
-        if ($.result2) $.result2.value = '';
 
         updateUI();
         checkWinner();
         saveGameState();
-        return;
+        showUndoToast(t.undoRoundAdded, () => restoreUndoSnapshot(snapshot));
+      } finally {
+        isScoreSubmitInFlight = false;
+        syncSubmitEnabled();
       }
-
-      const raw1 = ($.result1 && $.result1.value) || '';
-      const raw2 = ($.result2 && $.result2.value) || '';
-      const score1 = raw1.trim() === '' ? 0 : parseInt(raw1, 10);
-      const score2 = raw2.trim() === '' ? 0 : parseInt(raw2, 10);
-      const bounds = getScoreBounds();
-
-      if (parseScoreValue(String(score1)) === null || parseScoreValue(String(score2)) === null) {
-        Haptic.error();
-        if (gameState.gameType === 8 || gameState.gameType === 9) {
-          alert(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۴ تا ۱۳ و منفی ۴ تا منفی ۱۳ مجاز است.' : `In ${gameState.gameType} Ejbar, only 4 to 13 and -4 to -13 are allowed.`);
-        } else {
-          alert(currentLangUI === 'fa' ? 'در این نوع اجبار فقط ۳ تا ۹ و منفی ۳ تا منفی ۹ مجاز است.' : `In ${gameState.gameType} Ejbar, only 3 to 9 and -3 to -9 are allowed.`);
-        }
-        return;
-      }
-
-      let effective1 = score1;
-      let effective2 = score2;
-      if (gameState.gameType === 8 || gameState.gameType === 9) {
-        if (score1 === 10) effective1 = 20;
-        if (score2 === 10) effective2 = 20;
-        if (score1 === -10) effective1 = -10;
-        if (score2 === -10) effective2 = -10;
-      }
-
-      gameState.team1Total += effective1;
-      gameState.team2Total += effective2;
-
-      let points1 = 0, points2 = 0;
-      if (gameState.gameType === 6) {
-        if (score1 > 0 && (score1 === 6 || score1 === 8)) points1 = 1;
-        if (score2 > 0 && (score2 === 6 || score2 === 8)) points2 = 1;
-      } else if (gameState.gameType === 7) {
-        if (score1 > 0 && (score1 === 7 || score1 === 9)) points1 = 1;
-        if (score2 > 0 && (score2 === 7 || score2 === 9)) points2 = 1;
-      } else if (gameState.gameType === 8) {
-        if (score1 > 0 && score1 === 8) points1 = 1;
-        if (score2 > 0 && score2 === 8) points2 = 1;
-      } else if (gameState.gameType === 9) {
-        if (score1 > 0 && score1 === 9) points1 = 1;
-        if (score2 > 0 && score2 === 9) points2 = 1;
-      }
-
-      gameState.team1Points += points1;
-      gameState.team2Points += points2;
-
-      if (gameState.team1Total < gameState.team2Total) {
-        gameState.lastTurn = 1;
-      } else if (gameState.team2Total < gameState.team1Total) {
-        gameState.lastTurn = 2;
-      }
-
-      Haptic.medium();
-      gameState.history.push({ score1, score2, effective1, effective2, points1, points2, suit: selectedSuit });
-
-      if ($.result1) $.result1.value = '0';
-      if ($.result2) $.result2.value = '0';
-      clearDirectInputs();
-      if (picker1) picker1.setValue(0);
-      if (picker2) picker2.setValue(0);
-      updateMinusBtnState(1); updateMinusBtnState(2);
-      resetSuit();
-
-      updateUI();
-      checkWinner();
-      saveGameState();
     }
 
     function adjustScore(team, delta) {
@@ -2798,8 +3445,9 @@
         const score2 = `<div class="delta ${getScoreClass(eff2)}">${formatScore(eff2)}</div>`;
         const team1Class = gameState.gameType === 'shelem' ? getShelemHistoryClass(eff1) : (round.points1 > 0 ? 'milestone' : '');
         const team2Class = gameState.gameType === 'shelem' ? getShelemHistoryClass(eff2) : (round.points2 > 0 ? 'milestone' : '');
+        const rowAnimClass = (pendingHistoryEnter > 0 && index === gameState.history.length - 1) ? ' row-enter' : '';
 
-        return `<div class="row">
+        return `<div class="row${rowAnimClass}">
             <div class="mini ${team1Class}">
               ${score1}
               <div class="line">${roundLabel1}</div>
@@ -2812,6 +3460,7 @@
       }).reverse().join('');
 
       $.historyList.innerHTML = rows;
+      pendingHistoryEnter = 0;
     }
 
     const escapeHtmlMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
@@ -2905,10 +3554,17 @@
       $.historyList.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
     }
 
-    function deleteRound(index) {
+    async function deleteRound(index) {
+      const visibleRow = $.historyList?.querySelectorAll('.row')?.[index];
+      if (visibleRow) {
+        visibleRow.classList.remove('row-enter');
+        visibleRow.classList.add('row-exit');
+        await new Promise(r => setTimeout(r, 230));
+      }
       const actualIndex = gameState.history.length - 1 - index;
       const round = gameState.history[actualIndex];
       if (!round) return;
+      const snapshot = captureUndoSnapshot();
 
       gameState.team1Total -= (round.effective1 !== undefined ? round.effective1 : round.score1);
       gameState.team2Total -= (round.effective2 !== undefined ? round.effective2 : round.score2);
@@ -2927,27 +3583,43 @@
       updateUI();
       checkWinner();
       saveGameState();
+      showUndoToast(I18N_UI[currentLangUI].undoRoundDeleted, () => restoreUndoSnapshot(snapshot));
     }
 
-    function editRound(index) {
+    async function editRound(index) {
       const t = I18N_UI[currentLangUI];
       const actualIndex = gameState.history.length - 1 - index;
       const round = gameState.history[actualIndex];
       if (!round) return;
-
-      const team1ScoreInput = prompt(t.promptEditScore(getDisplayTeamName(gameState.team1Name)), round.score1);
-      if (team1ScoreInput === null) return;
-      const team2ScoreInput = prompt(t.promptEditScore(getDisplayTeamName(gameState.team2Name)), round.score2);
-      if (team2ScoreInput === null) return;
-
-      const newScore1 = parseInt(team1ScoreInput, 10);
-      const newScore2 = parseInt(team2ScoreInput, 10);
-
       const bounds = getScoreBounds();
-      if (isNaN(newScore1) || isNaN(newScore2) || newScore1 < bounds.min || newScore1 > bounds.max || newScore2 < bounds.min || newScore2 > bounds.max) {
-        alert(t.alertResultRange(bounds.max));
-        return;
-      }
+      const parsed = await openDialog({
+        mode: 'form',
+        title: t.dialogEditRound,
+        message: currentLangUI === 'fa' ? 'امتیازهای جدید را وارد کنید' : 'Enter updated scores',
+        confirmText: t.save,
+        cancelText: t.cancel,
+        field1Label: getDisplayTeamName(gameState.team1Name),
+        field2Label: getDisplayTeamName(gameState.team2Name),
+        field1Value: String(round.score1),
+        field2Value: String(round.score2),
+        validator: (v1, v2) => {
+          if (gameState.gameType === 'shelem') {
+            const s1 = parseShelemScoreValue(v1);
+            const s2 = parseShelemScoreValue(v2);
+            if (s1 === null || s2 === null) return { ok: false, error: t.alertshelemTotal };
+            return { ok: true };
+          }
+          const s1 = parseScoreValue(v1);
+          const s2 = parseScoreValue(v2);
+          if (s1 === null || s2 === null) return { ok: false, error: t.alertResultRange(bounds.max) };
+          return { ok: true };
+        }
+      });
+      if (!parsed) return;
+
+      const newScore1 = parseInt(parsed.v1, 10);
+      const newScore2 = parseInt(parsed.v2, 10);
+      const snapshot = captureUndoSnapshot();
 
       gameState.team1Total -= (round.effective1 !== undefined ? round.effective1 : round.score1);
       gameState.team2Total -= (round.effective2 !== undefined ? round.effective2 : round.score2);
@@ -3000,11 +3672,13 @@
       updateUI();
       checkWinner();
       saveGameState();
+      showUndoToast(t.undoRoundEdited, () => restoreUndoSnapshot(snapshot));
     }
 
-    function newGame() {
+    async function newGame() {
       const t = I18N_UI[currentLangUI];
-      if (!confirm(t.confirmNewGame)) return;
+      const confirmed = await openConfirmDialog(t.confirmNewGame, { destructive: true });
+      if (!confirmed) return;
       Haptic.medium();
       archiveCurrentGame();
 
@@ -3050,9 +3724,11 @@
       });
     }
 
-    function clearHistory() {
+    async function clearHistory() {
       const t = I18N_UI[currentLangUI];
-      if (!confirm(t.confirmClearHistory)) return;
+      const confirmed = await openConfirmDialog(t.confirmClearHistory, { destructive: true });
+      if (!confirmed) return;
+      const snapshot = captureUndoSnapshot();
       Haptic.warning();
 
       gameState.history = [];
@@ -3077,6 +3753,7 @@
       closeWinner();
       updateUI();
       saveGameState();
+      showUndoToast(t.undoHistoryCleared, () => restoreUndoSnapshot(snapshot));
     }
 
     // ── Localisation & Initialisation ────────────────────────────────────────
@@ -3142,12 +3819,27 @@
       }
 
       if ($.submitBtn) {
-        $.submitBtn.addEventListener('click', () => {
-          if ($.submitBtn.disabled) return;
-          addScore();
+        $.submitBtn.addEventListener('click', async () => {
+          if ($.submitBtn.disabled || isScoreSubmitInFlight) return;
+          await addScore();
           syncSubmitEnabled();
         });
       }
+      if ($.undoToastBtn) {
+        $.undoToastBtn.addEventListener('click', () => {
+          const run = undoHandler;
+          clearUndoToast();
+          if (typeof run === 'function') {
+            Haptic.light();
+            run();
+          }
+        });
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && activeDialogResolver && $.dialogCancelBtn && $.dialogCancelBtn.style.display !== 'none') {
+          closeDialog(null);
+        }
+      });
       if ($.result1) $.result1.addEventListener('input', syncSubmitEnabled);
       if ($.result2) $.result2.addEventListener('input', syncSubmitEnabled);
       if ($.directInput1) $.directInput1.addEventListener('input', () => { syncSubmitEnabled(); updateMinusBtnState(1); });
@@ -3240,10 +3932,22 @@
         newGame: "New Game",
         clear: "Clear History",
         submit: "Submit",
+        save: "Save",
         editRound: "Edit Round",
         deleteRound: "Delete Round",
         cancel: "Cancel",
         close: "Close",
+        ok: "OK",
+        yes: "Continue",
+        undo: "Undo",
+        dialogNotice: "Notice",
+        dialogConfirm: "Confirm",
+        dialogEditRound: "Edit Round Scores",
+        undoRoundAdded: "Round added",
+        undoRoundEdited: "Round updated",
+        undoRoundDeleted: "Round deleted",
+        undoHistoryCleared: "History cleared",
+        undoArchiveCleared: "Saved games cleared",
         scorer: "Scorer",
         cardGameScorer: "Card Game Scorer",
         wonWord: "Won",
@@ -3293,10 +3997,22 @@
         newGame: "بازی جدید",
         clear: "پاک کردن تاریخچه",
         submit: "ثبت",
+        save: "ذخیره",
         editRound: "ویرایش دست",
         deleteRound: "حذف دست",
         cancel: "انصراف",
         close: "بستن",
+        ok: "باشه",
+        yes: "ادامه",
+        undo: "برگردان",
+        dialogNotice: "توجه",
+        dialogConfirm: "تأیید",
+        dialogEditRound: "ویرایش امتیاز دست",
+        undoRoundAdded: "دست ثبت شد",
+        undoRoundEdited: "دست ویرایش شد",
+        undoRoundDeleted: "دست حذف شد",
+        undoHistoryCleared: "تاریخچه پاک شد",
+        undoArchiveCleared: "بازی‌های ذخیره‌شده پاک شدند",
         scorer: "امتیازشمار",
         cardGameScorer: "امتیازشمار بازی کارت",
         wonWord: "برد",
@@ -3412,12 +4128,9 @@
     }
 
     function applyLangUI(lang, opts = {}){
-      const animateMatrix = !!opts.animateMatrix;
-      const matrixTargets = animateMatrix ? [] : null;
       const setTranslatedText = (el, text) => {
         if (!el) return;
         el.textContent = text;
-        if (matrixTargets && text && String(text).trim()) matrixTargets.push(el);
       };
 
       currentLangUI = (lang === "fa") ? "fa" : "en";
@@ -3489,7 +4202,7 @@
       setTranslatedText(emptyHistory, t.noRounds);
 
       // Sheet buttons
-      const sheetBtns = document.querySelectorAll(".sheet-btn");
+      const sheetBtns = document.querySelectorAll("#sheetOverlay .sheet-btn");
       if(sheetBtns && sheetBtns.length >= 3){
         setTranslatedText(sheetBtns[0], t.editRound);
         setTranslatedText(sheetBtns[1], t.deleteRound);
@@ -3517,6 +4230,9 @@
       const isShareMode = installBtnEl && installBtnEl.dataset.mode === 'share';
       setTranslatedText(installBtnText, isShareMode ? t.shareApp : t.installApp);
       if(installBtnEl){ const lbl=isShareMode?t.shareApp:t.installApp; installBtnEl.title=lbl; installBtnEl.setAttribute("aria-label",lbl); }
+      if ($.undoToastBtn) $.undoToastBtn.textContent = t.undo;
+      if ($.dialogCancelBtn) $.dialogCancelBtn.textContent = t.cancel;
+      if ($.dialogConfirmBtn) $.dialogConfirmBtn.textContent = t.ok;
 
       // Team-dependent labels (UI only)
       try{
@@ -3541,15 +4257,24 @@
       }
       renderArchive();
       localizeDisplayedNumbersUI();
-      runMatrixTranslationAnimation(matrixTargets, currentLangUI);
       if(typeof applyIOSInstallLang==='function') applyIOSInstallLang();
     }
 
-    function toggleLang(){
+    async function toggleLang(){
+      if (isLangSwitching) return;
       Haptic.light();
       const next = currentLangUI === "en" ? "fa" : "en";
-      const btn = document.querySelector('button[onclick="toggleLang()"]');
-      squircleReveal(btn, () => applyLangUI(next, { animateMatrix: true }));
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        applyLangUI(next);
+        return;
+      }
+      isLangSwitching = true;
+      try {
+        await runLanguageCurtainTransition(next, () => applyLangUI(next));
+      } finally {
+        isLangSwitching = false;
+      }
     }
 
     // UI-only: Wrap updateUI to localize digits after each render. Does not change game logic.
