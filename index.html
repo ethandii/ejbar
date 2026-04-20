@@ -1207,6 +1207,7 @@
       display: grid;
       gap: 10px;
       margin-bottom: 10px;
+      grid-auto-flow:column;
     }
 
     .dialog-field {
@@ -4297,6 +4298,16 @@
 <script>
 let deferredPrompt=null;
 const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+function showInstallFallback(){
+  const lang = localStorage.getItem('lang') || 'en';
+  const isFa = lang === 'fa';
+  const title = isFa ? 'راهنمای نصب' : 'Install Help';
+  const message = isFa
+    ? 'نصب مستقیم در این مرورگر در دسترس نیست. اگر از Chrome یا Edge روی Android استفاده می‌کنید، از منوی مرورگر گزینه "Install app" یا "Add to Home screen" را بزنید.'
+    : 'Direct install is not available in this browser state. In Chrome or Edge on Android, open the browser menu and tap "Install app" or "Add to Home Screen".';
+  if (typeof openMessageDialog === 'function') openMessageDialog(message, title);
+  else alert(message);
+}
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt=e;
@@ -4304,8 +4315,12 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   if(btn) btn.classList.remove('hidden');
 });
 function installApp(){
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    switchToShareMode();
+    return;
+  }
   if(_isIOS){ showIOSInstall(); return; }
-  if(!deferredPrompt) return;
+  if(!deferredPrompt){ showInstallFallback(); return; }
   deferredPrompt.prompt();
   deferredPrompt.userChoice.finally(()=>{ deferredPrompt=null; });
 }
